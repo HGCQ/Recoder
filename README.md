@@ -38,7 +38,7 @@
 - UI 구현 : 2024.08.19 ~ 2024.09.30
 - 기능 구현 : 2024.08.31 ~ 2024.09.30
 - 테스트 : 2024.10.01 ~ 2024.10.21
-- [Gantt Chart]()
+- [Gantt Chart](https://github.com/HGCQ/Recoder/blob/main/data/XLGantt_v5.0.0_20220605_Release_KOR.xlsm)
 
 ### 🖊️ 브랜치 전략
 
@@ -108,12 +108,12 @@
 <br>
 
 ### 엔티티 분석
-![Entity]()
+![Entity](https://github.com/HGCQ/Recoder/blob/main/data/Entity.png)
 
 <br>
 
 ### 테이블 설계
-![Table]()
+![Table](https://github.com/HGCQ/Recoder/blob/main/data/table.png)
 
 <br>
 
