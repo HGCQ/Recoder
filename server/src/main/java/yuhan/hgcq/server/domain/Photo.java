@@ -18,7 +18,6 @@ public class Photo {
     private String name;
     private String path;
     private LocalDateTime created;
-    private Boolean isLiked;
     private Boolean isDeleted;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -41,12 +40,7 @@ public class Photo {
         this.name = name;
         this.path = path;
         this.created = created;
-        this.isLiked = false;
         this.isDeleted = false;
-    }
-
-    public void toggleIsLiked() {
-        this.isLiked = !isLiked;
     }
 
     public void toggleIsDeleted() {
