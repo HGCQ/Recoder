@@ -1,6 +1,5 @@
 package yuhan.hgcq.client.localDatabase.entity;
 
-import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
@@ -8,24 +7,19 @@ import java.time.LocalDate;
 
 @Entity(tableName = "Album")
 public class Album {
-
     @PrimaryKey(autoGenerate = true)
-    private Long albumId;
-    @NonNull
+    private Long album_id;
     private LocalDate date;
-    @NonNull
-    private String name;
-    @NonNull
-    private String content;
-    @NonNull
+    private String outline;
+    private String comment;
     private String region;
-    @NonNull
-    public Long getAlbumId() {
-        return albumId;
+
+    public Long getAlbum_id() {
+        return album_id;
     }
 
-    public void setAlbumId(Long albumId) {
-        this.albumId = albumId;
+    public void setAlbum_id(Long albumId) {
+        this.album_id = albumId;
     }
 
     public LocalDate getDate() {
@@ -36,20 +30,20 @@ public class Album {
         this.date = date;
     }
 
-    public String getName() {
-        return name;
+    public String getOutline() {
+        return outline;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setOutline(String outline) {
+        this.outline = outline;
     }
 
-    public String getContent() {
-        return content;
+    public String getComment() {
+        return comment;
     }
 
-    public void setContent(String content) {
-        this.content = content;
+    public void setComment(String comment) {
+        this.comment = comment;
     }
 
     public String getRegion() {
@@ -63,10 +57,10 @@ public class Album {
     @Override
     public String toString() {
         return "Album{" +
-                "album_id=" + albumId +
+                "album_id=" + album_id +
                 ", date=" + date +
-                ", outline='" + name + '\'' +
-                ", comment='" + content + '\'' +
+                ", outline='" + outline + '\'' +
+                ", comment='" + comment + '\'' +
                 ", region='" + region + '\'' +
                 '}';
     }
