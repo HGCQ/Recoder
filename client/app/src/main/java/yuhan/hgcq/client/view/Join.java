@@ -1,2 +1,4 @@
-package yuhan.hgcq.client.view;public class Join {
+package yuhan.hgcq.client.view;
+
+public class Join {
 }

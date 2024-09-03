@@ -7,4 +7,69 @@
     android:layout_height="match_parent"
     tools:context=".view.privated.PrivatedMain">
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/eventList"
+        android:layout_width="408dp"
+        android:layout_height="560dp"
+        android:gravity="center"
+        android:padding="17dp"
+        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.608"
+        app:spanCount="2" />
+
+    <EditText
+        android:id="@+id/searchText"
+        android:layout_width="234dp"
+        android:layout_height="35dp"
+        android:layout_marginTop="40dp"
+        android:background="@drawable/border"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.096"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageButton
+        android:id="@+id/search"
+        android:layout_width="42dp"
+        android:layout_height="36dp"
+        android:layout_marginTop="40dp"
+        android:background="@drawable/border"
+        android:scaleType="fitCenter"
+        android:src="@drawable/search"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.043"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="#234567" />
+
+    <ImageButton
+        android:id="@+id/plus"
+        android:layout_width="47dp"
+        android:layout_height="47dp"
+        android:layout_marginTop="40dp"
+        android:background="#00000000"
+        android:scaleType="fitCenter"
+        android:src="@drawable/plusicon"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.956"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="#234567" />
+
+    <ImageButton
+        android:id="@+id/love"
+        android:layout_width="47dp"
+        android:layout_height="47dp"
+        android:layout_marginTop="40dp"
+        android:background="#00000000"
+        android:scaleType="fitCenter"
+        android:src="@drawable/loveicon"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.796"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="#234567" />
 </androidx.constraintlayout.widget.ConstraintLayout>
