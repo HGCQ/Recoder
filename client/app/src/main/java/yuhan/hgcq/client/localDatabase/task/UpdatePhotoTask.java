@@ -6,15 +6,15 @@ import yuhan.hgcq.client.localDatabase.DAO.PhotoDAO;
 import yuhan.hgcq.client.localDatabase.entity.Photo;
 
 public class UpdatePhotoTask extends AsyncTask<Photo,Void,Void> {
-    private PhotoDAO photoDao;
+    private PhotoDAO photoDAO;
 
-    public UpdatePhotoTask(PhotoDAO photoDao) {
-        this.photoDao = photoDao;
-    }
+    public UpdatePhotoTask(PhotoDAO photoDAO) {this.photoDAO = photoDAO;}
 
     @Override
     protected Void doInBackground(Photo... photos) {
-        photoDao.updatePhoto(photos[0]);
+        if (photos != null && photos.length > 0) {
+            photoDAO.updatePhoto(photos[0]);
+        }
         return null;
     }
 

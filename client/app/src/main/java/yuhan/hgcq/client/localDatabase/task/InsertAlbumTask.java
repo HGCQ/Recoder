@@ -6,15 +6,17 @@ import yuhan.hgcq.client.localDatabase.DAO.AlbumDAO;
 import yuhan.hgcq.client.localDatabase.entity.Album;
 
 public class InsertAlbumTask extends AsyncTask<Album,Void,Void> {
-    private AlbumDAO eventDao;
+    private AlbumDAO albumDAO;
 
-    public InsertAlbumTask(AlbumDAO eventDao) {
-        this.eventDao = eventDao;
+    public InsertAlbumTask(AlbumDAO albumDAO) {
+        this.albumDAO = albumDAO;
     }
 
     @Override
     protected Void doInBackground(Album... albums) {
-        eventDao.insertAlbum(albums[0]);
+        if (albums != null && albums.length > 0) {
+            albumDAO.insertAlbum(albums[0]);
+        }
         return null;
     }
 }
