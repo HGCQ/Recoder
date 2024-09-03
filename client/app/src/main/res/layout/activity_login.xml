@@ -27,7 +27,7 @@
                 android:layout_gravity="center"
                 android:layout_marginRight="59dp"
                 android:text="Recorder"
-                android:textSize="50sp"
+                android:textSize="40sp"
                 android:textStyle="bold" />
 
             <TextView
@@ -35,7 +35,6 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="50dp"
-                android:text="회원 서비스 이용을 위해 로그인 해주세요."
                 android:textColor="#FFFFFF"
                 android:textSize="12sp" />
 
@@ -142,6 +141,8 @@
                     android:textSize="40dp" />
 
             </RelativeLayout>
+
+
         </LinearLayout>
 
     </ScrollView>

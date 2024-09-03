@@ -10,13 +10,13 @@ import androidx.core.view.WindowInsetsCompat;
 
 import yuhan.hgcq.client.R;
 
-public class Join extends AppCompatActivity {
+public class CreateAlbum extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_join);
+        setContentView(R.layout.activity_create_album);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
