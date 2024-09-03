@@ -1,6 +1,8 @@
 package yuhan.hgcq.client.model.dto.member;
 
-public class LoginForm {
+import java.io.Serializable;
+
+public class LoginForm implements Serializable {
     private String email;
     private String password;
 

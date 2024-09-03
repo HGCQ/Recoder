@@ -2,18 +2,17 @@ package yuhan.hgcq.client.model.dto.member;
 
 import java.io.Serializable;
 
-public class SignupForm implements Serializable {
+public class MemberDTO implements Serializable {
+    private Long id;
     private String name;
     private String email;
-    private String password;
 
-    public SignupForm() {
+    public Long getId() {
+        return id;
     }
 
-    public SignupForm(String name, String email, String password) {
-        this.name = name;
-        this.email = email;
-        this.password = password;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -32,20 +31,21 @@ public class SignupForm implements Serializable {
         this.email = email;
     }
 
-    public String getPassword() {
-        return password;
+    public MemberDTO() {
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public MemberDTO(Long id, String name, String email) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
     }
 
     @Override
     public String toString() {
-        return "SignupForm{" +
-                "name='" + name + '\'' +
+        return "MemberDTO{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
                 ", email='" + email + '\'' +
-                ", password='" + password + '\'' +
                 '}';
     }
 }
