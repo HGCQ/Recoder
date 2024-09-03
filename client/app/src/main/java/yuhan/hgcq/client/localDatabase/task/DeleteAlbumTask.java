@@ -6,15 +6,17 @@ import yuhan.hgcq.client.localDatabase.DAO.AlbumDAO;
 import yuhan.hgcq.client.localDatabase.entity.Album;
 
 public class DeleteAlbumTask extends AsyncTask<Album,Void,Void> {
-    private AlbumDAO eventDao;
+    private AlbumDAO albumDAO;
 
-    public DeleteAlbumTask(AlbumDAO eventDao) {
-        this.eventDao = eventDao;
+    public DeleteAlbumTask(AlbumDAO albumDAO) {
+        this.albumDAO = albumDAO;
     }
 
     @Override
     protected Void doInBackground(Album... albums) {
-        eventDao.deleteAlbum(albums[0]);
+        if (albums != null && albums.length > 0) {
+            albumDAO.deleteAlbum(albums[0]);
+        }
         return null;
     }
 }

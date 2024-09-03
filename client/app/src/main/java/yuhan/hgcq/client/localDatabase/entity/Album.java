@@ -1,5 +1,6 @@
 package yuhan.hgcq.client.localDatabase.entity;
 
+import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
@@ -7,19 +8,24 @@ import java.time.LocalDate;
 
 @Entity(tableName = "Album")
 public class Album {
-    @PrimaryKey(autoGenerate = true)
-    private Long album_id;
-    private LocalDate date;
-    private String outline;
-    private String comment;
-    private String region;
 
-    public Long getAlbum_id() {
-        return album_id;
+    @PrimaryKey(autoGenerate = true)
+    private Long albumId;
+    @NonNull
+    private LocalDate date;
+    @NonNull
+    private String name;
+    @NonNull
+    private String content;
+    @NonNull
+    private String region;
+    @NonNull
+    public Long getAlbumId() {
+        return albumId;
     }
 
-    public void setAlbum_id(Long albumId) {
-        this.album_id = albumId;
+    public void setAlbumId(Long albumId) {
+        this.albumId = albumId;
     }
 
     public LocalDate getDate() {
@@ -30,20 +36,20 @@ public class Album {
         this.date = date;
     }
 
-    public String getOutline() {
-        return outline;
+    public String getName() {
+        return name;
     }
 
-    public void setOutline(String outline) {
-        this.outline = outline;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getComment() {
-        return comment;
+    public String getContent() {
+        return content;
     }
 
-    public void setComment(String comment) {
-        this.comment = comment;
+    public void setContent(String content) {
+        this.content = content;
     }
 
     public String getRegion() {
@@ -57,10 +63,10 @@ public class Album {
     @Override
     public String toString() {
         return "Album{" +
-                "album_id=" + album_id +
+                "album_id=" + albumId +
                 ", date=" + date +
-                ", outline='" + outline + '\'' +
-                ", comment='" + comment + '\'' +
+                ", outline='" + name + '\'' +
+                ", comment='" + content + '\'' +
                 ", region='" + region + '\'' +
                 '}';
     }
