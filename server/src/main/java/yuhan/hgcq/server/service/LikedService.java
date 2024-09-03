@@ -9,6 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
-public class TeamMemberService {
-    private static final Logger log = LoggerFactory.getLogger(TeamMemberService.class);
+public class LikedService {
+    private static final Logger log = LoggerFactory.getLogger(LikedService.class);
 }

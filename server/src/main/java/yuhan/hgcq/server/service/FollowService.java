@@ -11,5 +11,5 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class FollowService {
-    private static final Logger log = LoggerFactory.getLogger(MemberService.class);
+    private static final Logger log = LoggerFactory.getLogger(FollowService.class);
 }
