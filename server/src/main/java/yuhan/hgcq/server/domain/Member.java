@@ -16,8 +16,12 @@ public class Member {
     @Column(name = "member_id")
     private Long id;
 
+    @Column(unique = true, nullable = false)
     private String name;
+
+    @Column(unique = true, nullable = false)
     private String email;
+
     private String password;
 
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)

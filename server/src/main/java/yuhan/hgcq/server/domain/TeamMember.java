@@ -4,12 +4,14 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import yuhan.hgcq.server.domain.id.TeamMemberId;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @IdClass(TeamMemberId.class)
+@ToString
 public class TeamMember {
     @Id
     @Column(name = "team_id")

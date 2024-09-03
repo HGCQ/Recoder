@@ -4,21 +4,27 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@ToString
 public class Photo {
     @Id @GeneratedValue
     @Column(name = "photo_id")
     private Long id;
 
     private String name;
+
+    @Column(unique = true, nullable = false)
     private String path;
+
     private LocalDateTime created;
     private Boolean isDeleted;
+    private LocalDateTime deleted;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "album_id")
@@ -27,14 +33,14 @@ public class Photo {
     @PrePersist
     @PreUpdate
     private void validate() {
-        if (album == null) {
-            throw new NullPointerException("Event is null");
+        if (album == null || path == null) {
+            throw new NullPointerException("Album or Path is null");
         }
     }
 
     public Photo(Album album, String name, String path, LocalDateTime created) {
-        if (album == null) {
-            throw new NullPointerException("Event cannot be null");
+        if (album == null || path == null) {
+            throw new NullPointerException("Album or Path cannot be null");
         }
         this.album = album;
         this.name = name;
@@ -43,7 +49,13 @@ public class Photo {
         this.isDeleted = false;
     }
 
-    public void toggleIsDeleted() {
+    public void changeIsDeleted() {
         this.isDeleted = !isDeleted;
+
+        if (isDeleted) {
+            deleted = LocalDateTime.now();
+        } else {
+            deleted = null;
+        }
     }
 }
