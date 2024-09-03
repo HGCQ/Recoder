@@ -74,6 +74,16 @@ public class PhotoRepository {
     }
 
     /**
+     * 휴지통에 있는 사진 리스트 조회
+     * @param album 앨범
+     * @return 사진 리스트
+     */
+    public List<Photo> findByDeleted(Album album) {
+        return em.createQuery("select p from Photo p where p.isDeleted = true", Photo.class)
+                .getResultList();
+    }
+
+    /**
      * 앨범에 속한 사진 전체 삭제
      *
      * @param album 앨범
