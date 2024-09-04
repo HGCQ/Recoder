@@ -6,7 +6,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class UpdateForm {
+public class MemberUpdateForm {
     private String name;
     private String password;
 }

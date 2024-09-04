@@ -13,6 +13,15 @@ import yuhan.hgcq.server.repository.MemberRepository;
 
 import java.util.List;
 
+/**
+ * 회원 기능 요구사항 분석
+ * 1. 회원가입을 할 때 이름과 이메일은 중복이 안되도록 한다.
+ * 2. 로그인은 이메일과 패스워드로 한다.
+ * 3. 회원 정보 수정은 이름과 패스워드만 가능하다.
+ * 4. 전체 회원 리스트를 추출할 수 있다.
+ * 5. 회원 리스트를 이름으로 검색할 수 있다.
+ */
+
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -68,7 +77,7 @@ public class MemberService {
         if(findMember == null){
 
 
-            throw new IllegalArgumentException("존재하지 않는 아이디 입니다.")
+            throw new IllegalArgumentException("존재하지 않는 아이디 입니다.");
         }
         return findMember;
     }

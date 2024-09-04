@@ -49,13 +49,18 @@ public class Photo {
         this.isDeleted = false;
     }
 
-    public void changeIsDeleted() {
-        this.isDeleted = !isDeleted;
+    public void delete() {
+        this.isDeleted = true;
+        deleted = LocalDateTime.now();
+    }
 
-        if (isDeleted) {
-            deleted = LocalDateTime.now();
-        } else {
-            deleted = null;
-        }
+    public void cancelDelete() {
+        this.isDeleted = false;
+        deleted = null;
+    }
+
+    /* 테스트 코드(나중에 삭제) */
+    public void test(LocalDateTime date) {
+        deleted = date;
     }
 }

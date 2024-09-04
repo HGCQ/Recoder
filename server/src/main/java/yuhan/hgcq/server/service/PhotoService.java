@@ -13,6 +13,12 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
+/**
+ * 사진 기능 요구사항 분석
+ * 1. 사진은 서버의 외부 디렉터리에 저장을 한다.(추후 AWS 변경 가능성 있음)
+ * 2. 사진을 삭제 요청하면 휴지통으로 이동하고, 30일 후 삭제된다.
+ */
+
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -34,7 +40,7 @@ public class PhotoService {
         ensureNotNull(photo, "Photo");
 
         Long saveId = pr.save(photo);
-        log.info("save photo : {}", photo);
+        log.info("Save Photo : {}", photo);
         return saveId;
     }
 
@@ -47,13 +53,10 @@ public class PhotoService {
     public void delete(Photo photo) {
         ensureNotNull(photo, "Photo");
 
-        Boolean isDeleted = photo.getIsDeleted();
+        photo.delete();
 
-        if (!isDeleted) {
-            photo.changeIsDeleted();
-            pr.save(photo);
-            log.info("delete photo : {}", photo);
-        }
+        pr.save(photo);
+        log.info("Delete Photo : {}", photo);
     }
 
     /**
@@ -65,13 +68,10 @@ public class PhotoService {
     public void deleteCancel(Photo photo) {
         ensureNotNull(photo, "Photo");
 
-        Boolean isDeleted = photo.getIsDeleted();
+        photo.cancelDelete();
 
-        if (isDeleted) {
-            photo.changeIsDeleted();
-            pr.save(photo);
-            log.info("delete cancel photo : {}", photo);
-        }
+        pr.save(photo);
+        log.info("Delete Cancel Photo : {}", photo);
     }
 
     /**
@@ -88,7 +88,7 @@ public class PhotoService {
 
             if (between >= DELETE_DAY) {
                 pr.delete(photo.getId());
-                log.info("complete delete photo : {}", photo);
+                log.info("Complete Delete Photo : {}", photo);
             }
         }
     }
@@ -103,7 +103,7 @@ public class PhotoService {
         Photo find = pr.findOne(id);
 
         if (find == null) {
-            throw new IllegalArgumentException("photo not found");
+            throw new IllegalStateException("photo not found");
         }
 
         return find;
@@ -119,7 +119,7 @@ public class PhotoService {
         Photo find = pr.findByPath(path);
 
         if (find == null) {
-            throw new IllegalArgumentException("photo not found");
+            throw new IllegalStateException("photo not found");
         }
 
         return find;

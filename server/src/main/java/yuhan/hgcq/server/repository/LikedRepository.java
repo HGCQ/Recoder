@@ -1,6 +1,7 @@
 package yuhan.hgcq.server.repository;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -31,10 +32,14 @@ public class LikedRepository {
      * @return 좋아요
      */
     public Liked findOne(Member member, Photo photo) {
-        return em.createQuery("select l from Liked l where l.member = :member and l.photo = :photo", Liked.class)
-                .setParameter("member", member)
-                .setParameter("photo", photo)
-                .getSingleResult();
+        try {
+            return em.createQuery("select l from Liked l where l.member = :member and l.photo = :photo", Liked.class)
+                    .setParameter("member", member)
+                    .setParameter("photo", photo)
+                    .getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
     }
 
     /**

@@ -71,25 +71,24 @@ class MemberRepositoryTest {
     void findName() {
         Member memberA = new Member("A", "a@test.com", "a1");
         Member memberB = new Member("B", "b@test.com", "b1");
-        Member memberB2 = new Member("B", "b2@test.com", "b2");
-        Member memberC = new Member("C", "c@test.com", "c1");
+        Member memberC = new Member("C", "b2@test.com", "c1");
+        Member memberD = new Member("D", "c@test.com", "d1");
 
         memberRepository.save(memberA);
         memberRepository.save(memberB);
-        memberRepository.save(memberB2);
         memberRepository.save(memberC);
+        memberRepository.save(memberD);
 
         List<Member> find = memberRepository.findByName("B");
-        assertThat(find).hasSize(2);
-        assertThat(find).contains(memberB, memberB2).doesNotContain(memberA, memberC);
+        assertThat(find).hasSize(1).contains(memberB);
     }
 
     @Test
     void findAllEmails() {
         Member memberA = new Member("A", "a@test.com", "a1");
         Member memberB = new Member("B", "b@test.com", "b1");
-        Member memberB2 = new Member("B", "b2@test.com", "b2");
-        Member memberC = new Member("C", "c@test.com", "c1");
+        Member memberB2 = new Member("C", "b2@test.com", "c1");
+        Member memberC = new Member("D", "c@test.com", "d1");
 
         memberRepository.save(memberA);
         memberRepository.save(memberB);
