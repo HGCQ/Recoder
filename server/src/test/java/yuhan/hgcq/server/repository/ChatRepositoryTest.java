@@ -71,7 +71,7 @@ class ChatRepositoryTest {
     @Test
     void save() {
         Member findMember = mr.findOne(saveMemberId);
-        Album findAlbum = ar.findOne(saveTeamId);
+        Album findAlbum = ar.findOne(saveAlbumId);
         Chat chat = new Chat(findMember, "test", findAlbum);
 
         Long saveId = cr.save(chat);
@@ -84,7 +84,7 @@ class ChatRepositoryTest {
     @Test
     void delete() {
         Member findMember = mr.findOne(saveMemberId);
-        Album findAlbum = ar.findOne(saveTeamId);
+        Album findAlbum = ar.findOne(saveAlbumId);
         Chat chat = new Chat(findMember, "test", findAlbum);
 
         Long saveId = cr.save(chat);
@@ -103,7 +103,7 @@ class ChatRepositoryTest {
         Member findMember3 = mr.findOne(saveMemberId3);
         Member findMember4 = mr.findOne(saveMemberId4);
 
-        Album findAlbum = ar.findOne(saveTeamId);
+        Album findAlbum = ar.findOne(saveAlbumId);
 
         Chat chat = new Chat(findMember, "test", findAlbum);
         Chat chat2 = new Chat(findMember2, "test2", findAlbum);

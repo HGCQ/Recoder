@@ -21,6 +21,8 @@ public class TeamMember {
     @Column(name = "member_id")
     private Long memberId;
 
+    private Boolean isAdmin;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "team_id", insertable = false, updatable = false)
     private Team team;
@@ -37,5 +39,14 @@ public class TeamMember {
         this.member = member;
         this.teamId = team.getId();
         this.memberId = member.getId();
+        this.isAdmin = false;
+    }
+
+    public void authorizeAdmin() {
+        this.isAdmin = true;
+    }
+
+    public void revokeAdmin() {
+        this.isAdmin = false;
     }
 }

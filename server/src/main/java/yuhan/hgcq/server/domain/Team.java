@@ -45,4 +45,8 @@ public class Team {
         this.owner = owner;
         this.name = name;
     }
+
+    public void changeName(String name) {
+        this.name = name;
+    }
 }

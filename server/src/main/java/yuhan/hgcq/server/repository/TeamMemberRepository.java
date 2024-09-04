@@ -1,6 +1,7 @@
 package yuhan.hgcq.server.repository;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -32,6 +33,33 @@ public class TeamMemberRepository {
      */
     public void delete(TeamMember teamMember) {
         em.remove(teamMember);
+    }
+
+    /**
+     * 그룹 회원 관계 조회
+     *
+     * @param member 회원
+     * @param team   그룹
+     * @return 그룹 회원
+     */
+    public TeamMember findOne(Member member, Team team) {
+        try {
+            return em.createQuery("select tm from TeamMember tm where tm.member = :member and tm.team = :team", TeamMember.class)
+                    .setParameter("member", member)
+                    .setParameter("team", team)
+                    .getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
+    }
+
+    /**
+     * 그룹에 회원 정보 수정
+     *
+     * @param teamMember 그룹 회원
+     */
+    public void update(TeamMember teamMember) {
+        em.merge(teamMember);
     }
 
     /**
@@ -79,6 +107,18 @@ public class TeamMemberRepository {
      */
     public List<Member> findByTeam(Team team) {
         return em.createQuery("select tm.member from TeamMember tm where tm.team = :team", Member.class)
+                .setParameter("team", team)
+                .getResultList();
+    }
+
+    /**
+     * 그룹에 속한 관리자 리스트 조회
+     *
+     * @param team 그룹
+     * @return 관리자 리스트
+     */
+    public List<Member> findAdminByTeam(Team team) {
+        return em.createQuery("select tm.member from TeamMember tm where tm.team = :team and tm.isAdmin = true", Member.class)
                 .setParameter("team", team)
                 .getResultList();
     }
