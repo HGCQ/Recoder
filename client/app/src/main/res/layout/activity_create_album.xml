@@ -5,73 +5,71 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <ImageButton
+        android:id="@+id/back"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:background="#00000000"
+        android:scaleType="fitCenter"
+        android:src="@drawable/backicon"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.043"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.057" />
+
     <EditText
-        android:id="@+id/searchText"
+        android:id="@+id/createAlbumText"
         android:layout_width="234dp"
         android:layout_height="35dp"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="60dp"
         android:background="@drawable/border"
+        android:hint="앨범 이름을 입력해주세요."
+        android:gravity="center"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.096"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/save"
+        android:layout_width="104dp"
+        android:layout_height="39dp"
+        android:layout_marginTop="688dp"
+        android:background="@drawable/border"
+        android:hint="생성"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.98"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/eventList"
-        android:layout_width="412dp"
-        android:layout_height="520dp"
+        android:id="@+id/albumphoto"
+        android:layout_width="374dp"
+        android:layout_height="537dp"
         android:gravity="center"
         android:padding="17dp"
         app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.635"
+        app:layout_constraintVertical_bias="0.715"
         app:spanCount="3" />
 
     <TextView
         android:id="@+id/date"
         android:layout_width="118dp"
         android:layout_height="29dp"
+        android:layout_marginTop="112dp"
         android:gravity="center"
         android:text="date"
         android:textSize="25sp"
-        tools:layout_editor_absoluteX="3dp"
-        tools:layout_editor_absoluteY="92dp" />
-
-    <ImageButton
-        android:id="@+id/select"
-        android:layout_width="33dp"
-        android:layout_height="22dp"
-        android:layout_marginTop="104dp"
-        android:background="#00000000"
-        android:scaleType="fitCenter"
-        android:src="@drawable/selecticon"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.957"
+        app:layout_constraintHorizontal_bias="0.01"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:tint="#234567" />
-    <FrameLayout
-        android:id="@+id/main_container"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/bottom_navigation_view"
-        app:layout_constraintEnd_toEndOf="@+id/bottom_navigation_view"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
-
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottom_navigation_view"
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
-        app:itemIconTint="#2196F3"
-        app:itemTextColor="@color/black"
-        app:labelVisibilityMode="labeled"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:menu="@menu/menu_bottom_nav" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

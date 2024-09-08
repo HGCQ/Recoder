@@ -4,8 +4,8 @@
         android:id="@+id/fragment_home"
         android:icon="@drawable/home"/>
     <item
-        android:id="@+id/fragment_search"
-        android:icon="@drawable/search"/>
+        android:id="@+id/fragment_friend"
+        android:icon="@drawable/friends"/>
     <item
         android:id="@+id/like"
         android:icon="@drawable/loveicon"/>
