@@ -22,6 +22,7 @@
         app:layout_constraintVertical_bias="1.0" />
 
     <ImageView
+        android:id="@+id/picture"
         android:layout_width="186dp"
         android:layout_height="138dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -29,20 +30,35 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintVertical_bias="1.0" />
 
     <TextView
         android:id="@+id/title"
-        android:layout_width="92dp"
-        android:layout_height="25dp"
+        android:layout_width="104dp"
+        android:layout_height="26dp"
         android:gravity="center"
         android:text="title"
         android:textSize="25sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.156"
+        app:layout_constraintHorizontal_bias="0.178"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.831" />
+        app:layout_constraintVertical_bias="0.892" />
+
+    <ImageButton
+        android:id="@+id/groupset"
+        android:layout_width="33dp"
+        android:layout_height="34dp"
+        android:layout_marginTop="168dp"
+        android:background="#00000000"
+        android:scaleType="fitCenter"
+        android:src="@drawable/groupset"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.442"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="#234567" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

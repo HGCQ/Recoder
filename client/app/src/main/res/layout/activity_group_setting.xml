@@ -5,6 +5,99 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".view.GroupSetting">
+    tools:context=".view.AlbumMain">
 
+    <TextView
+        android:layout_width="234dp"
+        android:layout_height="35dp"
+        android:layout_marginTop="140dp"
+        android:text="친구 목록"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.09"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/friendList"
+        android:layout_width="411dp"
+        android:layout_height="500dp"
+        android:gravity="center"
+        android:padding="17dp"
+        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.701"
+        app:spanCount="1" />
+
+    <View
+        android:layout_width="410dp"
+        android:layout_height="2dp"
+        android:background="#D3D3D3"
+        tools:layout_editor_absoluteX="1dp"
+        tools:layout_editor_absoluteY="130dp" />
+
+    <TextView
+        android:layout_width="234dp"
+        android:layout_height="35dp"
+        android:layout_marginTop="68dp"
+        android:text="그룹 이름"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.31"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/Groupname"
+        android:layout_width="233dp"
+        android:layout_height="46dp"
+        android:layout_marginTop="84dp"
+        android:gravity="right"
+        android:hint="그룹 이름 입력"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.314"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageButton
+        android:id="@+id/back"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:background="#00000000"
+        android:scaleType="fitCenter"
+        android:src="@drawable/backicon"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.002"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.07"
+        app:tint="#234567" />
+
+    <TextView
+        android:layout_width="234dp"
+        android:layout_height="35dp"
+        android:layout_marginTop="140dp"
+        android:text="친구 목록"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.09"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/groupleave"
+        android:layout_width="244dp"
+        android:layout_height="44dp"
+        android:layout_marginTop="668dp"
+        android:background="@drawable/border"
+        android:scaleType="fitCenter"
+        android:text="그룹방 나가기"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="#234567" />
 </androidx.constraintlayout.widget.ConstraintLayout>
