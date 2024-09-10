@@ -4,10 +4,12 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@ToString
 public class Liked {
     @Id
     @Column(name = "member_id")
@@ -38,7 +40,11 @@ public class Liked {
         this.isLiked = true;
     }
 
-    public void toggleIsLiked() {
-        this.isLiked = !isLiked;
+    public void cancelLiked() {
+        this.isLiked = false;
+    }
+
+    public void addLiked() {
+        this.isLiked = true;
     }
 }

@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    tools:context=".view.Login">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="40dp"
+            android:layout_marginTop="80dp"
+            android:layout_marginRight="40dp"
+            android:orientation="vertical">
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginRight="59dp"
+                android:text="Recorder"
+                android:textSize="40sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="50dp"
+                android:textColor="#FFFFFF"
+                android:textSize="12sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="40dp"
+                android:layout_marginRight="80dp"
+                android:text="이메일" />
+
+            <EditText
+                android:id="@+id/id"
+                android:layout_width="210dp"
+                android:layout_height="48dp"
+                android:layout_gravity="center"
+                android:textSize="15dp"
+                android:hint="email@domain.com"
+                android:inputType="textEmailAddress"
+
+                android:maxLength="20" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="40dp"
+                android:layout_marginRight="73dp"
+                android:text="비밀번호" />
+
+            <EditText
+                android:id="@+id/password"
+                android:layout_width="210dp"
+                android:layout_height="48dp"
+                android:layout_gravity="center"
+                android:hint="password"
+                android:textSize="15dp"
+                android:inputType="textPassword"
+                android:maxLength="20" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:layout_marginLeft="50dp"
+                android:layout_marginTop="30dp"
+                android:layout_marginRight="40dp"
+                android:layout_marginBottom="50dp"
+                android:orientation="horizontal">
+
+                <ImageButton
+                    android:id="@+id/join"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginStart="141dp"
+                    android:layout_marginTop="15dp"
+                    android:background="@drawable/joinbutton"
+                    tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />
+
+                <TextView
+                    android:id="@+id/JButtonText"
+                    android:layout_width="30dp"
+                    android:layout_height="25dp"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginStart="143dp"
+                    android:layout_marginTop="55dp"
+                    android:textSize="12dp"
+                    android:text="Join" />
+
+                <ImageButton
+                    android:id="@+id/login"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginStart="32dp"
+                    android:layout_marginTop="14dp"
+                    android:background="@drawable/loginbutton"
+                    tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />
+
+                <TextView
+                    android:id="@+id/LButtonText"
+                    android:layout_width="40dp"
+                    android:layout_height="25dp"
+                    android:layout_alignParentStart="true"
+                    android:layout_marginStart="39dp"
+                    android:layout_marginTop="55dp"
+                    android:text="Login"
+                    android:textSize="12dp" />
+
+                <TextView
+                    android:id="@+id/l2"
+
+                    android:layout_width="25dp"
+                    android:layout_height="100dp"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginStart="103dp"
+                    android:layout_marginTop="5dp"
+
+                    android:text="|"
+                    android:textSize="40dp" />
+
+            </RelativeLayout>
+
+
+        </LinearLayout>
+
+    </ScrollView>
+</LinearLayout>

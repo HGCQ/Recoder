@@ -4,12 +4,14 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import yuhan.hgcq.server.domain.id.TeamMemberId;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @IdClass(TeamMemberId.class)
+@ToString
 public class TeamMember {
     @Id
     @Column(name = "team_id")
@@ -18,6 +20,8 @@ public class TeamMember {
     @Id
     @Column(name = "member_id")
     private Long memberId;
+
+    private Boolean isAdmin;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "team_id", insertable = false, updatable = false)
@@ -35,5 +39,14 @@ public class TeamMember {
         this.member = member;
         this.teamId = team.getId();
         this.memberId = member.getId();
+        this.isAdmin = false;
+    }
+
+    public void authorizeAdmin() {
+        this.isAdmin = true;
+    }
+
+    public void revokeAdmin() {
+        this.isAdmin = false;
     }
 }

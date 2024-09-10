@@ -1,6 +1,7 @@
 package yuhan.hgcq.server.repository;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -56,9 +57,13 @@ public class PhotoRepository {
      * @return 사진
      */
     public Photo findByPath(String path) {
-        return em.createQuery("select p from Photo p where p.path = :path", Photo.class)
-                .setParameter("path", path)
-                .getSingleResult();
+        try {
+            return em.createQuery("select p from Photo p where p.path = :path", Photo.class)
+                    .setParameter("path", path)
+                    .getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
     }
 
     /**
@@ -70,6 +75,16 @@ public class PhotoRepository {
     public List<Photo> findAll(Album album) {
         return em.createQuery("select p from Photo p where p.album = :album", Photo.class)
                 .setParameter("album", album)
+                .getResultList();
+    }
+
+    /**
+     * 휴지통에 있는 사진 리스트 조회
+     * @param album 앨범
+     * @return 사진 리스트
+     */
+    public List<Photo> findByDeleted(Album album) {
+        return em.createQuery("select p from Photo p where p.isDeleted = true", Photo.class)
                 .getResultList();
     }
 

@@ -14,8 +14,8 @@ import yuhan.hgcq.client.localDatabase.entity.Photo;
 public interface PhotoDAO {
     @Insert
     void insertPhoto(Photo photo);
-    @Query("SELECT * FROM photo WHERE albumId = :albumId")
-    List<Photo> getPhotosForEvent(Long albumId);
+    @Query("SELECT * FROM photo WHERE event_id = :eventId")
+    List<Photo> getPhotosForEvent(int eventId);
     @Update
     void updatePhoto(Photo photo);
     @Delete

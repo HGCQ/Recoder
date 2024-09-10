@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,6 +12,7 @@ import java.util.List;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@ToString
 public class Team {
     @Id @GeneratedValue
     @Column(name = "team_id")
@@ -41,6 +43,10 @@ public class Team {
             throw new IllegalArgumentException("Owner cannot be null");
         }
         this.owner = owner;
+        this.name = name;
+    }
+
+    public void changeName(String name) {
         this.name = name;
     }
 }

@@ -1,6 +1,7 @@
 package yuhan.hgcq.server.repository;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -41,10 +42,14 @@ public class FollowRepository {
      * @return 팔로우
      */
     public Follow findOne(Member member, Member follow) {
-        return em.createQuery("select f from Follow f where f.member = :member and f.follow = :follow", Follow.class)
-                .setParameter("member", member)
-                .setParameter("follow", follow)
-                .getSingleResult();
+        try {
+            return em.createQuery("select f from Follow f where f.member = :member and f.follow = :follow", Follow.class)
+                    .setParameter("member", member)
+                    .setParameter("follow", follow)
+                    .getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
     }
 
     /**

@@ -1,6 +1,8 @@
 package yuhan.hgcq.client.model.dto.member;
 
-public class UpdateForm {
+import java.io.Serializable;
+
+public class UpdateForm implements Serializable {
     private String name;
 
     private String password;

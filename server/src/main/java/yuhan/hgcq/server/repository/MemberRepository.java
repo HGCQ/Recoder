@@ -1,6 +1,7 @@
 package yuhan.hgcq.server.repository;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -56,9 +57,13 @@ public class MemberRepository {
      * @return 회원
      */
     public Member findOne(String email) {
-        return em.createQuery("select m from Member m where m.email = :email", Member.class)
-                .setParameter("email", email)
-                .getSingleResult();
+        try {
+            return em.createQuery("select m from Member m where m.email = :email", Member.class)
+                    .setParameter("email", email)
+                    .getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
     }
 
     /**
@@ -68,8 +73,8 @@ public class MemberRepository {
      * @return 회원 리스트
      */
     public List<Member> findByName(String name) {
-        return em.createQuery("select m from Member m where m.name = :name", Member.class)
-                .setParameter("name", name)
+        return em.createQuery("select m from Member m where m.name like :name", Member.class)
+                .setParameter("name", "%" + name + "%")
                 .getResultList();
     }
 
@@ -90,6 +95,16 @@ public class MemberRepository {
      */
     public List<String> findAllEmails() {
         return em.createQuery("select m.email from Member m order by m.email", String.class)
+                .getResultList();
+    }
+
+    /**
+     * 이름 리스트 조회
+     *
+     * @return 이름 리스트
+     */
+    public List<String> findAllNames() {
+        return em.createQuery("select m.name from Member m order by m.name", String.class)
                 .getResultList();
     }
 }
