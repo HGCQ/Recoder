@@ -14,14 +14,6 @@ import yuhan.hgcq.client.localDatabase.Converters;
 @Entity(tableName = "Album")
 @TypeConverters({Converters.class})
 public class Album {
-<<<<<<< HEAD
-    @PrimaryKey(autoGenerate = true)
-    private Long album_id;
-    private LocalDate date;
-    private String outline;
-    private String comment;
-=======
-
     public Album() {
 
     }
@@ -45,7 +37,6 @@ public class Album {
     @NonNull
     private String content;
     @NonNull
->>>>>>> main
     private String region;
 
     public Long getAlbum_id() {
@@ -65,22 +56,6 @@ public class Album {
         this.date = date;
     }
 
-<<<<<<< HEAD
-    public String getOutline() {
-        return outline;
-    }
-
-    public void setOutline(String outline) {
-        this.outline = outline;
-    }
-
-    public String getComment() {
-        return comment;
-    }
-
-    public void setComment(String comment) {
-        this.comment = comment;
-=======
     @NonNull
     public String getName() {
         return name;
@@ -97,7 +72,6 @@ public class Album {
 
     public void setContent(@NonNull String content) {
         this.content = content;
->>>>>>> main
     }
 
     @NonNull
@@ -112,17 +86,10 @@ public class Album {
     @Override
     public String toString() {
         return "Album{" +
-<<<<<<< HEAD
-                "album_id=" + album_id +
-                ", date=" + date +
-                ", outline='" + outline + '\'' +
-                ", comment='" + comment + '\'' +
-=======
                 "albumId=" + albumId +
                 ", date=" + date +
                 ", name='" + name + '\'' +
                 ", content='" + content + '\'' +
->>>>>>> main
                 ", region='" + region + '\'' +
                 '}';
     }
