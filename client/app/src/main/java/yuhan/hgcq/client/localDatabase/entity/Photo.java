@@ -27,13 +27,8 @@ public class Photo {
     }
 
     @PrimaryKey(autoGenerate = true)
-<<<<<<< HEAD
     private int photo_id;
 
-=======
-    private Long photoId;
-    @NonNull
->>>>>>> main
     private String name;
     private String path;
     private Long album_id;
@@ -41,7 +36,6 @@ public class Photo {
     private  Boolean is_deleted;
     private LocalDateTime created;
 
-<<<<<<< HEAD
     // Getters and Setters
     public int getPhoto_id() {
         return photo_id;
@@ -49,14 +43,6 @@ public class Photo {
 
     public void setPhoto_id(int photo_id) {
         this.photo_id = photo_id;
-=======
-    public Long getPhotoId() {
-        return photoId;
-    }
-
-    public void setPhotoId(Long photoId) {
-        this.photoId = photoId;
->>>>>>> main
     }
 
     @NonNull
@@ -77,22 +63,12 @@ public class Photo {
         this.path = path;
     }
 
-<<<<<<< HEAD
     public Long getAlbum_id() {
         return album_id;
     }
 
     public void setAlbum_id(Long album_id) {
         this.album_id = album_id;
-=======
-    @NonNull
-    public Long getAlbumId() {
-        return albumId;
-    }
-
-    public void setAlbumId(@NonNull Long albumId) {
-        this.albumId = albumId;
->>>>>>> main
     }
 
     @NonNull
@@ -125,17 +101,10 @@ public class Photo {
     @Override
     public String toString() {
         return "Photo{" +
-<<<<<<< HEAD
                 "photo_id=" + photo_id +
                 ", name='" + name + '\'' +
                 ", path='" + path + '\'' +
                 ", album_id=" + album_id +
-=======
-                "photoId=" + photoId +
-                ", name='" + name + '\'' +
-                ", path='" + path + '\'' +
-                ", albumId=" + albumId +
->>>>>>> main
                 ", is_liked=" + is_liked +
                 ", is_deleted=" + is_deleted +
                ", created=" + created +
