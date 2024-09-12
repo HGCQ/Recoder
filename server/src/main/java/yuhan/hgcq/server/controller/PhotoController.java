@@ -177,7 +177,7 @@ public class PhotoController {
      * @return 성공 시 201 상태 코드, 업로드 실패 시 500번 상태 코드, 실패 시 401 상태 코드
      */
     @PostMapping("/autosave")
-    public ResponseEntity<?> autosavePhoto(@RequestBody AutoSavePhotoForm form, HttpServletRequest request) {
+    public ResponseEntity<?> autosavePhoto(@ModelAttribute AutoSavePhotoForm form, HttpServletRequest request) {
         HttpSession session = request.getSession(false);
 
         if (session != null) {
