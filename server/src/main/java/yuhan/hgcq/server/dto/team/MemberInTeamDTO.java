@@ -1,4 +1,4 @@
-package yuhan.hgcq.server.dto.member;
+package yuhan.hgcq.server.dto.team;
 
 import lombok.*;
 
@@ -8,8 +8,9 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class MemberDTO implements Serializable {
+public class MemberInTeamDTO implements Serializable {
     private Long memberId;
     private String name;
-    private String email;
+    private Boolean isAdmin;
+    private Boolean isOwner;
 }

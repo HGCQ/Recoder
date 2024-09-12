@@ -59,6 +59,10 @@ public class Photo {
         deleted = null;
     }
 
+    public void changeAlbum(Album album) {
+        this.album = album;
+    }
+
     /* 테스트 코드(나중에 삭제) */
     public void test(LocalDateTime date) {
         deleted = date;

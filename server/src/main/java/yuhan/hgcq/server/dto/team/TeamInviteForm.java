@@ -3,13 +3,14 @@ package yuhan.hgcq.server.dto.team;
 import lombok.*;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class TeamDTO implements Serializable {
+public class TeamInviteForm implements Serializable {
     private Long teamId;
-    private String owner;
-    private String name;
+    private List<Long> members = new ArrayList<>();
 }

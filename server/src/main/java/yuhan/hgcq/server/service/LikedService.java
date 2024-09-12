@@ -27,7 +27,7 @@ public class LikedService {
     private final LikedRepository lr;
 
     /**
-     * 좋아요 추가
+     * 좋아요 추가(테스트 완료)
      *
      * @param liked 좋아요
      */
@@ -50,7 +50,7 @@ public class LikedService {
     }
 
     /**
-     * 좋아요 삭제
+     * 좋아요 삭제(테스트 완료)
      *
      * @param liked 좋아요
      */
@@ -65,7 +65,7 @@ public class LikedService {
     }
 
     /**
-     * 좋아요 검색
+     * 좋아요 검색(테스트 완료)
      *
      * @param member 회원
      * @param photo  사진
@@ -85,7 +85,7 @@ public class LikedService {
     }
 
     /**
-     * 좋아요한 사진 리스트 검색
+     * 좋아요한 사진 리스트 검색(테스트 완료)
      *
      * @param member 회원
      * @return 사진 리스트

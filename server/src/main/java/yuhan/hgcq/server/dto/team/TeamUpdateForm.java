@@ -10,6 +10,6 @@ import java.io.Serializable;
 @AllArgsConstructor
 @ToString
 public class TeamUpdateForm implements Serializable {
-    private Long id;
+    private Long teamId;
     private String name;
 }

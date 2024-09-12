@@ -12,8 +12,8 @@ import yuhan.hgcq.server.domain.Member;
 import yuhan.hgcq.server.domain.Photo;
 import yuhan.hgcq.server.domain.Team;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
@@ -63,8 +63,8 @@ class PhotoServiceTest {
         t1Id = ts.create(t1);
         t2Id = ts.create(t2);
 
-        Album a1 = new Album(t1, LocalDate.now(), "a1", "Seoul", "test");
-        Album a2 = new Album(t1, LocalDate.now(), "a2", "Seoul", "test");
+        Album a1 = new Album(t1, LocalDateTime.now(), LocalDateTime.now(), "a1");
+        Album a2 = new Album(t1, LocalDateTime.now(), LocalDateTime.now(), "a2");
 
         try {
             a1Id = as.create(m1, a1);
@@ -80,7 +80,7 @@ class PhotoServiceTest {
         Album a1 = as.search(a1Id);
         Photo p1 = new Photo(a1, "p1", "/t1/a1/p1", LocalDateTime.now());
 
-        Long saveId = ps.create(p1);
+        Long saveId = ps.save(p1);
         Photo find = ps.search(saveId);
 
         assertThat(find).isEqualTo(p1);
@@ -92,7 +92,7 @@ class PhotoServiceTest {
         Album a1 = as.search(a1Id);
         Photo p1 = new Photo(a1, "p1", "/t1/a1/p1", LocalDateTime.now());
 
-        Long saveId = ps.create(p1);
+        Long saveId = ps.save(p1);
         Photo find = ps.search(saveId);
 
         ps.delete(find);
@@ -107,7 +107,7 @@ class PhotoServiceTest {
         Album a1 = as.search(a1Id);
         Photo p1 = new Photo(a1, "p1", "/t1/a1/p1", LocalDateTime.now());
 
-        Long saveId = ps.create(p1);
+        Long saveId = ps.save(p1);
         Photo find = ps.search(saveId);
 
         ps.delete(find);
@@ -125,7 +125,7 @@ class PhotoServiceTest {
         Album a1 = as.search(a1Id);
         Photo p1 = new Photo(a1, "p1", "/t1/a1/p1", LocalDateTime.of(2024, 8, 1, 1, 1, 1));
 
-        Long saveId = ps.create(p1);
+        Long saveId = ps.save(p1);
         Photo find = ps.search(saveId);
 
         ps.delete(find);
@@ -144,9 +144,26 @@ class PhotoServiceTest {
         Album a1 = as.search(a1Id);
         Photo p1 = new Photo(a1, "p1", "/t1/a1/p1", LocalDateTime.of(2024, 8, 1, 1, 1, 1));
 
-        Long saveId = ps.create(p1);
+        Long saveId = ps.save(p1);
         Photo find = ps.search("/t1/a1/p1");
 
         assertThat(find).isEqualTo(p1);
+    }
+    
+    @Test
+    @DisplayName("앨범 이동")
+    void move() {
+        Album a1 = as.search(a1Id);
+        Album a2 = as.search(a2Id);
+
+        Photo p1 = new Photo(a1, "p1", "/t1/a1/p1", LocalDateTime.of(2024, 8, 1, 1, 1, 1));
+        Long saveId = ps.save(p1);
+
+        List<Photo> photoList = new ArrayList<>();
+        photoList.add(p1);
+
+        ps.move(a2, photoList);
+
+        assertThat(p1.getAlbum()).isEqualTo(a2);
     }
 }

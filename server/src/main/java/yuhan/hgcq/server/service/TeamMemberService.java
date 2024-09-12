@@ -34,7 +34,7 @@ public class TeamMemberService {
     private final TeamMemberRepository tmr;
 
     /**
-     * 그룹에 회원 초대
+     * 그룹에 회원 초대(테스트 완료)
      *
      * @param member     주체
      * @param teamMember 대상
@@ -57,7 +57,7 @@ public class TeamMemberService {
     }
 
     /**
-     * 그룹에 회원 추방
+     * 그룹에 회원 추방(테스트 완료)
      *
      * @param member     주체
      * @param teamMember 대상
@@ -81,7 +81,21 @@ public class TeamMemberService {
     }
 
     /**
-     * 관리자 권한 부여
+     * 그룹에 속한 회원 검색(테스트 완료)
+     *
+     * @param team   그룹
+     * @param member 회원
+     * @return 그룹 회원
+     */
+    public TeamMember search(Team team, Member member) {
+        ensureNotNull(team, "Team");
+        ensureNotNull(member, "Member");
+
+        return tmr.findOne(member, team);
+    }
+
+    /**
+     * 관리자 권한 부여(테스트 완료)
      *
      * @param member     주체
      * @param teamMember 대상
@@ -105,7 +119,7 @@ public class TeamMemberService {
     }
 
     /**
-     * 관리자 권한 박탈
+     * 관리자 권한 박탈(테스트 완료)
      *
      * @param member     주체
      * @param teamMember 대상
@@ -129,7 +143,7 @@ public class TeamMemberService {
     }
 
     /**
-     * 회원이 가진 그룹 리스트 검색
+     * 회원이 가진 그룹 리스트 검색(테스트 완료)
      *
      * @param member 회원
      * @return 그룹 리스트
@@ -141,7 +155,7 @@ public class TeamMemberService {
     }
 
     /**
-     * 회원이 가진 그룹 리스트 이름으로 검색
+     * 회원이 가진 그룹 리스트 이름으로 검색(테스트 완료)
      *
      * @param member 회원
      * @param name   이름
@@ -155,7 +169,7 @@ public class TeamMemberService {
     }
 
     /**
-     * 그룹에 속한 회원 리스트 검색
+     * 그룹에 속한 회원 리스트 검색(테스트 완료)
      *
      * @param team 그룹
      * @return 회원 리스트
@@ -167,7 +181,7 @@ public class TeamMemberService {
     }
 
     /**
-     * 그룹에 속한 관리자 리스트 검색
+     * 그룹에 속한 관리자 리스트 검색(테스트 완료)
      *
      * @param team 그룹
      * @return 관리자 리스트

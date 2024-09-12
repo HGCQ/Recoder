@@ -12,6 +12,7 @@ import yuhan.hgcq.server.domain.Member;
 import yuhan.hgcq.server.repository.ChatRepository;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * 채팅 기능 요구사항 분석
@@ -28,7 +29,7 @@ public class ChatService {
     private final ChatRepository cr;
 
     /**
-     * 채팅 생성
+     * 채팅 생성(테스트 완료)
      *
      * @param chat 채팅
      * @return 채팅 id
@@ -43,7 +44,7 @@ public class ChatService {
     }
 
     /**
-     * 채팅 삭제
+     * 채팅 삭제(테스트 완료)
      *
      * @param member 주체
      * @param chat   대상
@@ -55,7 +56,7 @@ public class ChatService {
         ensureNotNull(chat, "Chat");
 
         Member writer = chat.getWriter();
-        boolean isWriter = member.getId() == writer.getId();
+        boolean isWriter = Objects.equals(member.getId(), writer.getId());
 
         if (isWriter) {
             cr.delete(chat.getId());
@@ -66,7 +67,7 @@ public class ChatService {
     }
 
     /**
-     * 채팅 검색
+     * 채팅 검색(테스트 완료)
      *
      * @param id 채팅 id
      * @return 채팅
@@ -82,7 +83,7 @@ public class ChatService {
     }
 
     /**
-     * 채팅 리스트 검색
+     * 채팅 리스트 검색(테스트 완료)
      *
      * @param album 앨범
      * @return 채팅 리스트

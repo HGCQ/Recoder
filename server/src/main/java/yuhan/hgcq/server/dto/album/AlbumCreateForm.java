@@ -9,10 +9,9 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class AlbumDTO implements Serializable {
-    private Long albumId;
+public class AlbumCreateForm implements Serializable {
     private Long teamId;
-    private LocalDateTime startDate;
-    private LocalDateTime endDate;
     private String name;
+    private LocalDateTime startTime;
+    private LocalDateTime endTime;
 }

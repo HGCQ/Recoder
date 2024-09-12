@@ -39,7 +39,7 @@ public class AlbumService {
     private final static int DELETE_DAY = 30;
 
     /**
-     * 앨범 생성
+     * 앨범 생성(테스트 완료)
      *
      * @param member 회원
      * @param album  앨범
@@ -63,7 +63,7 @@ public class AlbumService {
     }
 
     /**
-     * 앨범 수정
+     * 앨범 수정(테스트 완료)
      *
      * @param member 회원
      * @param album  앨범
@@ -85,7 +85,7 @@ public class AlbumService {
     }
 
     /**
-     * 앨범 삭제
+     * 앨범 삭제(테스트 완료)
      *
      * @param member 회원
      * @param album  앨범
@@ -107,7 +107,7 @@ public class AlbumService {
     }
 
     /**
-     * 앨범 삭제 취소
+     * 앨범 삭제 취소(테스트 완료)
      *
      * @param member 회원
      * @param album  앨범
@@ -129,7 +129,7 @@ public class AlbumService {
     }
 
     /**
-     * 휴지통 자동 삭제
+     * 휴지통 자동 삭제(테스트 완료)
      *
      * @param albums 앨범
      */
@@ -149,7 +149,7 @@ public class AlbumService {
     }
 
     /**
-     * 앨범 검색
+     * 앨범 검색(테스트 완료)
      *
      * @param id 앨범 id
      * @return 앨범
@@ -165,7 +165,7 @@ public class AlbumService {
     }
 
     /**
-     * 앨범 리스트 검색
+     * 앨범 리스트 검색(테스트 완료)
      *
      * @param team 그룹
      * @return 앨범 리스트
@@ -177,7 +177,21 @@ public class AlbumService {
     }
 
     /**
-     * 휴지통에 속한 앨범 리스트 검색
+     * 앨범 리스트 이름으로 검색(테스트 완료)
+     *
+     * @param team 그룹
+     * @param name 이름
+     * @return 앨범 리스트
+     */
+    public List<Album> searchByName(Team team, String name) {
+        ensureNotNull(team, "Team");
+        ensureNotNull(name, "Name");
+
+        return ar.findByName(team, name);
+    }
+
+    /**
+     * 휴지통에 속한 앨범 리스트 검색(테스트 완료)
      *
      * @param team 그룹
      * @return 앨범 리스트
