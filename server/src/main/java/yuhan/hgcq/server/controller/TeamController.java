@@ -359,7 +359,7 @@ public class TeamController {
      * @param request 요청
      * @return 성공 시 200 상태 코드와 그룹 리스트, 실패 시 401 상태 코드
      */
-    @GetMapping("/search/name")
+    @GetMapping("/list/name")
     public ResponseEntity<?> searchTeamByTeamName(@RequestParam("name") String name, HttpServletRequest request) {
         HttpSession session = request.getSession(false);
 
@@ -393,7 +393,7 @@ public class TeamController {
      * @param request 요청
      * @return 성공 시 200 상태 코드와 회원 리스트, 실패 시 401 상태 코드
      */
-    @GetMapping("/memberList/teamId")
+    @GetMapping("/memberlist/teamId")
     public ResponseEntity<?> memberListByTeam(@RequestParam("teamId") Long teamId, HttpServletRequest request) {
         HttpSession session = request.getSession(false);
 
@@ -446,7 +446,7 @@ public class TeamController {
      * @param request 요청
      * @return 성공 시 200 상태 코드와 관리자 리스트, 실패 시 401 상태 코드
      */
-    @GetMapping("/adminList/teamId")
+    @GetMapping("/adminlist/teamId")
     public ResponseEntity<?> adminListByTeam(@RequestParam("teamId") Long teamId, HttpServletRequest request) {
         HttpSession session = request.getSession(false);
 
