@@ -31,7 +31,7 @@ public class TeamService {
     private final TeamMemberRepository tmr;
 
     /**
-     * 그룹 생성
+     * 그룹 생성(테스트 완료)
      *
      * @param team 그룹
      */
@@ -50,7 +50,7 @@ public class TeamService {
     }
 
     /**
-     * 그룹 수정
+     * 그룹 수정(테스트 완료)
      *
      * @param member 회원
      * @param team   그룹
@@ -72,7 +72,7 @@ public class TeamService {
     }
 
     /**
-     * 그룹 삭제
+     * 그룹 삭제(테스트 완료)
      *
      * @param member 회원
      * @param team   그룹
@@ -96,7 +96,7 @@ public class TeamService {
     }
 
     /**
-     * 그룹 검색
+     * 그룹 검색(테스트 완료)
      *
      * @param id 그룹 id
      * @return 그룹

@@ -9,7 +9,6 @@ import org.springframework.expression.AccessException;
 import org.springframework.transaction.annotation.Transactional;
 import yuhan.hgcq.server.domain.*;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -66,8 +65,8 @@ class LikedServiceTest {
         t1Id = ts.create(t1);
         t2Id = ts.create(t2);
 
-        Album a1 = new Album(t1, LocalDate.now(), "a1", "Seoul", "test");
-        Album a2 = new Album(t1, LocalDate.now(), "a2", "Seoul", "test");
+        Album a1 = new Album(t1, LocalDateTime.now(), LocalDateTime.now(), "a1");
+        Album a2 = new Album(t1, LocalDateTime.now(), LocalDateTime.now(), "a2");
 
         try {
             a1Id = as.create(m1, a1);
@@ -79,8 +78,8 @@ class LikedServiceTest {
         Photo p1 = new Photo(a1, "p1", "/t1/a1/p1", LocalDateTime.now());
         Photo p2 = new Photo(a1, "p2", "/t1/a1/p2", LocalDateTime.now());
 
-        p1Id = ps.create(p1);
-        p2Id = ps.create(p2);
+        p1Id = ps.save(p1);
+        p2Id = ps.save(p2);
     }
 
     @Test

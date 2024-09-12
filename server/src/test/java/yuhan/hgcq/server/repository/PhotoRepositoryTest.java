@@ -65,7 +65,7 @@ class PhotoRepositoryTest {
         tmr.save(tm2);
         tmr.save(tm3);
 
-        Album album = new Album(t1, LocalDate.now(), "album1", "Seoul", "test");
+        Album album = new Album(t1, LocalDateTime.now(), LocalDateTime.now(), "a1");
         saveAlbumId = ar.save(album);
     }
     

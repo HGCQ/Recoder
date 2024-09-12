@@ -84,7 +84,7 @@ public class PhotoRepository {
      * @return 사진 리스트
      */
     public List<Photo> findByDeleted(Album album) {
-        return em.createQuery("select p from Photo p where p.isDeleted = true", Photo.class)
+        return em.createQuery("select p from Photo p where p.isDeleted = true order by p.created desc", Photo.class)
                 .getResultList();
     }
 

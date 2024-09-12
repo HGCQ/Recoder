@@ -80,7 +80,7 @@ public class TeamMemberRepository {
      * @return 그룹 리스트
      */
     public List<Team> findAll(Member member) {
-        return em.createQuery("select tm.team from TeamMember tm where tm.member = :member", Team.class)
+        return em.createQuery("select tm.team from TeamMember tm where tm.member = :member order by tm.team.name asc", Team.class)
                 .setParameter("member", member)
                 .getResultList();
     }
@@ -93,7 +93,7 @@ public class TeamMemberRepository {
      * @return 그룹 리스트
      */
     public List<Team> findByName(Member member, String name) {
-        return em.createQuery("select tm.team from TeamMember tm where tm.member = :member and tm.team.name like :name", Team.class)
+        return em.createQuery("select tm.team from TeamMember tm where tm.member = :member and tm.team.name like :name order by tm.team.name asc", Team.class)
                 .setParameter("member", member)
                 .setParameter("name", "%" + name + "%")
                 .getResultList();
@@ -106,7 +106,7 @@ public class TeamMemberRepository {
      * @return 회원 리스트
      */
     public List<Member> findByTeam(Team team) {
-        return em.createQuery("select tm.member from TeamMember tm where tm.team = :team", Member.class)
+        return em.createQuery("select tm.member from TeamMember tm where tm.team = :team order by tm.isAdmin desc, tm.member.name asc", Member.class)
                 .setParameter("team", team)
                 .getResultList();
     }
