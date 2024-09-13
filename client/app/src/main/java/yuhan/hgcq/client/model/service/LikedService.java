@@ -8,6 +8,7 @@ import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import yuhan.hgcq.client.model.dto.photo.LikedDTO;
+import yuhan.hgcq.client.model.dto.photo.PhotoDTO;
 
 public interface LikedService {
     @POST("/liked/add")
@@ -17,5 +18,5 @@ public interface LikedService {
     Call<ResponseBody> deleteLiked(@Body LikedDTO likedDTO);
 
     @GET("/liked/list")
-    Call<List<LikedDTO>> likedList();
+    Call<List<PhotoDTO>> likedList();
 }

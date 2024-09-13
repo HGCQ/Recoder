@@ -2,12 +2,15 @@ package yuhan.hgcq.client.model.dto.member;
 
 import java.io.Serializable;
 
-public class UpdateForm implements Serializable {
-    private String name;
+public class MemberUpdateForm implements Serializable {
 
+    private String name;
     private String password;
 
-    public UpdateForm(String name, String password) {
+    public MemberUpdateForm() {
+    }
+
+    public MemberUpdateForm(String name, String password) {
         this.name = name;
         this.password = password;
     }
@@ -30,7 +33,7 @@ public class UpdateForm implements Serializable {
 
     @Override
     public String toString() {
-        return "UpdateForm{" +
+        return "MemberUpdateForm{" +
                 "name='" + name + '\'' +
                 ", password='" + password + '\'' +
                 '}';

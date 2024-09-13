@@ -7,6 +7,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import yuhan.hgcq.client.model.dto.chat.ChatDTO;
 import yuhan.hgcq.client.model.dto.photo.LikedDTO;
+import yuhan.hgcq.client.model.dto.photo.PhotoDTO;
 import yuhan.hgcq.client.model.service.LikedService;
 
 public class LikedController {
@@ -23,8 +24,8 @@ public class LikedController {
         call.enqueue(callback);
     }
 
-    public void likedList(LikedDTO likedDTO, Callback<List<LikedDTO>> callback) {
-        Call<List<LikedDTO>> call = likedService.likedList();
+    public void likedList(Callback<List<PhotoDTO>> callback) {
+        Call<List<PhotoDTO>> call = likedService.likedList();
         call.enqueue(callback);
     }
 }

@@ -4,7 +4,8 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 public class PhotoDTO implements Serializable {
-    private Long id;
+
+    private Long photoId;
     private Long albumId;
     private String name;
     private String path;
@@ -13,20 +14,20 @@ public class PhotoDTO implements Serializable {
     public PhotoDTO() {
     }
 
-    public PhotoDTO(Long id, Long albumId, String name, String path, LocalDateTime created) {
-        this.id = id;
+    public PhotoDTO(Long photoId, Long albumId, String name, String path, LocalDateTime created) {
+        this.photoId = photoId;
         this.albumId = albumId;
         this.name = name;
         this.path = path;
         this.created = created;
     }
 
-    public Long getId() {
-        return id;
+    public Long getPhotoId() {
+        return photoId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setPhotoId(Long photoId) {
+        this.photoId = photoId;
     }
 
     public Long getAlbumId() {
@@ -64,7 +65,7 @@ public class PhotoDTO implements Serializable {
     @Override
     public String toString() {
         return "PhotoDTO{" +
-                "id=" + id +
+                "photoId=" + photoId +
                 ", albumId=" + albumId +
                 ", name='" + name + '\'' +
                 ", path='" + path + '\'' +
