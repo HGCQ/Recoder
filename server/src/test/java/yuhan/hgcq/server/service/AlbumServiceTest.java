@@ -79,7 +79,7 @@ class AlbumServiceTest {
         Member m1 = ms.search(m1Id);
         Team t1 = ts.search(t1Id);
 
-        Album a1 = new Album(t1, LocalDate.now(), "a1", "Seoul", "test");
+        Album a1 = new Album(t1, LocalDateTime.now(), LocalDateTime.now(), "a1");
 
         Long a1Id = null;
 
@@ -101,7 +101,7 @@ class AlbumServiceTest {
 
         Team t1 = ts.search(t1Id);
 
-        Album a1 = new Album(t1, LocalDate.now(), "a1", "Seoul", "test");
+        Album a1 = new Album(t1, LocalDateTime.now(), LocalDateTime.now(), "a1");
 
         Long a1Id = null;
 
@@ -114,7 +114,7 @@ class AlbumServiceTest {
         Member m1 = ms.search(m1Id);
         Team t1 = ts.search(t1Id);
 
-        Album a1 = new Album(t1, LocalDate.now(), "a1", "Seoul", "test");
+        Album a1 = new Album(t1, LocalDateTime.now(), LocalDateTime.now(), "a1");
 
         Long a1Id = null;
 
@@ -137,7 +137,7 @@ class AlbumServiceTest {
         Member m2 = ms.search(m2Id);
         Team t1 = ts.search(t1Id);
 
-        Album a1 = new Album(t1, LocalDate.now(), "a1", "Seoul", "test");
+        Album a1 = new Album(t1, LocalDateTime.now(), LocalDateTime.now(), "a1");
 
         Long a1Id = null;
 
@@ -156,7 +156,7 @@ class AlbumServiceTest {
         Member m1 = ms.search(m1Id);
         Team t1 = ts.search(t1Id);
 
-        Album a1 = new Album(t1, LocalDate.now(), "a1", "Seoul", "test");
+        Album a1 = new Album(t1, LocalDateTime.now(), LocalDateTime.now(), "a1");
 
         Long a1Id = null;
 
@@ -180,7 +180,7 @@ class AlbumServiceTest {
         Member m2 = ms.search(m2Id);
         Team t1 = ts.search(t1Id);
 
-        Album a1 = new Album(t1, LocalDate.now(), "a1", "Seoul", "test");
+        Album a1 = new Album(t1, LocalDateTime.now(), LocalDateTime.now(), "a1");
 
         Long a1Id = null;
 
@@ -201,7 +201,7 @@ class AlbumServiceTest {
         Member m2 = ms.search(m2Id);
         Team t1 = ts.search(t1Id);
 
-        Album a1 = new Album(t1, LocalDate.now(), "a1", "Seoul", "test");
+        Album a1 = new Album(t1, LocalDateTime.now(), LocalDateTime.now(), "a1");
 
         Long a1Id = null;
 
@@ -226,7 +226,7 @@ class AlbumServiceTest {
         Member m1 = ms.search(m1Id);
         Team t1 = ts.search(t1Id);
 
-        Album a1 = new Album(t1, LocalDate.now(), "a1", "Seoul", "test");
+        Album a1 = new Album(t1, LocalDateTime.now(), LocalDateTime.now(), "a1");
 
         Long a1Id = null;
 
@@ -234,8 +234,6 @@ class AlbumServiceTest {
             a1Id = as.create(m1, a1);
             Album find = as.search(a1Id);
             find.changeName("modifyA1");
-            find.changeRegion("modifySeoul");
-            find.changeContent("modifyTest");
             as.modify(m1, find);
         } catch (AccessException e) {
             fail();
@@ -243,8 +241,6 @@ class AlbumServiceTest {
 
         Album find = as.search(a1Id);
         assertThat(find.getName()).isEqualTo("modifyA1");
-        assertThat(find.getRegion()).isEqualTo("modifySeoul");
-        assertThat(find.getContent()).isEqualTo("modifyTest");
     }
 
     @Test
@@ -254,7 +250,7 @@ class AlbumServiceTest {
         Member m2 = ms.search(m2Id);
         Team t1 = ts.search(t1Id);
 
-        Album a1 = new Album(t1, LocalDate.now(), "a1", "Seoul", "test");
+        Album a1 = new Album(t1, LocalDateTime.now(), LocalDateTime.now(), "a1");
 
         Long a1Id = null;
 
@@ -266,8 +262,6 @@ class AlbumServiceTest {
 
         Album find = as.search(a1Id);
         find.changeName("modifyA1");
-        find.changeRegion("modifySeoul");
-        find.changeContent("modifyTest");
 
         assertThrows(AccessException.class, () -> as.modify(m2, find));
     }
@@ -279,8 +273,8 @@ class AlbumServiceTest {
         Member m2 = ms.search(m2Id);
         Team t1 = ts.search(t1Id);
 
-        Album a1 = new Album(t1, LocalDate.now(), "a1", "Seoul", "test");
-        Album a2 = new Album(t1, LocalDate.now(), "a2", "Seoul", "test");
+        Album a1 = new Album(t1, LocalDateTime.now(), LocalDateTime.now(), "a1");
+        Album a2 = new Album(t1, LocalDateTime.now(), LocalDateTime.now(), "a2");
 
         Long a1Id = null;
         Long a2Id = null;
@@ -294,5 +288,32 @@ class AlbumServiceTest {
 
         List<Album> albumList = as.searchAll(t1);
         assertThat(albumList).hasSize(2).contains(a1, a2);
+    }
+
+    @Test
+    @DisplayName("앨범 리스트 이름으로 검색")
+    void albumListSearchByName() {
+        Member m1 = ms.search(m1Id);
+        Member m2 = ms.search(m2Id);
+        Team t1 = ts.search(t1Id);
+
+        Album a1 = new Album(t1, LocalDateTime.now(), LocalDateTime.now(), "a1");
+        Album a2 = new Album(t1, LocalDateTime.now(), LocalDateTime.now(), "a2");
+
+        Long a1Id = null;
+        Long a2Id = null;
+
+        try {
+            a1Id = as.create(m1, a1);
+            a2Id = as.create(m1, a2);
+        } catch (AccessException e) {
+            fail();
+        }
+
+        List<Album> al1 = as.searchByName(t1, "a");
+        List<Album> al2 = as.searchByName(t1, "1");
+
+        assertThat(al1).hasSize(2).contains(a1, a2);
+        assertThat(al2).hasSize(1).contains(a1);
     }
 }

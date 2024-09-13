@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import yuhan.hgcq.server.domain.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
@@ -64,7 +65,7 @@ class ChatRepositoryTest {
         tmr.save(tm2);
         tmr.save(tm3);
 
-        Album album = new Album(t1, LocalDate.now(), "album1", "Seoul", "test");
+        Album album = new Album(t1, LocalDateTime.now(), LocalDateTime.now(), "a1");
         saveAlbumId = ar.save(album);
     }
 

@@ -13,6 +13,7 @@ import yuhan.hgcq.server.domain.Member;
 import yuhan.hgcq.server.domain.Team;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
@@ -62,8 +63,8 @@ class ChatServiceTest {
         t1Id = ts.create(t1);
         t2Id = ts.create(t2);
 
-        Album a1 = new Album(t1, LocalDate.now(), "a1", "Seoul", "test");
-        Album a2 = new Album(t1, LocalDate.now(), "a2", "Seoul", "test");
+        Album a1 = new Album(t1, LocalDateTime.now(), LocalDateTime.now(), "a1");
+        Album a2 = new Album(t1, LocalDateTime.now(), LocalDateTime.now(), "a2");
 
         try {
             a1Id = as.create(m1, a1);

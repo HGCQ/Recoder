@@ -10,8 +10,9 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @ToString
 public class ChatDTO implements Serializable {
-    private Long id;
-    private Long eventId;
+    private Long chatId;
     private Long writerId;
+    private String writerName;
+    private String message;
     private LocalDateTime time;
 }

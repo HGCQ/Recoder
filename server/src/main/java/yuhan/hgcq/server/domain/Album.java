@@ -20,10 +20,9 @@ public class Album {
     @Column(name = "album_id")
     private Long id;
 
-    private LocalDate date;
+    private LocalDateTime startDate;
+    private LocalDateTime endDate;
     private String name;
-    private String region;
-    private String content;
     private Boolean isDeleted;
     private LocalDateTime deletedAt;
 
@@ -45,15 +44,14 @@ public class Album {
         }
     }
 
-    public Album(Team team, LocalDate date, String name, String region, String content) {
+    public Album(Team team, LocalDateTime startDate, LocalDateTime endDate, String name) {
         if (team == null) {
             throw new IllegalStateException("Team cannot be null");
         }
         this.team = team;
-        this.date = date;
+        this.startDate = startDate;
+        this.endDate = endDate;
         this.name = name;
-        this.region = region;
-        this.content = content;
         this.isDeleted = false;
     }
 
@@ -61,12 +59,12 @@ public class Album {
         this.name = name;
     }
 
-    public void changeRegion(String region) {
-        this.region = region;
+    public void changeStartDate(LocalDateTime startDate) {
+        this.startDate = startDate;
     }
 
-    public void changeContent(String content) {
-        this.content = content;
+    public void changeEndDate(LocalDateTime endDate) {
+        this.endDate = endDate;
     }
 
     public void deleteAlbum() {

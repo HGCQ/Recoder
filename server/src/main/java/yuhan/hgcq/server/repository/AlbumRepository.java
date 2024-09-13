@@ -56,8 +56,22 @@ public class AlbumRepository {
      * @return 앨범 리스트
      */
     public List<Album> findAll(Team team) {
-        return em.createQuery("select a from Album a where a.team = :team", Album.class)
+        return em.createQuery("select a from Album a where a.team = :team order by a.startDate desc", Album.class)
                 .setParameter("team", team)
+                .getResultList();
+    }
+
+    /**
+     * 그룹에 속한 앨범 리스트 이름으로 조회
+     *
+     * @param team 그룹
+     * @param name 이름
+     * @return 앨범 리스트
+     */
+    public List<Album> findByName(Team team, String name) {
+        return em.createQuery("select a from Album a where a.team = :team and a.name like :name order by a.startDate desc", Album.class)
+                .setParameter("team", team)
+                .setParameter("name", "%" + name + "%")
                 .getResultList();
     }
 

@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @ToString
 public class PhotoDTO implements Serializable {
-    private Long id;
+    private Long photoId;
     private Long albumId;
     private String name;
     private String path;
