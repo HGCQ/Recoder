@@ -13,14 +13,23 @@ import yuhan.hgcq.client.localDatabase.entity.Album;
 @Dao
 public interface AlbumDAO {
     @Insert
-    void insertAlbum(Album album);
-
-    @Query("SELECT * FROM Album")
-    List<Album> getAllAlbum();
-
-    @Update
-    void updateAlbum(Album album);
+    Long save(Album album);
 
     @Delete
-    void deleteAlbum(Album album);
+    void delete(Album album);
+
+    @Update
+    void update(Album album);
+
+    @Query("select * from Album where albumId = :id")
+    Album findById(Long id);
+
+    @Query("SELECT * FROM Album")
+    List<Album> findAll();
+
+    @Query("select * from Album where name like :name")
+    List<Album> findByName(String name);
+
+    @Query("select * from Album where isDeleted = 1")
+    List<Album> findByIsDeleted();
 }

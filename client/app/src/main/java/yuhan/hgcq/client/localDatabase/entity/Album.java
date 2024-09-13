@@ -1,86 +1,72 @@
 package yuhan.hgcq.client.localDatabase.entity;
 
+import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 import androidx.room.TypeConverters;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import yuhan.hgcq.client.localDatabase.Converters;
 
-//import yuhan.hgcq.client.localDatabase.Converters;
-
 @Entity(tableName = "Album")
 @TypeConverters({Converters.class})
 public class Album {
-<<<<<<< HEAD
     @PrimaryKey(autoGenerate = true)
-    private Long album_id;
-    private LocalDate date;
-    private String outline;
-    private String comment;
-=======
+    private Long albumId;
+    @NonNull
+    private LocalDateTime startDate;
+
+    @NonNull
+    private LocalDateTime endDate;
+    @NonNull
+    private String name;
+
+    @NonNull
+    private Boolean isDeleted;
+
+    private LocalDateTime deletedTime;
 
     public Album() {
 
     }
 
-
     // 정적 팩토리 메서드
-    public static Album create(@NonNull LocalDateTime date, @NonNull String name, @NonNull String content, @NonNull String region) {
+    public static Album create(@NonNull LocalDateTime startDate, @NonNull LocalDateTime endDate,  @NonNull String name) {
         Album album = new Album();
-        album.setDate(date);
+        album.setStartDate(startDate);
+        album.setEndDate(endDate);
         album.setName(name);
-        album.setContent(content);
-        album.setRegion(region);
+        album.isDeleted = false;
         return album;
     }
-    @PrimaryKey(autoGenerate = true)
-    private Long albumId;
-    @NonNull
-    private LocalDateTime date;
-    @NonNull
-    private String name;
-    @NonNull
-    private String content;
-    @NonNull
->>>>>>> main
-    private String region;
 
-    public Long getAlbum_id() {
-        return album_id;
+    public Long getAlbumId() {
+        return albumId;
     }
 
-    public void setAlbum_id(Long albumId) {
-        this.album_id = albumId;
+    public void setAlbumId(Long albumId) {
+        this.albumId = albumId;
     }
 
     @NonNull
-    public LocalDateTime getDate() {
-        return date;
+    public LocalDateTime getStartDate() {
+        return startDate;
     }
 
-    public void setDate(@NonNull LocalDateTime date) {
-        this.date = date;
+    public void setStartDate(@NonNull LocalDateTime startDate) {
+        this.startDate = startDate;
     }
 
-<<<<<<< HEAD
-    public String getOutline() {
-        return outline;
+    @NonNull
+    public LocalDateTime getEndDate() {
+        return endDate;
     }
 
-    public void setOutline(String outline) {
-        this.outline = outline;
+    public void setEndDate(@NonNull LocalDateTime endDate) {
+        this.endDate = endDate;
     }
 
-    public String getComment() {
-        return comment;
-    }
-
-    public void setComment(String comment) {
-        this.comment = comment;
-=======
     @NonNull
     public String getName() {
         return name;
@@ -91,39 +77,41 @@ public class Album {
     }
 
     @NonNull
-    public String getContent() {
-        return content;
+    public Boolean getDeleted() {
+        return isDeleted;
     }
 
-    public void setContent(@NonNull String content) {
-        this.content = content;
->>>>>>> main
+    public void setDeleted(@NonNull Boolean deleted) {
+        isDeleted = deleted;
     }
 
-    @NonNull
-    public String getRegion() {
-        return region;
+    public LocalDateTime getDeletedTime() {
+        return deletedTime;
     }
 
-    public void setRegion(@NonNull String region) {
-        this.region = region;
+    public void setDeletedTime(LocalDateTime deletedTime) {
+        this.deletedTime = deletedTime;
+    }
+
+    public void delete() {
+        this.isDeleted = true;
+        this.deletedTime = LocalDateTime.now();
+    }
+
+    public void deleteCancel() {
+        this.isDeleted = false;
+        this.deletedTime = null;
     }
 
     @Override
     public String toString() {
         return "Album{" +
-<<<<<<< HEAD
-                "album_id=" + album_id +
-                ", date=" + date +
-                ", outline='" + outline + '\'' +
-                ", comment='" + comment + '\'' +
-=======
                 "albumId=" + albumId +
-                ", date=" + date +
+                ", startDate=" + startDate +
+                ", endDate=" + endDate +
                 ", name='" + name + '\'' +
-                ", content='" + content + '\'' +
->>>>>>> main
-                ", region='" + region + '\'' +
+                ", isDeleted=" + isDeleted +
+                ", deleted=" + deletedTime +
                 '}';
     }
 }
