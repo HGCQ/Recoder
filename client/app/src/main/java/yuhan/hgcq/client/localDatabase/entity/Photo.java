@@ -1,5 +1,6 @@
 package yuhan.hgcq.client.localDatabase.entity;
 
+import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
 import androidx.room.Index;
@@ -16,8 +17,8 @@ import yuhan.hgcq.client.localDatabase.Converters;
 @Entity(tableName = "photo",
         foreignKeys = @ForeignKey(
                 entity = Album.class,
-                parentColumns = "album_id",
-                childColumns = "album_id",
+                parentColumns = "albumId",
+                childColumns = "albumId",
                 onDelete = ForeignKey.CASCADE
         ),
         indices = {@Index(value = {"albumId"})})
@@ -27,22 +28,26 @@ public class Photo {
     }
 
     @PrimaryKey(autoGenerate = true)
-    private int photo_id;
-
+    private Long photoId;
+    @NonNull
     private String name;
+    @NonNull
     private String path;
-    private Long album_id;
+    @NonNull
+    private Long albumId;
+    @NonNull
     private Boolean is_liked;
-    private  Boolean is_deleted;
+    @NonNull
+    private Boolean is_deleted;
+    @NonNull
     private LocalDateTime created;
 
-    // Getters and Setters
-    public int getPhoto_id() {
-        return photo_id;
+    public Long getPhotoId() {
+        return photoId;
     }
 
-    public void setPhoto_id(int photo_id) {
-        this.photo_id = photo_id;
+    public void setPhotoId(Long photoId) {
+        this.photoId = photoId;
     }
 
     @NonNull
@@ -63,12 +68,13 @@ public class Photo {
         this.path = path;
     }
 
-    public Long getAlbum_id() {
-        return album_id;
+    @NonNull
+    public Long getAlbumId() {
+        return albumId;
     }
 
-    public void setAlbum_id(Long album_id) {
-        this.album_id = album_id;
+    public void setAlbumId(@NonNull Long albumId) {
+        this.albumId = albumId;
     }
 
     @NonNull
@@ -101,13 +107,13 @@ public class Photo {
     @Override
     public String toString() {
         return "Photo{" +
-                "photo_id=" + photo_id +
+                "photoId=" + photoId +
                 ", name='" + name + '\'' +
                 ", path='" + path + '\'' +
-                ", album_id=" + album_id +
+                ", albumId=" + albumId +
                 ", is_liked=" + is_liked +
                 ", is_deleted=" + is_deleted +
-               ", created=" + created +
+                ", created=" + created +
                 '}';
     }
 }
