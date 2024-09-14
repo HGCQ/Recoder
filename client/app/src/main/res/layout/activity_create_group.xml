@@ -3,21 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:id="@+id/main">
 
-    <ImageButton
-        android:id="@+id/back"
-        android:layout_width="35dp"
-        android:layout_height="35dp"
-        android:background="#00000000"
-        android:scaleType="fitCenter"
-        android:src="@drawable/backicon"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.043"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.057" />
 
     <EditText
         android:id="@+id/Groupname"
@@ -35,28 +23,28 @@
         android:id="@+id/save"
         android:layout_width="104dp"
         android:layout_height="39dp"
-        android:layout_marginTop="688dp"
+        android:layout_marginTop="632dp"
         android:background="@drawable/border"
         android:hint="생성"
         android:textStyle="bold"
+        android:onClick="onClick_setting_costume_save"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.98"
+        app:layout_constraintHorizontal_bias="0.986"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/albumphoto"
-        android:layout_width="412dp"
-        android:layout_height="537dp"
+        android:layout_width="403dp"
+        android:layout_height="483dp"
         android:gravity="center"
         android:padding="17dp"
         app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.778"
+        app:layout_constraintVertical_bias="0.6"
         app:spanCount="3" />
 
     <TextView
@@ -71,6 +59,19 @@
         app:layout_constraintHorizontal_bias="0.003"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+    <ImageButton
+        android:id="@+id/groupAdd"
+        android:layout_width="39dp"
+        android:layout_height="37dp"
+        android:layout_marginTop="48dp"
+        android:background="#00000000"
+        android:scaleType="fitCenter"
+        android:src="@drawable/groupadd"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.956"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="#234567" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

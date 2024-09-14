@@ -2,50 +2,49 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:context=".view.AlbumMain">
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/trashList"
-        android:layout_width="412dp"
-        android:layout_height="520dp"
+        android:id="@+id/friendList"
+        android:layout_width="410dp"
+        android:layout_height="523dp"
         android:gravity="center"
         android:padding="17dp"
         app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.6"
-        app:spanCount="5" />
+        app:layout_constraintVertical_bias="0.591"
+        app:spanCount="1" />
 
-    <TextView
-        android:id="@+id/date"
-        android:layout_width="118dp"
-        android:layout_height="29dp"
-        android:gravity="center"
-        android:text="date"
-        android:textSize="25sp"
-        app:layout_constraintBottom_toBottomOf="parent"
+    <Button
+        android:id="@+id/follower"
+        android:layout_width="204dp"
+        android:layout_height="41dp"
+        android:layout_marginTop="72dp"
+        android:background="@drawable/border"
+        android:scaleType="fitCenter"
+        android:text="팔로워"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.139" />
-
-    <ImageButton
-        android:id="@+id/back"
-        android:layout_width="35dp"
-        android:layout_height="35dp"
-        android:background="#00000000"
-        android:scaleType="fitCenter"
-        android:src="@drawable/backicon"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.042"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.057"
         app:tint="#234567" />
+
+    <Button
+        android:id="@+id/following"
+        android:layout_width="208dp"
+        android:layout_height="41dp"
+        android:layout_marginTop="72dp"
+        android:background="@drawable/border"
+        android:text="팔로잉"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation_view"
