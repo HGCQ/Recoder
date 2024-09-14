@@ -4,15 +4,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.content.DialogInterface;
-import android.os.Bundle;
-import android.view.View;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -29,188 +26,200 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import yuhan.hgcq.client.R;
-import yuhan.hgcq.client.controller.SignupForm;
+import yuhan.hgcq.client.controller.MemberController;
+import yuhan.hgcq.client.model.dto.member.SignupForm;
 
 public class Join extends AppCompatActivity {
 
-    ImageButton back,join,nameCheck,emailCheck;
-    EditText name,email,password,passwordCheck;
-    private Context  context;
-    private SignupForm signup;
-    private boolean isNotNameCheck=false;
-    private boolean isNotEmailCheck=false;
+    /* View */
+    EditText name, email, pw, pwCheck;
+    ImageButton nameCheck, emailCheck, join;
+
+    /* http */
+    MemberController mc;
+
+    /* 중복 확인용 */
+    String checkedName, checkedEmail;
+    boolean isDuplicateName = false;
+    boolean isDuplicateEmail = false;
+
+    /* 정규식 */
+    String regName = "^[가-힣A-Za-z0-9]{1,8}$";
+    String regPw = "^[A-Za-z][A-Za-z0-9!@#$%^&*()_+]{7,19}$";
+    String regEmail = "\\w+@\\w+\\.\\w+(\\.\\w+)?";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         getSupportActionBar().setTitle("회원가입");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         super.onCreate(savedInstanceState);
+
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_join);
+
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
 
-        signup =new SignupForm();
-        String regName= "^[가-힣A-Za-z0-9]{1,8}$";
-        String regPw = "^[A-Za-z][A-Za-z0-9!@#$%^&*()_+]{7,19}$";
-        String regEmail = "\\w+@\\w+\\.\\w+(\\.\\w+)?";
-        this.context=this;
+        /* 서버와 연결할 Controller 생성 */
+        mc = new MemberController(this);
 
-        back=(ImageButton) findViewById(R.id.back);
-        join=(ImageButton) findViewById(R.id.join);
-        nameCheck=(ImageButton) findViewById(R.id.nameCheck);
-        emailCheck=(ImageButton) findViewById(R.id.emailCheck);
+        /* View와 Layout 연결 */
+        name = findViewById(R.id.name);
+        email = findViewById(R.id.email);
+        pw = findViewById(R.id.password);
+        pwCheck = findViewById(R.id.passwordCheck);
 
-        name=(EditText) findViewById(R.id.name);
-        email=(EditText) findViewById(R.id.email);
-        password=(EditText) findViewById(R.id.password);
-        passwordCheck=(EditText) findViewById(R.id.passwordCheck);
+        nameCheck = findViewById(R.id.nameCheck);
+        emailCheck = findViewById(R.id.emailCheck);
+        join = findViewById(R.id.join);
 
-        Intent goToLogin=new Intent(this,Login.class);
+        /* 관련된 페이지 */
+        Intent loginPage = new Intent(this, Login.class);
 
-        back.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(goToLogin);
-            }
-        });
+        /* 뒤로 가기 버튼 눌림 */
+
+        /* 이름 중복 확인 버튼 눌림 */
         nameCheck.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String userName=name.getText().toString();
-                signup.duplicateName(userName, new Callback<Boolean>() {
-                    @Override
-                    public void onResponse(Call<Boolean> call, Response<Boolean> response) {
-                        if(response.isSuccessful()){
-                         if(Pattern.matches(regName,userName)){
-                             if(response.body()){
-                                 isNotNameCheck=true;
-                                 Toast.makeText(context, "사용 가능한 닉네임입니다.", Toast.LENGTH_SHORT).show();
-                             } else{
-                                 Toast.makeText(context, "중복된 닉네임입니다.", Toast.LENGTH_SHORT).show();
-                             }
-                         }else{
-                             Toast.makeText(context, "닉네임 형식이 잘못됐습니다.", Toast.LENGTH_SHORT).show();
-                         }
-                        }else{
-                            Toast.makeText(context, "중복된 닉네임입니다.", Toast.LENGTH_SHORT).show();
+                String userName = name.getText().toString();
+                if (Pattern.matches(regName, userName)) {
+                    mc.duplicateName(userName, new Callback<Boolean>() {
+                        @Override
+                        public void onResponse(Call<Boolean> call, Response<Boolean> response) {
+                            if (response.body()) {
+                                isDuplicateName = true;
+                                checkedName = userName;
+                                Toast.makeText(Join.this, "사용 가능한 닉네임입니다.", Toast.LENGTH_SHORT).show();
+                                email.requestFocus();
+                            } else {
+                                Toast.makeText(Join.this, "중복된 닉네임입니다.", Toast.LENGTH_SHORT).show();
+                                name.requestFocus();
+                            }
                         }
 
-                    }
-
-                    @Override
-                    public void onFailure(Call<Boolean> call, Throwable t) {
-                        Toast.makeText(context, "통신 실패.", Toast.LENGTH_SHORT).show();
-                    }
-                });
+                        @Override
+                        public void onFailure(Call<Boolean> call, Throwable t) {
+                            Toast.makeText(Join.this, "서버와 통신 실패했습니다. 네트워크를 확인해주세요.", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                } else {
+                    Toast.makeText(Join.this, "닉네임 형식이 잘못됐습니다.", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
+        /* 이메일 중복 확인 버튼 눌림 */
         emailCheck.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String userEmail = email.getText().toString();
-                signup.duplicateEmail(userEmail, new Callback<Boolean>() {
-                    @Override
-                    public void onResponse(Call<Boolean> call, Response<Boolean> response) {
-                        if (response.isSuccessful()) {
-                            if (Pattern.matches(regEmail, userEmail)) {
-                                if (response.body()) {
-                                    isNotEmailCheck = true;
-                                    Toast.makeText(context, "사용 가능 이메일입니다.", Toast.LENGTH_SHORT).show();
-                                } else {
-                                    Toast.makeText(context, "중복된 이메일입니다.", Toast.LENGTH_SHORT).show();
-                                }
+                if (Pattern.matches(regEmail, userEmail)) {
+                    mc.duplicateEmail(userEmail, new Callback<Boolean>() {
+                        @Override
+                        public void onResponse(Call<Boolean> call, Response<Boolean> response) {
+                            if (response.body()) {
+                                isDuplicateEmail = true;
+                                checkedEmail = userEmail;
+                                Toast.makeText(Join.this, "사용 가능한 이메일입니다.", Toast.LENGTH_SHORT).show();
+                                pw.requestFocus();
                             } else {
-                                Toast.makeText(context, "이메일 형식이 잘못됐습니다.", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(Join.this, "중복된 이메일입니다.", Toast.LENGTH_SHORT).show();
+                                email.requestFocus();
                             }
-                        } else {
-                            Toast.makeText(context, "중복된 이메일 입니다.", Toast.LENGTH_SHORT).show();
                         }
-                    }
 
-                    @Override
-                    public void onFailure(Call<Boolean> call, Throwable t) {
-                        Toast.makeText(context, "통신 실패.", Toast.LENGTH_SHORT).show();
-                    }
-                });
+                        @Override
+                        public void onFailure(Call<Boolean> call, Throwable t) {
+                            Toast.makeText(Join.this, "서버와 통신 실패했습니다. 네트워크를 확인해주세요.", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                } else {
+                    Toast.makeText(Join.this, "이메일 형식이 잘못됐습니다.", Toast.LENGTH_SHORT).show();
+                }
             }
         });
+
+        /* 회원 가입 버튼 눌림 */
         join.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String userEmail = email.getText().toString();
-                String userPassword = password.getText().toString();
-                String userPasswordCheck = passwordCheck.getText().toString();
                 String userName = name.getText().toString();
+                String userEmail = email.getText().toString();
+                String userPw = pw.getText().toString();
+                String userPwCheck = pwCheck.getText().toString();
 
-                // 비어 있는지 확인
+                /* 값이 비어 있는 지 확인 */
                 if (userName.isEmpty()) {
-                    Toast.makeText(context, "값을 입력하세요.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(Join.this, "닉네임을 입력하세요.", Toast.LENGTH_SHORT).show();
                     name.requestFocus();
                     return;
                 } else if (userEmail.isEmpty()) {
-                    Toast.makeText(context, "값을 입력하세요.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(Join.this, "이메일을 입력하세요.", Toast.LENGTH_SHORT).show();
                     email.requestFocus();
                     return;
-                } else if (userPassword.isEmpty()) {
-                    Toast.makeText(context, "값을 입력하세요.", Toast.LENGTH_SHORT).show();
-                    password.requestFocus();
+                } else if (userPw.isEmpty()) {
+                    Toast.makeText(Join.this, "비밀 번호를 입력하세요.", Toast.LENGTH_SHORT).show();
+                    pw.requestFocus();
                     return;
-                } else if (userPasswordCheck.isEmpty()) {
-                    Toast.makeText(context, "값을 입력하세요.", Toast.LENGTH_SHORT).show();
-                    passwordCheck.requestFocus();
-                    return;
-                }
-
-                // 정규식 확인
-                if (!Pattern.matches(regPw, userPassword)) {
-                    Toast.makeText(context, "비밀번호 형식이 잘못됐습니다. 다시 입력하세요.", Toast.LENGTH_SHORT).show();
-                    password.requestFocus();
+                } else if (userPwCheck.isEmpty()) {
+                    Toast.makeText(Join.this, "비밀 번호 확인을 입력하세요.", Toast.LENGTH_SHORT).show();
+                    pwCheck.requestFocus();
                     return;
                 }
 
-                // 비밀번호 일치 확인
+                /* 비밀 번호 형식 확인 */
+                if (!Pattern.matches(regPw, userPw)) {
+                    Toast.makeText(Join.this, "비밀 번호 형식이 잘못됐습니다. 다시 입력하세요.", Toast.LENGTH_SHORT).show();
+                    pw.requestFocus();
+                    return;
+                }
 
-                if (userPassword.equals(userPasswordCheck)) {
+                if (userPw.equals(userPwCheck)) {
 
-                    if (isNotEmailCheck) {
+                    if (isDuplicateName && userName.equals(checkedName)) {
 
-                        if (isNotNameCheck) {
-                            // 회원 가입
-                          signup.joinMember(new yuhan.hgcq.client.model.dto.member.SignupForm(), new Callback<ResponseBody>() {
-                              @Override
-                              public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                                  if (response.isSuccessful()) {
-                                      Toast.makeText(context, "회원 가입 성공!", Toast.LENGTH_SHORT).show();
-                                      Log.d("회원 가입 성공", "Code: " + response.code());
-                                      startActivity(goToLogin);
-                                  } else {
-                                      Toast.makeText(context, "이미 존재하지 않는 이메일입니다.", Toast.LENGTH_SHORT).show();
-                                      Log.d("회원 가입 실패", "Code: " + response.code());
-                                  }
+                        if (isDuplicateEmail && userEmail.equals(checkedEmail)) {
+                            onClick_setting_costume_save("가입하시겠습니까?", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    SignupForm form = new SignupForm(userName, userEmail, userPw);
+                                    mc.joinMember(form, new Callback<ResponseBody>() {
+                                        @Override
+                                        public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                                            if (response.isSuccessful()) {
+                                                Toast.makeText(Join.this, "회원 가입 성공했습니다.", Toast.LENGTH_SHORT).show();
+                                                startActivity(loginPage);
+                                            } else {
+                                                Toast.makeText(Join.this, "회원 가입 실패했습니다.", Toast.LENGTH_SHORT).show();
+                                            }
+                                        }
 
-                              }
-
-                              @Override
-                              public void onFailure(Call<ResponseBody> call, Throwable t) {
-                                  Toast.makeText(context, "서버 응답 오류", Toast.LENGTH_SHORT).show();
-                                  Log.e("회원 가입 실패", t.getMessage());
-                              }
-                          });
+                                        @Override
+                                        public void onFailure(Call<ResponseBody> call, Throwable t) {
+                                            Toast.makeText(Join.this, "회원 가입 실패했습니다.", Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                                }
+                            }, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    Toast.makeText(Join.this, "취소했습니다.", Toast.LENGTH_SHORT).show();
+                                }
+                            });
                         } else {
-                            Toast.makeText(context, "이름이 일치하지 않습니다.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(Join.this, "이메일 중복 확인을 해주세요.", Toast.LENGTH_SHORT).show();
                         }
                     } else {
-                        Toast.makeText(context, "이메일이 일치하지 않습니다.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(Join.this, "닉네임 중복 확인을 해주세요.", Toast.LENGTH_SHORT).show();
                     }
                 } else {
-                    Toast.makeText(context, "비밀번호가 일치하지 않습니다.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(Join.this, "비밀 번호와 비밀 번호 확인이 일치하지 않습니다. 다시 입력하세요.", Toast.LENGTH_SHORT).show();
+                    pw.requestFocus();
                 }
-
-
             }
         });
     }
@@ -233,22 +242,16 @@ public class Join extends AppCompatActivity {
         }
         return super.dispatchTouchEvent(ev);
     }
-    public void onClick_setting_costume_save(View view) {
+
+    public void onClick_setting_costume_save(String message,
+                                             DialogInterface.OnClickListener positive,
+                                             DialogInterface.OnClickListener negative) {
         new AlertDialog.Builder(this)
                 .setTitle("Recoder")
-                .setMessage("가입하시겠습니까?")
+                .setMessage(message)
                 .setIcon(R.drawable.album)
-                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                        // 확인시 처리 로직
-                        Toast.makeText(Join.this, "가입하였습니다.", Toast.LENGTH_SHORT).show();
-                    }
-                })
-                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                        Toast.makeText(Join.this, "취소하였습니다.", Toast.LENGTH_SHORT).show();
-                    }
-                })
+                .setPositiveButton(android.R.string.yes, positive)
+                .setNegativeButton(android.R.string.no, negative)
                 .show();
     }
 }
