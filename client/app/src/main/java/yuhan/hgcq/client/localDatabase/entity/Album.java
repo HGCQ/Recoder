@@ -22,6 +22,7 @@ public class Album {
     @NonNull
     private String name;
 
+    //휴지통은 널값 허용해도 되는거 아닌가?
     @NonNull
     private Boolean isDeleted;
 

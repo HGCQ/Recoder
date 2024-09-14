@@ -26,7 +26,7 @@ public class AlbumRepository {
         dao = AppDatabase.getInstance(context).albumDAO();
         executor = Executors.newSingleThreadExecutor();
     }
-
+    //앨법 생성
     @Transaction
     public void create(Album album, Callback<Boolean> callback) {
         executor.execute(() -> {
@@ -38,7 +38,7 @@ public class AlbumRepository {
             }
         });
     }
-
+    //앨범 삭제
     @Transaction
     public void delete(Long id, Callback<Boolean> callback) {
         executor.execute(() -> {
@@ -52,7 +52,7 @@ public class AlbumRepository {
             }
         });
     }
-
+    //삭제 취소
     @Transaction
     public void deleteCancel(Long id, Callback<Boolean> callback) {
         executor.execute(() -> {
@@ -66,23 +66,30 @@ public class AlbumRepository {
             }
         });
     }
-
+    //찾기
     public void search(Long id, Callback<PAlbumDTO> callback) {
         executor.execute(() -> {
             try {
                 Album fa = dao.findById(id);
                 PAlbumDTO dto = mapping(fa);
+
                 callback.onSuccess(dto);
             } catch (Exception e) {
                 callback.onError(e);
             }
         });
     }
+
+    //이름으로 찾기
     private void findByName(String name, Callback<List<PAlbumDTO>> callback){
         executor.execute(() -> {
             try {
+
                 List<Album> albumList = dao.findByName(name);
                 List<PAlbumDTO> dtoList = new ArrayList<>();
+                if (albumList == null) {
+                    albumList = new ArrayList<>(); // null을 빈 리스트로 처리
+                }
 
                 for (Album album : albumList) {
                     PAlbumDTO dto = mapping(album);
@@ -97,7 +104,7 @@ public class AlbumRepository {
 
     }
 
-  //  private
+  // 전체 찾기
 
     public void searchAll(Callback<List<PAlbumDTO>> callback) {
         executor.execute(() -> {
@@ -117,6 +124,7 @@ public class AlbumRepository {
         });
     }
 
+    //휴지통에서 찾기
     public void searchTrash(Callback<List<PAlbumDTO>> callback) {
         executor.execute(() -> {
             try {
@@ -134,6 +142,24 @@ public class AlbumRepository {
             }
         });
     }
+
+    //수정
+    public void update(Album album, Callback<Album> callback) {
+        executor.execute(() -> {
+            try {
+                // DAO의 업데이트 메서드 호출
+                dao.update(album);
+
+                // 성공 콜백 호출 (결과가 album 반환을 위해 사용)
+                callback.onSuccess(album);
+            } catch (Exception e) {
+                // 실패 시 에러 콜백 호출
+                callback.onError(e);
+            }
+        });
+    }
+
+
     private PAlbumDTO mapping(Album album) {
         PAlbumDTO dto = new PAlbumDTO();
         dto.setAlbumId(album.getAlbumId());
@@ -144,6 +170,9 @@ public class AlbumRepository {
         dto.setDeletedTime(album.getDeletedTime());
         return dto;
     }
+
+
+    //휴지통
     private void trash(List<Album> albums) {
         LocalDateTime now = LocalDateTime.now();
         for (Album album : albums) {
