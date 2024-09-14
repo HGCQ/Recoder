@@ -5,35 +5,29 @@ import java.time.LocalDateTime;
 
 public class ChatDTO implements Serializable {
 
-    private Long id;
-    private Long eventId;
+    private Long chatId;
     private Long writerId;
+    private String writerName;
+    private String message;
     private LocalDateTime time;
 
     public ChatDTO() {
     }
 
-    public ChatDTO(Long id, Long eventId, Long writerId, LocalDateTime time) {
-        this.id = id;
-        this.eventId = eventId;
+    public ChatDTO(Long chatId, Long writerId, String writerName, String message, LocalDateTime time) {
+        this.chatId = chatId;
         this.writerId = writerId;
+        this.writerName = writerName;
+        this.message = message;
         this.time = time;
     }
 
-    public Long getId() {
-        return id;
+    public Long getChatId() {
+        return chatId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Long getEventId() {
-        return eventId;
-    }
-
-    public void setEventId(Long eventId) {
-        this.eventId = eventId;
+    public void setChatId(Long chatId) {
+        this.chatId = chatId;
     }
 
     public Long getWriterId() {
@@ -42,6 +36,22 @@ public class ChatDTO implements Serializable {
 
     public void setWriterId(Long writerId) {
         this.writerId = writerId;
+    }
+
+    public String getWriterName() {
+        return writerName;
+    }
+
+    public void setWriterName(String writerName) {
+        this.writerName = writerName;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
     }
 
     public LocalDateTime getTime() {
@@ -55,9 +65,10 @@ public class ChatDTO implements Serializable {
     @Override
     public String toString() {
         return "ChatDTO{" +
-                "id=" + id +
-                ", eventId=" + eventId +
+                "chatId=" + chatId +
                 ", writerId=" + writerId +
+                ", writerName='" + writerName + '\'' +
+                ", message='" + message + '\'' +
                 ", time=" + time +
                 '}';
     }

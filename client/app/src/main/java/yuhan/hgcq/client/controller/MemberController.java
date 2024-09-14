@@ -5,7 +5,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import yuhan.hgcq.client.model.dto.member.LoginForm;
 import yuhan.hgcq.client.model.dto.member.SignupForm;
-import yuhan.hgcq.client.model.dto.member.UpdateForm;
+import yuhan.hgcq.client.model.dto.member.MemberUpdateForm;
 import yuhan.hgcq.client.model.service.MemberService;
 
 public class MemberController {
@@ -61,7 +61,7 @@ public class MemberController {
      * memberDto 수정된 회원 정보 DTO
      * callback 수정 결과 콜백
      */
-    public void updateMember(UpdateForm updateForm, Callback<ResponseBody> callback) {
+    public void updateMember(MemberUpdateForm updateForm, Callback<ResponseBody> callback) {
         Call<ResponseBody> call = memberService.updateMember(updateForm);
         call.enqueue(callback);
     }

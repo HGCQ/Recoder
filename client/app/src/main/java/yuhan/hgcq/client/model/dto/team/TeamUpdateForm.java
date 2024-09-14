@@ -2,18 +2,16 @@ package yuhan.hgcq.client.model.dto.team;
 
 import java.io.Serializable;
 
-public class TeamDTO implements Serializable {
+public class TeamUpdateForm implements Serializable {
 
     private Long teamId;
-    private String owner;
     private String name;
 
-    public TeamDTO() {
+    public TeamUpdateForm() {
     }
 
-    public TeamDTO(Long teamId, String owner, String name) {
+    public TeamUpdateForm(Long teamId, String name) {
         this.teamId = teamId;
-        this.owner = owner;
         this.name = name;
     }
 
@@ -23,14 +21,6 @@ public class TeamDTO implements Serializable {
 
     public void setTeamId(Long teamId) {
         this.teamId = teamId;
-    }
-
-    public String getOwner() {
-        return owner;
-    }
-
-    public void setOwner(String owner) {
-        this.owner = owner;
     }
 
     public String getName() {
@@ -43,9 +33,8 @@ public class TeamDTO implements Serializable {
 
     @Override
     public String toString() {
-        return "TeamDTO{" +
+        return "TeamUpdateForm{" +
                 "teamId=" + teamId +
-                ", owner='" + owner + '\'' +
                 ", name='" + name + '\'' +
                 '}';
     }

@@ -12,20 +12,39 @@ import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.Part;
 import retrofit2.http.Query;
+import yuhan.hgcq.client.model.dto.photo.MovePhotoForm;
 import yuhan.hgcq.client.model.dto.photo.PhotoDTO;
 
 public interface PhotoService {
 
     @Multipart
-    @POST("/photo/add")
-    Call<ResponseBody> addPhoto(
-            @Part("date") RequestBody date,
-            @Part("imageName") RequestBody imageName,
-            @Part MultipartBody.Part image);
+    @POST("/photo/upload")
+    Call<ResponseBody> uploadPhoto(
+            @Part("albumId") RequestBody albumId,
+            @Part List<MultipartBody.Part> files,
+            @Part("creates") List<RequestBody> creates
+    );
 
     @POST("/photo/delete")
     Call<ResponseBody> deletePhoto(@Body PhotoDTO photoDTO);
 
-    @GET("/photo/list")
-    Call<List<String>> getPhotos(@Query("date") String eventDate);
+    @POST("/photo/delete/cancel")
+    Call<ResponseBody> cancelDeletePhoto(@Body PhotoDTO photoDTO);
+
+    @POST("/photo/move")
+    Call<ResponseBody> movePhoto(@Body MovePhotoForm movePhotoForm);
+
+    @Multipart
+    @POST("/photo/autosave")
+    Call<ResponseBody> autosavePhoto(
+            @Part List<MultipartBody.Part> files,
+            @Part("albumIds") List<RequestBody> albumIds,
+            @Part("creates") List<RequestBody> creates
+    );
+
+    @GET("/photo/list/albumId")
+    Call<List<PhotoDTO>> getPhotos(@Query("albumId") Long albumId);
+
+    @GET("/photo/list/albumId/trash")
+    Call<List<PhotoDTO>> trashPhotos(@Query("albumId") Long albumId);
 }

@@ -3,20 +3,18 @@ package yuhan.hgcq.client.model.dto.album;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-public class AlbumDTO implements Serializable {
+public class AlbumUpdateForm implements Serializable {
 
     private Long albumId;
-    private Long teamId;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
     private String name;
 
-    public AlbumDTO() {
+    public AlbumUpdateForm() {
     }
 
-    public AlbumDTO(Long albumId, Long teamId, LocalDateTime startDate, LocalDateTime endDate, String name) {
+    public AlbumUpdateForm(Long albumId, LocalDateTime startDate, LocalDateTime endDate, String name) {
         this.albumId = albumId;
-        this.teamId = teamId;
         this.startDate = startDate;
         this.endDate = endDate;
         this.name = name;
@@ -28,14 +26,6 @@ public class AlbumDTO implements Serializable {
 
     public void setAlbumId(Long albumId) {
         this.albumId = albumId;
-    }
-
-    public Long getTeamId() {
-        return teamId;
-    }
-
-    public void setTeamId(Long teamId) {
-        this.teamId = teamId;
     }
 
     public LocalDateTime getStartDate() {
@@ -64,9 +54,8 @@ public class AlbumDTO implements Serializable {
 
     @Override
     public String toString() {
-        return "AlbumDTO{" +
+        return "AlbumUpdateForm{" +
                 "albumId=" + albumId +
-                ", teamId=" + teamId +
                 ", startDate=" + startDate +
                 ", endDate=" + endDate +
                 ", name='" + name + '\'' +

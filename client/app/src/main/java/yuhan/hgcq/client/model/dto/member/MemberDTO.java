@@ -3,16 +3,26 @@ package yuhan.hgcq.client.model.dto.member;
 import java.io.Serializable;
 
 public class MemberDTO implements Serializable {
-    private Long id;
+
+    private Long memberId;
     private String name;
     private String email;
 
-    public Long getId() {
-        return id;
+    public MemberDTO() {
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public MemberDTO(Long memberId, String name, String email) {
+        this.memberId = memberId;
+        this.name = name;
+        this.email = email;
+    }
+
+    public Long getMemberId() {
+        return memberId;
+    }
+
+    public void setMemberId(Long memberId) {
+        this.memberId = memberId;
     }
 
     public String getName() {
@@ -31,19 +41,10 @@ public class MemberDTO implements Serializable {
         this.email = email;
     }
 
-    public MemberDTO() {
-    }
-
-    public MemberDTO(Long id, String name, String email) {
-        this.id = id;
-        this.name = name;
-        this.email = email;
-    }
-
     @Override
     public String toString() {
         return "MemberDTO{" +
-                "id=" + id +
+                "memberId=" + memberId +
                 ", name='" + name + '\'' +
                 ", email='" + email + '\'' +
                 '}';
