@@ -17,6 +17,13 @@ import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import yuhan.hgcq.client.model.service.AlbumService;
+import yuhan.hgcq.client.model.service.ChatService;
+import yuhan.hgcq.client.model.service.FollowService;
+import yuhan.hgcq.client.model.service.LikedService;
+import yuhan.hgcq.client.model.service.MemberService;
+import yuhan.hgcq.client.model.service.PhotoService;
+import yuhan.hgcq.client.model.service.TeamService;
 
 public class NetworkClient {
     private static NetworkClient instance;
@@ -25,6 +32,14 @@ public class NetworkClient {
     private final ClearableCookieJar cookieJar;
     private final Context app;
     private final SharedPrefsCookiePersistor sharedPrefsCookiePersistor;
+
+    private AlbumService as;
+    private ChatService cs;
+    private FollowService fs;
+    private LikedService ls;
+    private MemberService ms;
+    private PhotoService ps;
+    private TeamService ts;
 
     private final String serverIp = "http://127.0.0.1:8080";
 
@@ -56,6 +71,14 @@ public class NetworkClient {
                 .client(okHttpClient)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
+
+        as = retrofit.create(AlbumService.class);
+        cs = retrofit.create(ChatService.class);
+        fs = retrofit.create(FollowService.class);
+        ls = retrofit.create(LikedService.class);
+        ms = retrofit.create(MemberService.class);
+        ps = retrofit.create(PhotoService.class);
+        ts = retrofit.create(TeamService.class);
     }
 
     public static synchronized NetworkClient getInstance(Context context) {
@@ -73,10 +96,36 @@ public class NetworkClient {
         return serverIp;
     }
 
-    public SharedPrefsCookiePersistor getSharedPrefsCookiePersistor() {
-        return sharedPrefsCookiePersistor;
+    /* Retrofit Service 반환 */
+    public AlbumService getAlbumService() {
+        return as;
     }
 
+    public ChatService getChatService() {
+        return cs;
+    }
+
+    public FollowService getFollowService() {
+        return fs;
+    }
+
+    public LikedService getLikedService() {
+        return ls;
+    }
+
+    public MemberService getMemberService() {
+        return ms;
+    }
+
+    public PhotoService getPhotoService() {
+        return ps;
+    }
+
+    public TeamService getTeamService() {
+        return ts;
+    }
+
+    /* 쿠키 관련 메소드 (수정 필요) */
     public void saveCookie() {
         NetworkClient client = NetworkClient.getInstance(app);
 

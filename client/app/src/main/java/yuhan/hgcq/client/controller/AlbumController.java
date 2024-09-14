@@ -1,10 +1,13 @@
 package yuhan.hgcq.client.controller;
 
+import android.content.Context;
+
 import java.util.List;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
+import yuhan.hgcq.client.config.NetworkClient;
 import yuhan.hgcq.client.model.dto.album.AlbumCreateForm;
 import yuhan.hgcq.client.model.dto.album.AlbumDTO;
 import yuhan.hgcq.client.model.dto.album.AlbumUpdateForm;
@@ -13,6 +16,11 @@ import yuhan.hgcq.client.model.service.AlbumService;
 public class AlbumController {
 
     private AlbumService albumService;
+
+    public AlbumController(Context context) {
+        NetworkClient client = NetworkClient.getInstance(context.getApplicationContext());
+        albumService = client.getAlbumService();
+    }
 
     public void createAlbum(AlbumCreateForm albumCreateForm, Callback<ResponseBody> callback) {
         Call<ResponseBody> call = albumService.createAlbum(albumCreateForm);
