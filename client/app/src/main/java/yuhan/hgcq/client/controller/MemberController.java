@@ -1,8 +1,11 @@
 package yuhan.hgcq.client.controller;
 
+import android.content.Context;
+
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
+import yuhan.hgcq.client.config.NetworkClient;
 import yuhan.hgcq.client.model.dto.member.LoginForm;
 import yuhan.hgcq.client.model.dto.member.SignupForm;
 import yuhan.hgcq.client.model.dto.member.MemberUpdateForm;
@@ -11,6 +14,11 @@ import yuhan.hgcq.client.model.service.MemberService;
 public class MemberController {
 
     private MemberService memberService;
+
+    public MemberController(Context context) {
+        NetworkClient client = NetworkClient.getInstance(context.getApplicationContext());
+        memberService = client.getMemberService();
+    }
 
     public void joinMember(SignupForm signupForm, Callback<ResponseBody> callback) {
         Call<ResponseBody> call = memberService.joinMember(signupForm);

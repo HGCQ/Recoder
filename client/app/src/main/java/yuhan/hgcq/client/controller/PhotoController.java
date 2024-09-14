@@ -16,6 +16,7 @@ import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
+import yuhan.hgcq.client.config.NetworkClient;
 import yuhan.hgcq.client.model.dto.photo.MovePhotoForm;
 import yuhan.hgcq.client.model.dto.photo.PhotoDTO;
 import yuhan.hgcq.client.model.service.PhotoService;
@@ -24,6 +25,13 @@ public class PhotoController {
 
     private PhotoService photoService;
     private Context context; // 액티비티
+
+    public PhotoController(Context context) {
+        this.context = context;
+        NetworkClient client = NetworkClient.getInstance(context.getApplicationContext());
+        photoService = client.getPhotoService();
+    }
+
 
     public void uploadPhoto(Long albumId, List<Uri> photoUris, List<LocalDateTime> creates, Callback<ResponseBody> callback) {
         RequestBody albumIdPart = RequestBody.create(

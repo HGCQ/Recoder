@@ -1,10 +1,13 @@
 package yuhan.hgcq.client.controller;
 
+import android.content.Context;
+
 import java.util.List;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
+import yuhan.hgcq.client.config.NetworkClient;
 import yuhan.hgcq.client.model.dto.album.AlbumDTO;
 import yuhan.hgcq.client.model.dto.team.MemberInTeamDTO;
 import yuhan.hgcq.client.model.dto.team.TeamCreateForm;
@@ -18,6 +21,11 @@ import yuhan.hgcq.client.model.service.TeamService;
 public class TeamController {
 
     private TeamService teamService;
+
+    public TeamController(Context context) {
+        NetworkClient client = NetworkClient.getInstance(context.getApplicationContext());
+        teamService = client.getTeamService();
+    }
 
     public void createTeam(TeamCreateForm teamCreateForm, Callback<ResponseBody> callback) {
         Call<ResponseBody> call = teamService.createTeam(teamCreateForm);
