@@ -16,7 +16,6 @@ public class AlbumMain extends AppCompatActivity {
         getSupportActionBar().setTitle("Recoder");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         super.onCreate(savedInstanceState);
-
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_album_main);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {

@@ -20,6 +20,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.538"
         app:spanCount="2" />
+
     <TextView
         android:id="@+id/empty"
         android:layout_width="200dp"
@@ -54,7 +55,7 @@
         android:scaleType="fitCenter"
         android:src="@drawable/search"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.089"
+        app:layout_constraintHorizontal_bias="0.070"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:tint="#234567" />

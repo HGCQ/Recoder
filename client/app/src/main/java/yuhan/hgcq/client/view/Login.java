@@ -32,6 +32,7 @@ public class Login extends AppCompatActivity {
     public void onClick_setting_costume_save(String message,
                                              DialogInterface.OnClickListener positive,
                                              DialogInterface.OnClickListener negative) {
+
         new AlertDialog.Builder(this)
                 .setTitle("Recoder")
                 .setMessage(message)

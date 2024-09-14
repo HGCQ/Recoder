@@ -41,8 +41,9 @@ public class Modify extends AppCompatActivity {
                 .show();
     }
     public void onClick_setting_costume_cancel(String message,
-                                             DialogInterface.OnClickListener positive,
-                                             DialogInterface.OnClickListener negative) {
+                                               DialogInterface.OnClickListener positive,
+                                               DialogInterface.OnClickListener negative) {
+
         new AlertDialog.Builder(this)
                 .setTitle("Recoder")
                 .setMessage(message)
