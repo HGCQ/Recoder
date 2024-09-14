@@ -16,7 +16,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginLeft="40dp"
-            android:layout_marginTop="80dp"
+            android:layout_marginTop="70dp"
             android:layout_marginRight="40dp"
             android:orientation="vertical">
 
@@ -25,7 +25,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginRight="59dp"
                 android:text="Recorder"
                 android:textSize="40sp"
                 android:textStyle="bold" />
@@ -114,6 +113,7 @@
                     android:layout_alignParentTop="true"
                     android:layout_marginStart="32dp"
                     android:layout_marginTop="14dp"
+                    android:onClick="onClick_setting_costume_save"
                     android:background="@drawable/loginbutton"
                     tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />
 
@@ -129,20 +129,27 @@
 
                 <TextView
                     android:id="@+id/l2"
-
                     android:layout_width="25dp"
                     android:layout_height="100dp"
                     android:layout_alignParentStart="true"
                     android:layout_alignParentTop="true"
                     android:layout_marginStart="103dp"
                     android:layout_marginTop="5dp"
-
                     android:text="|"
                     android:textSize="40dp" />
 
             </RelativeLayout>
 
-
+            <Button
+                android:layout_width="250dp"
+                android:layout_height="40dp"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:layout_gravity="center"
+                android:layout_marginTop="-20dp"
+                android:background="#F6F6F6"
+                android:shadowColor="#F6F6F6"
+                android:text="비밀번호를 잊어버리셨나요?" />
         </LinearLayout>
 
     </ScrollView>

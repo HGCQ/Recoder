@@ -6,8 +6,22 @@
     android:layout_height="match_parent"
     android:id="@+id/main">
 
+    <Button
+        android:id="@+id/phototrash"
+        android:layout_width="204dp"
+        android:layout_height="41dp"
+        android:layout_marginTop="32dp"
+        android:background="@drawable/border"
+        android:scaleType="fitCenter"
+        android:text="사진 휴지통"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.009"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="#234567" />
+
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/likeList"
+        android:id="@+id/albumtrashList"
         android:layout_width="412dp"
         android:layout_height="520dp"
         android:gravity="center"
@@ -16,8 +30,25 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.497"
+        app:layout_constraintVertical_bias="0.597"
         app:spanCount="5" />
+
+    <ImageButton
+        android:id="@+id/recover"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:background="#00000000"
+        android:scaleType="fitCenter"
+        android:src="@drawable/recover"
+        android:onClick="onClick_setting_costume_save"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.957"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.057"
+        app:tint="#234567" />
+
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation_view"
         android:layout_width="410dp"
@@ -30,4 +61,5 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:menu="@menu/menu_bottom_nav" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

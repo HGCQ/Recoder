@@ -2,9 +2,11 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/main">
+    tools:context=".view.AlbumMain">
+
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation_view"
         android:layout_width="410dp"
@@ -18,20 +20,23 @@
         app:layout_constraintStart_toStartOf="parent"
         app:menu="@menu/menu_bottom_nav" />
 
-    <androidx.viewpager2.widget.ViewPager2
-        android:id="@+id/viewPager"
-        android:layout_width="325dp"
-        android:layout_height="500dp"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/friendList"
+        android:layout_width="409dp"
+        android:layout_height="481dp"
+        android:gravity="center"
+        android:padding="17dp"
+        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.363"
-        app:tint="#234567" />
+        app:layout_constraintVertical_bias="0.396"
+        app:spanCount="1" />
+
 
     <View
-        android:layout_width="match_parent"
-        android:layout_height="70dp"
+        android:layout_width="410dp"
+        android:layout_height="77dp"
         android:background="#D3D3D3"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -41,46 +46,45 @@
         app:layout_constraintVertical_bias="0.906"
         app:tint="#234567" />
 
-    <ImageButton
-        android:id="@+id/like"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:background="#00000000"
-        android:scaleType="fitCenter"
-        android:src="@drawable/loveicon"
-        app:layout_constraintBottom_toBottomOf="parent"
+    <ImageView
+        android:id="@+id/profile"
+        android:layout_width="41dp"
+        android:layout_height="41dp"
+        android:layout_marginTop="568dp"
+        android:src="@drawable/profile"
+        android:text="팔로잉"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.072"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.876"
-        app:tint="#234567" />
-
-    <ImageButton
-        android:id="@+id/trash"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:background="#00000000"
-        android:scaleType="fitCenter"
-        android:src="@drawable/trash"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.956"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.876"
-        app:tint="#234567" />
-
-    <ImageButton
-        android:id="@+id/move"
-        android:layout_width="44dp"
-        android:layout_height="39dp"
-        android:layout_marginTop="604dp"
-        android:background="#00000000"
-        android:scaleType="fitCenter"
-        android:src="@drawable/move"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.803"
+        app:layout_constraintHorizontal_bias="0.030"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:layout_width="286dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="568dp"
+        android:background="@drawable/edittext"
+        android:gravity="center"
+        android:hint="채팅을 입력해주세요"
+        android:textSize="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageButton
+        android:id="@+id/arrow"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:background="#00000000"
+        android:scaleType="fitCenter"
+        android:src="@drawable/arrow"
+        android:onClick="onClick_setting_costume_save"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.957"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.86"
+        app:tint="#234567" />
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>

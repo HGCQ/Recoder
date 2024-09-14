@@ -102,22 +102,6 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.237"
         app:tint="#234567" />
-
-    <ImageButton
-        android:id="@+id/back"
-        android:layout_width="35dp"
-        android:layout_height="35dp"
-        android:background="#00000000"
-        android:scaleType="fitCenter"
-        android:src="@drawable/backicon"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.042"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.057"
-        app:tint="#234567"/>
-
     <Button
         android:id="@+id/save"
         android:layout_width="199dp"
@@ -127,6 +111,7 @@
         android:text="저장"
         android:textColor="@color/black"
         android:textStyle="bold"
+        android:onClick="onClick_setting_costume_save"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -143,6 +128,7 @@
         android:text="취소"
         android:textColor="@color/black"
         android:textStyle="bold"
+        android:onClick="onClick_setting_costume_cancel"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

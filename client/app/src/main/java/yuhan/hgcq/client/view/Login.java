@@ -5,8 +5,13 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.content.DialogInterface;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -21,6 +26,8 @@ public class Login extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        getSupportActionBar().setTitle("로그인");
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_login);
@@ -48,5 +55,23 @@ public class Login extends AppCompatActivity {
                 startActivity(goToJoin);
             }
         });
+    }
+    public void onClick_setting_costume_save(View view) {
+        new AlertDialog.Builder(this)
+                .setTitle("Recoder")
+                .setMessage("로그인하시겠습니까?")
+                .setIcon(R.drawable.album)
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        // 확인시 처리 로직
+                        Toast.makeText(Login.this, "로그인하였습니다.", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        Toast.makeText(Login.this, "취소하였습니다.", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .show();
     }
 }
