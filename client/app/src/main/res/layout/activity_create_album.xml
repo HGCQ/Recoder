@@ -3,21 +3,37 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:id="@+id/main"
+    tools:context=".view.CreateAlbum">
 
     <ImageButton
-        android:id="@+id/back"
+        android:id="@+id/all"
         android:layout_width="35dp"
         android:layout_height="35dp"
         android:background="#00000000"
         android:scaleType="fitCenter"
-        android:src="@drawable/backicon"
+        android:src="@drawable/calendar"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.043"
+        app:layout_constraintHorizontal_bias="0.095"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.057" />
+        app:layout_constraintVertical_bias="0.086" />
+
+    <ImageButton
+        android:id="@+id/calendar"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:background="#00000000"
+        android:scaleType="fitCenter"
+        android:src="@drawable/all"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.952"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.136" />
 
     <EditText
         android:id="@+id/createAlbumText"
@@ -35,41 +51,30 @@
         android:id="@+id/save"
         android:layout_width="104dp"
         android:layout_height="39dp"
-        android:layout_marginTop="688dp"
+        android:layout_marginTop="640dp"
         android:background="@drawable/border"
         android:hint="생성"
         android:textStyle="bold"
+        android:onClick="onClick_setting_costume_save"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.98"
+        app:layout_constraintHorizontal_bias="0.983"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/albumphoto"
-        android:layout_width="374dp"
-        android:layout_height="537dp"
+        android:layout_width="366dp"
+        android:layout_height="512dp"
         android:gravity="center"
         android:padding="17dp"
         app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.488"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.715"
+        app:layout_constraintVertical_bias="0.593"
         app:spanCount="3" />
 
-    <TextView
-        android:id="@+id/date"
-        android:layout_width="118dp"
-        android:layout_height="29dp"
-        android:layout_marginTop="112dp"
-        android:gravity="center"
-        android:text="date"
-        android:textSize="25sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.01"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:tint="#234567" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

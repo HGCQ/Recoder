@@ -17,19 +17,19 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.591"
+        app:layout_constraintVertical_bias="0.389"
         app:spanCount="1" />
 
     <Button
         android:id="@+id/follower"
         android:layout_width="204dp"
         android:layout_height="41dp"
-        android:layout_marginTop="72dp"
+        android:layout_marginTop="32dp"
         android:background="@drawable/border"
         android:scaleType="fitCenter"
         android:text="팔로워"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.009"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:tint="#234567" />
@@ -38,7 +38,7 @@
         android:id="@+id/following"
         android:layout_width="208dp"
         android:layout_height="41dp"
-        android:layout_marginTop="72dp"
+        android:layout_marginTop="32dp"
         android:background="@drawable/border"
         android:text="팔로잉"
         app:layout_constraintEnd_toEndOf="parent"
@@ -46,31 +46,17 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageButton
-        android:id="@+id/back"
-        android:layout_width="35dp"
-        android:layout_height="35dp"
-        android:background="#00000000"
-        android:scaleType="fitCenter"
-        android:src="@drawable/backicon"
-        app:layout_constraintBottom_toBottomOf="parent"
+    <Button
+        android:id="@+id/save"
+        android:layout_width="104dp"
+        android:layout_height="39dp"
+        android:layout_marginTop="612dp"
+        android:background="@drawable/border"
+        android:hint="추가"
+        android:textStyle="bold"
+        android:onClick="onClick_setting_costume_save"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.005"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.057"
-        app:tint="#234567"/>
-
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottom_navigation_view"
-        android:layout_width="410dp"
-        android:layout_height="85dp"
-        app:itemIconTint="#2196F3"
-        app:itemTextColor="@color/black"
-        app:labelVisibilityMode="labeled"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:menu="@menu/menu_bottom_nav" />
+        app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

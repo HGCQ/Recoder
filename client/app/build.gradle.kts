@@ -43,7 +43,8 @@ dependencies {
     implementation ("com.github.bumptech.glide:glide:4.12.0")
     implementation ("com.github.bumptech.glide:compiler:4.12.0")
     implementation ("androidx.recyclerview:recyclerview:1.2.1")
-
+    implementation ("com.github.bumptech.glide:glide:4.15.1")
+    annotationProcessor ("com.github.bumptech.glide:compiler:4.15.1")
 
     implementation(libs.appcompat)
     implementation(libs.material)
@@ -62,6 +63,5 @@ dependencies {
     testImplementation ("androidx.test:core:1.5.0")
     testImplementation ("junit:junit:4.13.2")
     testImplementation ("androidx.room:room-testing:2.5.0")
-    
 
 }
