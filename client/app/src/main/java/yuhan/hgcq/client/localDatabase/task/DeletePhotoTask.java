@@ -1,3 +1,4 @@
+/*
 package yuhan.hgcq.client.localDatabase.task;
 
 import android.os.AsyncTask;
@@ -18,3 +19,4 @@ public class DeletePhotoTask extends AsyncTask<Photo,Void,Void> {
         return null;
     }
 }
+*/

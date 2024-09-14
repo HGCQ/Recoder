@@ -1,3 +1,4 @@
+/*
 package yuhan.hgcq.client.localDatabase.DAO;
 
 import androidx.room.Dao;
@@ -24,3 +25,4 @@ public interface AlbumDAO {
     @Delete
     void deleteAlbum(Album album);
 }
+*/

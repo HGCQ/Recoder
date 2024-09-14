@@ -1,5 +1,7 @@
+/*
 package yuhan.hgcq.client.localDatabase.entity;
 
+import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 import androidx.room.TypeConverters;
@@ -39,12 +41,12 @@ public class Album {
     @NonNull
     private String region;
 
-    public Long getAlbum_id() {
-        return album_id;
+    public Long getAlbumId() {
+        return albumId;
     }
 
-    public void setAlbum_id(Long albumId) {
-        this.album_id = albumId;
+    public void setAlbumId(Long albumId) {
+        this.albumId = albumId;
     }
 
     @NonNull
@@ -93,4 +95,4 @@ public class Album {
                 ", region='" + region + '\'' +
                 '}';
     }
-}
+}*/

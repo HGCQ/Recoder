@@ -1,3 +1,4 @@
+/*
 package yuhan.hgcq.client.localDatabase.task;
 
 import android.os.AsyncTask;
@@ -19,3 +20,4 @@ public class UpdatePhotoTask extends AsyncTask<Photo,Void,Void> {
     }
 
 }
+*/

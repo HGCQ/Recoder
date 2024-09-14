@@ -1,3 +1,4 @@
+/*
 package yuhan.hgcq.client.localDatabase.DAO;
 
 import androidx.room.Dao;
@@ -20,4 +21,4 @@ public interface PhotoDAO {
     void updatePhoto(Photo photo);
     @Delete
     void deletePhoto(Photo photo);
-}
+}*/

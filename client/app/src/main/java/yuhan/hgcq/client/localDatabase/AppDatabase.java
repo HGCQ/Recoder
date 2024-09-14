@@ -1,3 +1,4 @@
+/*
 package yuhan.hgcq.client.localDatabase;
 
 import androidx.room.Dao;
@@ -16,3 +17,4 @@ public abstract class AppDatabase extends RoomDatabase {
     public abstract AlbumDAO albumDAO();
     public abstract PhotoDAO photoDAO();
 }
+*/

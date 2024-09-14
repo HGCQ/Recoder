@@ -1,3 +1,4 @@
+/*
 package yuhan.hgcq.client.localDatabase.task;
 
 import android.os.AsyncTask;
@@ -12,9 +13,10 @@ public class DeleteAlbumTask extends AsyncTask<Album,Void,Void> {
         this.eventDao = eventDao;
     }
 
-    @Override
+    @Override/
     protected Void doInBackground(Album... albums) {
         eventDao.deleteAlbum(albums[0]);
         return null;
     }
 }
+*/

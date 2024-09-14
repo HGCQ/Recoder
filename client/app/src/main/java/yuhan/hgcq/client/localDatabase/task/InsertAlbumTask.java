@@ -1,3 +1,4 @@
+/*
 package yuhan.hgcq.client.localDatabase.task;
 
 import android.os.AsyncTask;
@@ -18,3 +19,4 @@ public class InsertAlbumTask extends AsyncTask<Album,Void,Void> {
         return null;
     }
 }
+*/

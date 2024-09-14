@@ -1,5 +1,7 @@
+/*
 package yuhan.hgcq.client.localDatabase.entity;
 
+import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
 import androidx.room.Index;
@@ -107,7 +109,7 @@ public class Photo {
                 ", album_id=" + album_id +
                 ", is_liked=" + is_liked +
                 ", is_deleted=" + is_deleted +
-               ", created=" + created +
+                ", created=" + created +
                 '}';
     }
-}
+}*/
