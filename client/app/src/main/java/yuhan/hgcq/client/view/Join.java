@@ -10,6 +10,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.content.DialogInterface;
 import android.widget.ImageButton;
+
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -246,6 +247,7 @@ public class Join extends AppCompatActivity {
     public void onClick_setting_costume_save(String message,
                                              DialogInterface.OnClickListener positive,
                                              DialogInterface.OnClickListener negative) {
+
         new AlertDialog.Builder(this)
                 .setTitle("Recoder")
                 .setMessage(message)
@@ -255,3 +257,4 @@ public class Join extends AppCompatActivity {
                 .show();
     }
 }
+

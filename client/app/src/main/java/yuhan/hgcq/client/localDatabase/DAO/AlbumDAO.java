@@ -27,7 +27,7 @@ public interface AlbumDAO {
     @Query("SELECT * FROM Album")
     List<Album> findAll();
 
-    @Query("select * from Album where name like '%' || :name || '%'COLLATE NOCASE")//대소문자를 구분하지 않기 위해 COLLATE NOCASE사용
+    @Query("select * from Album where name like :name COLLATE NOCASE")
     List<Album> findByName(String name);
 
     @Query("select * from Album where isDeleted = 1")

@@ -56,13 +56,14 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.461" />
 
+
     <EditText
         android:id="@+id/password"
         android:layout_width="360dp"
         android:layout_height="48dp"
         android:background="@android:drawable/editbox_background"
         android:hint="문자, 숫자, 특수문자 포함 8~20자"
-        android:inputType="text"
+        android:inputType="textPassword"
         android:maxLength="20"
         android:textSize="15dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -90,8 +91,9 @@
         android:background="@android:drawable/editbox_background"
         android:ems="9"
         android:importantForAccessibility="no"
-        android:inputType="text"
+        android:inputType="textPassword"
         android:maxLength="20"
+        android:textSize="15dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.568"
@@ -187,7 +189,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.389" />
-
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

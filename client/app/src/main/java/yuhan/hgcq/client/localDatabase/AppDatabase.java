@@ -2,11 +2,9 @@ package yuhan.hgcq.client.localDatabase;
 
 import android.content.Context;
 
-import androidx.room.Dao;
 import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
-import androidx.room.TypeConverters;
 
 import yuhan.hgcq.client.localDatabase.DAO.AlbumDAO;
 import yuhan.hgcq.client.localDatabase.DAO.PhotoDAO;
@@ -21,13 +19,10 @@ public abstract class AppDatabase extends RoomDatabase {
     public abstract AlbumDAO albumDAO();
     public abstract PhotoDAO photoDAO();
 
-
-    //synchronized
     public static synchronized AppDatabase getInstance(Context context) {
         if (instance == null) {
             instance = Room.databaseBuilder(context.getApplicationContext(),
                             AppDatabase.class, "app_database")
-                    .fallbackToDestructiveMigration()  // Handles migration by destroying and rebuilding the database if no migration strategy is provided
                     .build();
         }
         return instance;

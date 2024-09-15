@@ -29,22 +29,17 @@ public class AlbumTrash extends AppCompatActivity {
             return insets;
         });
     }
-    public void onClick_setting_costume_save(View view) {
+
+    public void onClick_setting_costume_save(String message,
+                                             DialogInterface.OnClickListener positive,
+                                             DialogInterface.OnClickListener negative) {
+
         new AlertDialog.Builder(this)
                 .setTitle("Recoder")
-                .setMessage("복구하시겠습니까?")
+                .setMessage(message)
                 .setIcon(R.drawable.album)
-                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                        // 확인시 처리 로직
-                        Toast.makeText(AlbumTrash.this, "복구하였습니다.", Toast.LENGTH_SHORT).show();
-                    }
-                })
-                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                        Toast.makeText(AlbumTrash.this, "취소하였습니다.", Toast.LENGTH_SHORT).show();
-                    }
-                })
+                .setPositiveButton(android.R.string.yes, positive)
+                .setNegativeButton(android.R.string.no, negative)
                 .show();
     }
 }
