@@ -8,7 +8,6 @@ import androidx.room.Update;
 
 import java.util.List;
 
-import yuhan.hgcq.client.localDatabase.entity.Album;
 import yuhan.hgcq.client.localDatabase.entity.Photo;
 
 @Dao
@@ -18,9 +17,9 @@ public interface PhotoDAO {
 
     @Update
     void update(Photo photo);
+
     @Delete
     void delete(Photo photo);
-
 
     @Query("SELECT * FROM photo WHERE photoId = :photoId")
     List<Photo> findById(Long photoId);
@@ -33,7 +32,6 @@ public interface PhotoDAO {
     @Query("select * from photo where is_deleted = 1")
     List<Photo> findByIsDeleted();
 
-    @Query("select*from photo where is_liked=1")
+    @Query("select*from photo where is_liked = 1")
     List<Photo>findIsLiked();
-
 }
