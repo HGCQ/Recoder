@@ -69,13 +69,13 @@ class FollowRepositoryTest {
         Follow find = fr.findOne(findMember, findMember2);
         fr.delete(find);
 
-        List<Member> followList = fr.findFollowList(findMember);
+        List<Member> followList = fr.findFollowingList(findMember);
 
         assertThat(followList).isEmpty();
     }
 
     @Test
-    void findByName() {
+    void findFollowingListByName() {
         Member findMember = mr.findOne(saveMemberId);
         Member findMember2 = mr.findOne(saveMemberId2);
         Member findMember3 = mr.findOne(saveMemberId3);
@@ -87,8 +87,8 @@ class FollowRepositoryTest {
         fr.save(follow1);
         fr.save(follow2);
 
-        List<Member> find1 = fr.findByName(findMember, "1");
-        List<Member> find2 = fr.findByName(findMember, "B");
+        List<Member> find1 = fr.findFollowingListByName(findMember, "1");
+        List<Member> find2 = fr.findFollowingListByName(findMember, "B");
 
         assertThat(find1).hasSize(2).contains(findMember2, findMember3).doesNotContain(findMember4);
         assertThat(find2).contains(findMember2).doesNotContain(findMember3);

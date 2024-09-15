@@ -34,7 +34,7 @@ public class ChatController {
      *
      * @param createChatForm 채팅 생성 폼
      * @param request        요청
-     * @return 성공 시 201 상태 코드, 실패 시 401 상태 코드
+     * @return 성공 시 201 상태 코드, 실패 시 400 상태 코드, 세션 없을 시 401 상태 코드
      */
     @PostMapping("/add")
     public ResponseEntity<?> createChat(@RequestBody CreateChatForm createChatForm, HttpServletRequest request) {
@@ -44,17 +44,24 @@ public class ChatController {
             MemberDTO loginMember = (MemberDTO) session.getAttribute("member");
 
             if (loginMember != null) {
-                Member findMember = ms.search(loginMember.getMemberId());
+                try {
+                    Member findMember = ms.search(loginMember.getMemberId());
 
-                if (findMember != null) {
-                    Album fa = as.search(createChatForm.getAlbumId());
+                    if (findMember != null) {
+                        Album fa = as.search(createChatForm.getAlbumId());
 
-                    if (fa != null) {
-                        Chat c = new Chat(findMember, createChatForm.getMessage(), fa);
-                        cs.create(c);
-
-                        return ResponseEntity.status(HttpStatus.CREATED).build();
+                        if (fa != null) {
+                            Chat c = new Chat(findMember, createChatForm.getMessage(), fa);
+                            try {
+                                cs.create(c);
+                                return ResponseEntity.status(HttpStatus.CREATED).body("Create Chat Success");
+                            } catch (IllegalArgumentException e) {
+                                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Create Chat Fail");
+                            }
+                        }
                     }
+                } catch (IllegalArgumentException e) {
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found Member Fail");
                 }
             }
         }
@@ -67,7 +74,7 @@ public class ChatController {
      *
      * @param chatDTO 채팅 DTO
      * @param request 요청
-     * @return 성공 시 200 상태 코드, 실패 시 401 상태 코드
+     * @return 성공 시 200 상태 코드, 실패 시 404 상태 코드, 권한 없을 시 401 상태 코드, 세션 없을 시 401 상태 코드
      */
     @PostMapping("/delete")
     public ResponseEntity<?> deleteChat(@RequestBody ChatDTO chatDTO, HttpServletRequest request) {
@@ -77,20 +84,29 @@ public class ChatController {
             MemberDTO loginMember = (MemberDTO) session.getAttribute("member");
 
             if (loginMember != null) {
-                Member findMember = ms.search(loginMember.getMemberId());
+                try {
+                    Member findMember = ms.search(loginMember.getMemberId());
 
-                if (findMember != null) {
-                    Chat fc = cs.search(chatDTO.getChatId());
-
-                    if (fc != null) {
+                    if (findMember != null) {
                         try {
-                            cs.delete(findMember, fc);
-                        } catch (AccessException e) {
-                            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Not Writer");
+                            Chat fc = cs.search(chatDTO.getChatId());
+
+                            if (fc != null) {
+                                try {
+                                    cs.delete(findMember, fc);
+                                    return ResponseEntity.status(HttpStatus.OK).body("Delete Chat Success");
+                                } catch (AccessException e) {
+                                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Not Writer");
+                                } catch (IllegalArgumentException e) {
+                                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Delete Chat Fail");
+                                }
+                            }
+                        } catch (IllegalArgumentException e) {
+                            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found Chat Fail");
                         }
                     }
-
-                    return ResponseEntity.status(HttpStatus.OK).build();
+                } catch (IllegalArgumentException e) {
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found Member Fail");
                 }
             }
         }
@@ -103,7 +119,7 @@ public class ChatController {
      *
      * @param albumId 앨범 id
      * @param request 요청
-     * @return 성공 시 200 상태 코드와 채팅 리스트, 실패 시 401 상태 코드
+     * @return 성공 시 200 상태 코드와 채팅 리스트, 실패 시 404 상태 코드, 세션 없을 시 401 상태 코드
      */
     @GetMapping("/list/albumId")
     public ResponseEntity<?> listChatsByAlbum(@RequestParam("albumId") Long albumId, HttpServletRequest request) {
@@ -113,22 +129,34 @@ public class ChatController {
             MemberDTO loginMember = (MemberDTO) session.getAttribute("member");
 
             if (loginMember != null) {
-                Member findMember = ms.search(loginMember.getMemberId());
+                try {
+                    Member findMember = ms.search(loginMember.getMemberId());
 
-                if (findMember != null) {
-                    Album fa = as.search(albumId);
+                    if (findMember != null) {
+                        try {
+                            Album fa = as.search(albumId);
 
-                    if (fa != null) {
-                        List<Chat> chatList = cs.searchAll(fa);
-                        List<ChatDTO> chatDTOList = new ArrayList<>();
+                            if (fa != null) {
+                                try {
+                                    List<Chat> chatList = cs.searchAll(fa);
+                                    List<ChatDTO> chatDTOList = new ArrayList<>();
 
-                        for (Chat chat : chatList) {
-                            ChatDTO dto = mapping(chat);
-                            chatDTOList.add(dto);
+                                    for (Chat chat : chatList) {
+                                        ChatDTO dto = mapping(chat);
+                                        chatDTOList.add(dto);
+                                    }
+
+                                    return ResponseEntity.status(HttpStatus.OK).body(chatDTOList);
+                                } catch (IllegalArgumentException e) {
+                                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found ChatList Fail");
+                                }
+                            }
+                        } catch (IllegalArgumentException e) {
+                            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found Album Fail");
                         }
-
-                        return ResponseEntity.status(HttpStatus.OK).body(chatDTOList);
                     }
+                } catch (IllegalArgumentException e) {
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found Member Fail");
                 }
             }
         }

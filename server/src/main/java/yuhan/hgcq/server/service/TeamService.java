@@ -36,7 +36,7 @@ public class TeamService {
      * @param team 그룹
      */
     @Transactional
-    public Long create(Team team) {
+    public Long create(Team team) throws IllegalArgumentException {
         ensureNotNull(team, "Team");
 
         Long saveId = tr.save(team);
@@ -57,7 +57,7 @@ public class TeamService {
      * @throws AccessException 관리자가 아닐 시
      */
     @Transactional
-    public void update(Member member, Team team) throws AccessException {
+    public void update(Member member, Team team) throws AccessException, IllegalArgumentException {
         ensureNotNull(member, "Member");
         ensureNotNull(team, "Team");
 
@@ -78,7 +78,7 @@ public class TeamService {
      * @param team   그룹
      */
     @Transactional
-    public void delete(Member member, Team team) {
+    public void delete(Member member, Team team) throws IllegalArgumentException {
         ensureNotNull(member, "Member");
         ensureNotNull(team, "Team");
 
@@ -101,11 +101,11 @@ public class TeamService {
      * @param id 그룹 id
      * @return 그룹
      */
-    public Team search(Long id) {
+    public Team search(Long id) throws IllegalArgumentException {
         Team findTeam = tr.findOne(id);
 
         if (findTeam == null) {
-            throw new IllegalStateException("team not found");
+            throw new IllegalArgumentException("team not found");
         }
 
         return findTeam;

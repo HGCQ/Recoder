@@ -32,7 +32,7 @@ public class LikedService {
      * @param liked 좋아요
      */
     @Transactional
-    public void add(Liked liked) {
+    public void add(Liked liked) throws IllegalArgumentException {
         ensureNotNull(liked, "Liked");
 
         Member member = liked.getMember();
@@ -55,7 +55,7 @@ public class LikedService {
      * @param liked 좋아요
      */
     @Transactional
-    public void remove(Liked liked) {
+    public void remove(Liked liked) throws IllegalArgumentException {
         ensureNotNull(liked, "Liked");
 
         liked.cancelLiked();
@@ -71,7 +71,7 @@ public class LikedService {
      * @param photo  사진
      * @return 좋아요
      */
-    public Liked search(Member member, Photo photo) {
+    public Liked search(Member member, Photo photo) throws IllegalArgumentException {
         ensureNotNull(member, "Member");
         ensureNotNull(photo, "Photo");
 
@@ -90,7 +90,7 @@ public class LikedService {
      * @param member 회원
      * @return 사진 리스트
      */
-    public List<Photo> searchAll(Member member) {
+    public List<Photo> searchAll(Member member) throws IllegalArgumentException {
         ensureNotNull(member, "Member");
 
         return lr.findAll(member);
