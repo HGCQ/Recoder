@@ -35,7 +35,7 @@ public class ChatService {
      * @return 채팅 id
      */
     @Transactional
-    public Long create(Chat chat) {
+    public Long create(Chat chat) throws IllegalArgumentException {
         ensureNotNull(chat, "Chat");
 
         Long saveId = cr.save(chat);
@@ -51,7 +51,7 @@ public class ChatService {
      * @throws AccessException 작성자가 아닐 시
      */
     @Transactional
-    public void delete(Member member, Chat chat) throws AccessException {
+    public void delete(Member member, Chat chat) throws AccessException, IllegalArgumentException {
         ensureNotNull(member, "Member");
         ensureNotNull(chat, "Chat");
 
@@ -72,11 +72,11 @@ public class ChatService {
      * @param id 채팅 id
      * @return 채팅
      */
-    public Chat search(Long id) {
+    public Chat search(Long id) throws IllegalArgumentException {
         Chat find = cr.findOne(id);
 
         if (find == null) {
-            throw new IllegalStateException("Chat not found");
+            throw new IllegalArgumentException("Chat not found");
         }
 
         return find;
@@ -88,7 +88,7 @@ public class ChatService {
      * @param album 앨범
      * @return 채팅 리스트
      */
-    public List<Chat> searchAll(Album album) {
+    public List<Chat> searchAll(Album album) throws IllegalArgumentException {
         ensureNotNull(album, "Album");
 
         return cr.findAll(album);

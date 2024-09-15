@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import yuhan.hgcq.server.domain.Member;
 import yuhan.hgcq.server.domain.Team;
 import yuhan.hgcq.server.domain.TeamMember;
+import yuhan.hgcq.server.dto.member.SignupForm;
 
 import java.util.List;
 
@@ -33,11 +34,14 @@ class TeamServiceTest {
 
     @BeforeEach
     void setUp() {
-        Member m1 = new Member("m1", "m1@test.com", "1234");
-        Member m2 = new Member("m2", "m2@test.com", "1234");
+        SignupForm m1 = new SignupForm("m1", "m1@test.com", "1234");
+        SignupForm m2 = new SignupForm("m2", "m2@test.com", "1234");
 
         m1Id = ms.join(m1);
         m2Id = ms.join(m2);
+
+        Member fm1 = ms.search(m1Id);
+        Member fm2 = ms.search(m2Id);
     }
 
     @Test

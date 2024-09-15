@@ -47,7 +47,7 @@ public class AlbumService {
      * @throws AccessException 관리자가 아닐 시
      */
     @Transactional
-    public Long create(Member member, Album album) throws AccessException {
+    public Long create(Member member, Album album) throws AccessException, IllegalArgumentException {
         ensureNotNull(album, "Album");
         ensureNotNull(member, "Member");
 
@@ -70,7 +70,7 @@ public class AlbumService {
      * @throws AccessException 관리자가 아닐 시
      */
     @Transactional
-    public void modify(Member member, Album album) throws AccessException {
+    public void modify(Member member, Album album) throws AccessException, IllegalArgumentException {
         ensureNotNull(member, "Member");
         ensureNotNull(album, "Album");
 
@@ -92,7 +92,7 @@ public class AlbumService {
      * @throws AccessException 관리자가 아닐 시
      */
     @Transactional
-    public void delete(Member member, Album album) throws AccessException {
+    public void delete(Member member, Album album) throws AccessException, IllegalArgumentException {
         ensureNotNull(album, "Album");
 
         boolean isAdmin = isAdmin(member, album);
@@ -114,7 +114,7 @@ public class AlbumService {
      * @throws AccessException 관리자가 아닐 시
      */
     @Transactional
-    public void cancelDelete(Member member, Album album) throws AccessException {
+    public void cancelDelete(Member member, Album album) throws AccessException, IllegalArgumentException {
         ensureNotNull(album, "Album");
 
         boolean isAdmin = isAdmin(member, album);
@@ -154,11 +154,11 @@ public class AlbumService {
      * @param id 앨범 id
      * @return 앨범
      */
-    public Album search(Long id) {
+    public Album search(Long id) throws IllegalArgumentException {
         Album find = ar.findOne(id);
 
         if (find == null) {
-            throw new IllegalStateException("Album not found");
+            throw new IllegalArgumentException("Album not found");
         }
 
         return find;
@@ -170,7 +170,7 @@ public class AlbumService {
      * @param team 그룹
      * @return 앨범 리스트
      */
-    public List<Album> searchAll(Team team) {
+    public List<Album> searchAll(Team team) throws IllegalArgumentException {
         ensureNotNull(team, "Team");
 
         return ar.findAll(team);
@@ -183,7 +183,7 @@ public class AlbumService {
      * @param name 이름
      * @return 앨범 리스트
      */
-    public List<Album> searchByName(Team team, String name) {
+    public List<Album> searchByName(Team team, String name) throws IllegalArgumentException {
         ensureNotNull(team, "Team");
         ensureNotNull(name, "Name");
 
@@ -196,7 +196,7 @@ public class AlbumService {
      * @param team 그룹
      * @return 앨범 리스트
      */
-    public List<Album> searchTrash(Team team) {
+    public List<Album> searchTrash(Team team) throws IllegalArgumentException {
         ensureNotNull(team, "Team");
 
         return ar.findByDeleted(team);

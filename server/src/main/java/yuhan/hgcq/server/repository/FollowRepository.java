@@ -53,13 +53,13 @@ public class FollowRepository {
     }
 
     /**
-     * 이름으로 팔로우 리스트 조회
+     * 이름으로 팔로잉 리스트 조회
      *
      * @param member 회원
      * @param name   이름
      * @return 팔로우 리스트
      */
-    public List<Member> findByName(Member member, String name) {
+    public List<Member> findFollowingListByName(Member member, String name) {
         return em.createQuery("select f.follow from Follow f where f.member = :member and f.follow.name LIKE :name order by f.follow.name", Member.class)
                 .setParameter("member", member)
                 .setParameter("name", "%" + name + "%")
@@ -67,14 +67,40 @@ public class FollowRepository {
     }
 
     /**
-     * 회원의 팔로우 리스트 조회
+     * 회원의 팔로잉 리스트 조회
      *
      * @param member 회원
      * @return 팔로우 리스트
      */
-    public List<Member> findFollowList(Member member) {
+    public List<Member> findFollowingList(Member member) {
         return em.createQuery("select f.follow from Follow f where f.member = :member order by f.follow.name", Member.class)
                 .setParameter("member", member)
+                .getResultList();
+    }
+
+    /**
+     * 회원의 팔로워 리스트 조회
+     *
+     * @param member 회원
+     * @return 팔로워 리스트
+     */
+    public List<Member> findFollowerList(Member member) {
+        return em.createQuery("select f.member from Follow f where f.follow = :member order by f.member.name", Member.class)
+                .setParameter("member", member)
+                .getResultList();
+    }
+
+    /**
+     * 회원의 팔로워 리스트 이름으로 조회
+     *
+     * @param member 회원
+     * @param name   이름
+     * @return 팔로워 리스트
+     */
+    public List<Member> findFollowerListByName(Member member, String name) {
+        return em.createQuery("select f.member from Follow f where f.follow = :member and f.member.name like :name order by f.member.name", Member.class)
+                .setParameter("member", member)
+                .setParameter("name", "%" + name + "%")
                 .getResultList();
     }
 }

@@ -53,7 +53,7 @@ public class PhotoService {
      * @return 사진 id
      */
     @Transactional
-    public Long save(Photo photo) {
+    public Long save(Photo photo) throws IllegalArgumentException {
         ensureNotNull(photo, "Photo");
 
         Long saveId = pr.save(photo);
@@ -68,7 +68,7 @@ public class PhotoService {
      * @throws IOException 예외
      */
     @Transactional
-    public void save(UploadPhotoForm form) throws IOException {
+    public void save(UploadPhotoForm form) throws IOException, IllegalArgumentException {
         List<MultipartFile> files = form.getFiles();
         List<LocalDateTime> creates = form.getCreates();
 
@@ -97,7 +97,7 @@ public class PhotoService {
                 Photo p = new Photo(fa, name, imagePath, creates.get(i));
                 pr.save(p);
 
-                log.info("Save Photo : {}", p);
+                log.info("Save Photos : {}", p);
             }
         } catch (IOException e) {
             log.error("IO Error");
@@ -111,7 +111,7 @@ public class PhotoService {
      * @param photo 사진
      */
     @Transactional
-    public void delete(Photo photo) {
+    public void delete(Photo photo) throws IllegalArgumentException {
         ensureNotNull(photo, "Photo");
 
         photo.delete();
@@ -126,7 +126,7 @@ public class PhotoService {
      * @param photo 사진
      */
     @Transactional
-    public void deleteCancel(Photo photo) {
+    public void deleteCancel(Photo photo) throws IllegalArgumentException {
         ensureNotNull(photo, "Photo");
 
         photo.cancelDelete();
@@ -160,11 +160,11 @@ public class PhotoService {
      * @param id 사진 id
      * @return 사진
      */
-    public Photo search(Long id) {
+    public Photo search(Long id) throws IllegalArgumentException {
         Photo find = pr.findOne(id);
 
         if (find == null) {
-            throw new IllegalStateException("photo not found");
+            throw new IllegalArgumentException("photo not found");
         }
 
         return find;
@@ -176,11 +176,11 @@ public class PhotoService {
      * @param path 경로
      * @return 사진
      */
-    public Photo search(String path) {
+    public Photo search(String path) throws IllegalArgumentException {
         Photo find = pr.findByPath(path);
 
         if (find == null) {
-            throw new IllegalStateException("photo not found");
+            throw new IllegalArgumentException("photo not found");
         }
 
         return find;
@@ -192,7 +192,7 @@ public class PhotoService {
      * @param album 앨범
      * @return 사진 리스트
      */
-    public List<Photo> searchAll(Album album) {
+    public List<Photo> searchAll(Album album) throws IllegalArgumentException {
         ensureNotNull(album, "Album");
 
         return pr.findAll(album);
@@ -204,7 +204,7 @@ public class PhotoService {
      * @param album 앨범
      * @return 사진 리스트
      */
-    public List<Photo> trashList(Album album) {
+    public List<Photo> trashList(Album album) throws IllegalArgumentException {
         ensureNotNull(album, "Album");
 
         return pr.findByDeleted(album);
@@ -275,7 +275,7 @@ public class PhotoService {
      * @param photos   사진 리스트
      */
     @Transactional
-    public void move(Album newAlbum, List<Photo> photos) {
+    public void move(Album newAlbum, List<Photo> photos) throws IllegalArgumentException {
         ensureNotNull(newAlbum, "Album");
         ensureNotNull(photos, "Photos");
 

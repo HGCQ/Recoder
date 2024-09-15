@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import yuhan.hgcq.server.domain.Member;
 import yuhan.hgcq.server.domain.Team;
 import yuhan.hgcq.server.domain.TeamMember;
+import yuhan.hgcq.server.dto.member.SignupForm;
 
 import java.util.List;
 
@@ -38,18 +39,23 @@ class TeamMemberServiceTest {
 
     @BeforeEach
     void setUp() {
-        Member m1 = new Member("m1", "m1@test.com", "1234");
-        Member m2 = new Member("m2", "m2@test.com", "1234");
-        Member m3 = new Member("m3", "m3@test.com", "1234");
-        Member m4 = new Member("m4", "m4@test.com", "1234");
+        SignupForm m1 = new SignupForm("m1", "m1@test.com", "1234");
+        SignupForm m2 = new SignupForm("m2", "m2@test.com", "1234");
+        SignupForm m3 = new SignupForm("m3", "m3@test.com", "1234");
+        SignupForm m4 = new SignupForm("m4", "m4@test.com", "1234");
 
         m1Id = ms.join(m1);
         m2Id = ms.join(m2);
         m3Id = ms.join(m3);
         m4Id = ms.join(m4);
 
-        Team t1 = new Team(m1, "t1");
-        Team t2 = new Team(m1, "t2");
+        Member fm1 = ms.search(m1Id);
+        Member fm2 = ms.search(m2Id);
+        Member fm3 = ms.search(m3Id);
+        Member fm4 = ms.search(m4Id);
+
+        Team t1 = new Team(fm1, "t1");
+        Team t2 = new Team(fm1, "t2");
 
         t1Id = ts.create(t1);
         t2Id = ts.create(t2);

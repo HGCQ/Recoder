@@ -41,7 +41,7 @@ public class TeamMemberService {
      * @throws AccessException 관리자가 아닐 시
      */
     @Transactional
-    public void invite(Member member, TeamMember teamMember) throws AccessException {
+    public void invite(Member member, TeamMember teamMember) throws AccessException, IllegalArgumentException {
         ensureNotNull(member, "Member");
         ensureNotNull(teamMember, "TeamMember");
 
@@ -64,7 +64,7 @@ public class TeamMemberService {
      * @throws AccessException 관리자가 아닐 시
      */
     @Transactional
-    public void expel(Member member, TeamMember teamMember) throws AccessException {
+    public void expel(Member member, TeamMember teamMember) throws AccessException, IllegalArgumentException {
         ensureNotNull(member, "Member");
         ensureNotNull(teamMember, "TeamMember");
 
@@ -87,7 +87,7 @@ public class TeamMemberService {
      * @param member 회원
      * @return 그룹 회원
      */
-    public TeamMember search(Team team, Member member) {
+    public TeamMember search(Team team, Member member) throws IllegalArgumentException {
         ensureNotNull(team, "Team");
         ensureNotNull(member, "Member");
 
@@ -102,7 +102,7 @@ public class TeamMemberService {
      * @throws AccessException 소유자가 아닐 시
      */
     @Transactional
-    public void authorizeAdmin(Member member, TeamMember teamMember) throws AccessException {
+    public void authorizeAdmin(Member member, TeamMember teamMember) throws AccessException, IllegalArgumentException {
         ensureNotNull(member, "Member");
         ensureNotNull(teamMember, "TeamMember");
 
@@ -126,7 +126,7 @@ public class TeamMemberService {
      * @throws AccessException 소유자가 아닐 시
      */
     @Transactional
-    public void revokeAdmin(Member member, TeamMember teamMember) throws AccessException {
+    public void revokeAdmin(Member member, TeamMember teamMember) throws AccessException, IllegalArgumentException {
         ensureNotNull(member, "Member");
         ensureNotNull(teamMember, "TeamMember");
 
@@ -148,7 +148,7 @@ public class TeamMemberService {
      * @param member 회원
      * @return 그룹 리스트
      */
-    public List<Team> searchTeamList(Member member) {
+    public List<Team> searchTeamList(Member member) throws IllegalArgumentException {
         ensureNotNull(member, "Member");
 
         return tmr.findAll(member);
@@ -161,7 +161,7 @@ public class TeamMemberService {
      * @param name   이름
      * @return 그룹 리스트
      */
-    public List<Team> searchTeamList(Member member, String name) {
+    public List<Team> searchTeamList(Member member, String name) throws IllegalArgumentException {
         ensureNotNull(member, "Member");
         ensureNotNull(name, "Name");
 
@@ -174,7 +174,7 @@ public class TeamMemberService {
      * @param team 그룹
      * @return 회원 리스트
      */
-    public List<Member> searchMemberList(Team team) {
+    public List<Member> searchMemberList(Team team) throws IllegalArgumentException {
         ensureNotNull(team, "Team");
 
         return tmr.findByTeam(team);
@@ -186,7 +186,7 @@ public class TeamMemberService {
      * @param team 그룹
      * @return 관리자 리스트
      */
-    public List<Member> searchAdminList(Team team) {
+    public List<Member> searchAdminList(Team team) throws IllegalArgumentException {
         ensureNotNull(team, "Team");
 
         return tmr.findAdminByTeam(team);

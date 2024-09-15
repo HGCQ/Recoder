@@ -5,8 +5,8 @@ spring:
   # before AWS
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    username: root
-    password: qwer1234
+    username: hgcq
+    password: yuhan12
     url: jdbc:mysql://localhost:3306/recoder
 
   jpa:
@@ -16,9 +16,9 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect
 
-#  redis:
-#    host: localhost
-#    port: 6379
+  redis:
+    host: localhost
+    port: 6379
 
 logging:
   level:

@@ -1,13 +1,13 @@
 package yuhan.hgcq.server.service;
 
 import lombok.RequiredArgsConstructor;
-import lombok.Synchronized;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import yuhan.hgcq.server.domain.Member;
 import yuhan.hgcq.server.dto.member.LoginForm;
+import yuhan.hgcq.server.dto.member.MemberUpdateForm;
 import yuhan.hgcq.server.dto.member.SignupForm;
 import yuhan.hgcq.server.repository.MemberRepository;
 
@@ -28,95 +28,148 @@ import java.util.List;
 public class MemberService {
     private static final Logger log = LoggerFactory.getLogger(MemberService.class);
 
-    private final MemberRepository memberRepository;
+    private final MemberRepository mr;
 
+    /**
+     * 회원 가입
+     *
+     * @param form 회원 가입 폼
+     * @return 회원 id
+     */
     @Transactional
-    public synchronized Long join(Member member){
+    public synchronized Long join(SignupForm form) throws IllegalArgumentException {
+        String name = form.getName();
+        String email = form.getEmail();
+        String password = form.getPassword();
 
-        String email = member.getEmail();
-        String name = member.getName();
-        if(!duplicateEmail(email)){
-            throw new IllegalArgumentException("이미 존재하는 이메일입니다.");
+        if (!duplicateEmail(email)) {
+            throw new IllegalArgumentException("Already Exist Email");
         }
 
-        if(!duplicateName(name)){
-            throw new IllegalArgumentException("이미 존재하는 이름입니다.");
+        if (!duplicateName(name)) {
+            throw new IllegalArgumentException("Already Exist Name");
         }
 
-        memberRepository.save(member);
-        log.debug("회원가입 성공");
-        return  member.getId();
+        Member member = new Member(name, email, password);
+        mr.save(member);
+
+        log.info("Join Member : {}", member);
+        return member.getId();
     }
 
+    /**
+     * 로그인
+     *
+     * @param loginForm 로그인 폼
+     * @return 로그인 유무
+     */
     @Transactional
-    public boolean login(LoginForm loginForm){
-        List<String> emails = memberRepository.findAllEmails();
+    public Member login(LoginForm loginForm) throws IllegalArgumentException {
+        List<String> emailList = mr.findAllEmails();
 
         String memberEmail = loginForm.getEmail();
-        String memberpassword = loginForm.getPassword();
+        String memberPassword = loginForm.getPassword();
 
-        if (!emails.contains(memberEmail)){
-            log.error("로그인 실패: 존재하지 않는 아이디");
-            throw  new IllegalArgumentException("존재하지 않는 아이디");
+        if (!emailList.contains(memberEmail)) {
+            log.error("Login Error (Not exist Email) : {}", memberEmail);
+            throw new IllegalArgumentException("Not exist Email");
         }
 
-        Member find = memberRepository.findOne(memberEmail);
+        Member fm = mr.findOne(memberEmail);
 
-        if(find.getPassword().equals(memberpassword)){
-            log.debug("로그인 성공");
-            return true;
-        }else{
-            log.error("로그인 실패: 비밀번호 틀림");
-            throw new IllegalArgumentException("비밀번호가 틀렸습니다.");
+        if (fm.getPassword().equals(memberPassword)) {
+            log.info("Login Success : {}", fm);
+            return fm;
+        } else {
+            log.info("Login Error (Wrong Password) : {}", memberEmail);
+            throw new IllegalArgumentException("Wrong Password");
         }
     }
 
+    /**
+     * 회원 정보 수정
+     *
+     * @param member 회원
+     * @param form   회원 정보 수정 폼
+     */
+    @Transactional
+    public void update(Member member, MemberUpdateForm form) throws IllegalArgumentException {
+        ensureNotNull(member, "Member");
 
-    public Member search(Long id){
-        Member findMember = memberRepository.findOne(id);
-        if(findMember == null){
+        String newName = form.getName();
+        String newPassword = form.getPassword();
 
-
-            throw new IllegalArgumentException("존재하지 않는 아이디 입니다.");
-        }
-        return findMember;
-    }
-
-
-    public Member searchByEmail(String email){
-        Member findMember = memberRepository.findOne(email);
-        if(findMember == null){
-
-
-            throw new IllegalArgumentException("존재하지 않는 이메일 입니다.");
+        if (newName != null && !duplicateName(newName)) {
+            member.changeName(newName);
         }
 
-
-        return findMember;
-    }
-
-    public List<Member> searchByName(String name){
-        List<Member> find = memberRepository.findByName(name);
-        if(find.isEmpty()){
-
-            throw new IllegalArgumentException("이름이 존재하지 않습니다.");
+        if (newPassword != null) {
+            member.changePassword(newPassword);
         }
-        return find;
+
+        mr.save(member);
+        log.info("Update Member : {}", member);
     }
 
-    public List<Member> searchAll(){
-        return memberRepository.findAll();
+    /**
+     * 회원 검색
+     *
+     * @param id 회원 id
+     * @return 회원
+     */
+    public Member search(Long id) throws IllegalArgumentException {
+        Member fm = mr.findOne(id);
+
+        if (fm == null) {
+            throw new IllegalArgumentException("Member Not Found");
+        }
+
+        return fm;
     }
 
+    /**
+     * 회원 이메일로 검색
+     *
+     * @param email 이메일
+     * @return 회원
+     */
+    public Member searchByEmail(String email) throws IllegalArgumentException {
+        Member fm = mr.findOne(email);
+
+        if (fm == null) {
+            throw new IllegalArgumentException("Member Not Found");
+        }
+
+        return fm;
+    }
+
+    /**
+     * 회원 이름으로 검색
+     *
+     * @param name 이름
+     * @return 회원 리스트
+     */
+    public List<Member> searchByName(String name) throws IllegalArgumentException {
+        return mr.findByName(name);
+    }
+
+    /**
+     * 회원 리스트
+     *
+     * @return 회원 리스트
+     */
+    public List<Member> searchAll() {
+        return mr.findAll();
+    }
 
     /**
      * 이메일 중복 검사
      *
      * @param email 이메일
-     * @return 중복 여부
+     * @return 중복 유무
      */
     public boolean duplicateEmail(String email) {
-        List<String> emails = memberRepository.findAllEmails();
+        List<String> emails = mr.findAllEmails();
         return !emails.contains(email);
     }
 
@@ -124,12 +177,17 @@ public class MemberService {
      * 닉네임 중복 검사
      *
      * @param name 닉네임
-     * @return 중복 여부
+     * @return 중복 유무
      */
     public boolean duplicateName(String name) {
-        List<String> names = memberRepository.findAllNames();
+        List<String> names = mr.findAllNames();
         return !names.contains(name);
     }
 
-
+    /* 매개변수가 null 값인지 확인 */
+    private void ensureNotNull(Object obj, String name) {
+        if (obj == null) {
+            throw new IllegalArgumentException(name + " is null");
+        }
+    }
 }

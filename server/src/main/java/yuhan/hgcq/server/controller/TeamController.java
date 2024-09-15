@@ -33,7 +33,7 @@ public class TeamController {
      *
      * @param createForm 그룹 생성 폼
      * @param request    요청
-     * @return 성공 시 201 상태 코드, 실패 시 401 상태 코드
+     * @return 성공 시 201 상태 코드, 실패 시 400 상태 코드 또는 404 상태 코드, 권한 없을 시 401 상태 코드, 세션 없을 시 401 상태 코드
      */
     @PostMapping("/create")
     public ResponseEntity<?> createTeam(@RequestBody TeamCreateForm createForm, HttpServletRequest request) {
@@ -43,32 +43,47 @@ public class TeamController {
             MemberDTO loginMember = (MemberDTO) session.getAttribute("member");
 
             if (loginMember != null) {
-                Member findMember = ms.search(loginMember.getMemberId());
+                try {
+                    Member findMember = ms.search(loginMember.getMemberId());
 
-                if (findMember != null) {
-                    Team newTeam = new Team(findMember, createForm.getName());
-                    ts.create(newTeam);
-
-                    List<Long> memberIdList = createForm.getMembers();
-                    List<Member> memberList = new ArrayList<>();
-
-                    for (Long memberId : memberIdList) {
-                        Member fm = ms.search(memberId);
-                        if (fm != null) {
-                            memberList.add(fm);
-                        }
-                    }
-
-                    for (Member member : memberList) {
-                        TeamMember newTeamMember = new TeamMember(newTeam, member);
+                    if (findMember != null) {
+                        Team newTeam = new Team(findMember, createForm.getName());
                         try {
-                            tms.invite(findMember, newTeamMember);
-                        } catch (AccessException e) {
-                            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Not Admin");
+                            ts.create(newTeam);
+
+                            List<Long> memberIdList = createForm.getMembers();
+                            List<Member> memberList = new ArrayList<>();
+
+                            for (Long memberId : memberIdList) {
+                                try {
+                                    Member fm = ms.search(memberId);
+
+                                    if (fm != null) {
+                                        memberList.add(fm);
+                                    }
+                                } catch (IllegalArgumentException e) {
+                                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found Member Fail");
+                                }
+                            }
+
+                            for (Member member : memberList) {
+                                TeamMember newTeamMember = new TeamMember(newTeam, member);
+                                try {
+                                    tms.invite(findMember, newTeamMember);
+                                } catch (AccessException e) {
+                                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Not Admin");
+                                } catch (IllegalArgumentException e) {
+                                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Invite Member Fail");
+                                }
+                            }
+
+                            return ResponseEntity.status(HttpStatus.CREATED).body("Create Team Success");
+                        } catch (IllegalArgumentException e) {
+                            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Create Team Fail");
                         }
                     }
-
-                    return ResponseEntity.status(HttpStatus.CREATED).build();
+                } catch (IllegalArgumentException e) {
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found Member Fail");
                 }
             }
         }
@@ -81,7 +96,7 @@ public class TeamController {
      *
      * @param inviteForm 회원 초대 폼
      * @param request    요청
-     * @return 성공 시 200 상태 코드, 실패 시 401 상태 코드
+     * @return 성공 시 200 상태 코드, 실패 시 404 상태 코드, 권한 없을 시 401 상태 코드, 세션 없을 시 401 상태 코드
      */
     @PostMapping("/invite")
     public ResponseEntity<?> inviteMember(@RequestBody TeamInviteForm inviteForm, HttpServletRequest request) {
@@ -91,34 +106,49 @@ public class TeamController {
             MemberDTO loginMember = (MemberDTO) session.getAttribute("member");
 
             if (loginMember != null) {
-                Member findMember = ms.search(loginMember.getMemberId());
+                try {
+                    Member findMember = ms.search(loginMember.getMemberId());
 
-                if (findMember != null) {
-                    Long teamId = inviteForm.getTeamId();
-                    Team ft = ts.search(teamId);
+                    if (findMember != null) {
+                        Long teamId = inviteForm.getTeamId();
+                        try {
+                            Team ft = ts.search(teamId);
 
-                    if (ft != null) {
-                        List<Long> memberIdList = inviteForm.getMembers();
-                        List<Member> memberList = new ArrayList<>();
+                            if (ft != null) {
+                                List<Long> memberIdList = inviteForm.getMembers();
+                                List<Member> memberList = new ArrayList<>();
 
-                        for (Long memberId : memberIdList) {
-                            Member fm = ms.search(memberId);
-                            if (fm != null) {
-                                memberList.add(fm);
+                                for (Long memberId : memberIdList) {
+                                    try {
+                                        Member fm = ms.search(memberId);
+
+                                        if (fm != null) {
+                                            memberList.add(fm);
+                                        }
+                                    } catch (IllegalArgumentException e) {
+                                        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found Member Fail");
+                                    }
+                                }
+
+                                for (Member member : memberList) {
+                                    TeamMember newTeamMember = new TeamMember(ft, member);
+                                    try {
+                                        tms.invite(findMember, newTeamMember);
+                                    } catch (AccessException e) {
+                                        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Not Admin");
+                                    } catch (IllegalArgumentException e) {
+                                        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Invite Member In Team Fail");
+                                    }
+                                }
+
+                                return ResponseEntity.status(HttpStatus.OK).body("Invite Member In Team Success");
                             }
+                        } catch (IllegalArgumentException e) {
+                            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found Team Fail");
                         }
-
-                        for (Member member : memberList) {
-                            TeamMember newTeamMember = new TeamMember(ft, member);
-                            try {
-                                tms.invite(findMember, newTeamMember);
-                            } catch (AccessException e) {
-                                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Not Admin");
-                            }
-                        }
-
-                        return ResponseEntity.status(HttpStatus.OK).build();
                     }
+                } catch (IllegalArgumentException e) {
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found Member Fail");
                 }
             }
         }
@@ -131,7 +161,7 @@ public class TeamController {
      *
      * @param teamMemberDTO 그룹 회원 DTO
      * @param request       요청
-     * @return 성공 시 200 상태 코드, 실패 시 401 상태 코드
+     * @return 성공 시 200 상태 코드, 실패 시 404 상태 코드, 권한 없을 시 401 상태 코드, 세션 없을 시 401 상태 코드
      */
     @PostMapping("/expel")
     public ResponseEntity<?> expelMember(@RequestBody TeamMemberDTO teamMemberDTO, HttpServletRequest request) {
@@ -141,25 +171,43 @@ public class TeamController {
             MemberDTO loginMember = (MemberDTO) session.getAttribute("member");
 
             if (loginMember != null) {
-                Member findMember = ms.search(loginMember.getMemberId());
+                try {
+                    Member findMember = ms.search(loginMember.getMemberId());
 
-                if (findMember != null) {
-                    Member fm = ms.search(teamMemberDTO.getMemberId());
-                    Team ft = ts.search(teamMemberDTO.getTeamId());
+                    if (findMember != null) {
+                        try {
+                            Member fm = ms.search(teamMemberDTO.getMemberId());
 
-                    if (fm != null && ft != null) {
-                        TeamMember ftm = tms.search(ft, fm);
-
-                        if (ftm != null) {
                             try {
-                                tms.expel(findMember, ftm);
-                            } catch (AccessException e) {
-                                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Not Admin");
-                            }
+                                Team ft = ts.search(teamMemberDTO.getTeamId());
 
-                            return ResponseEntity.status(HttpStatus.OK).build();
+                                if (fm != null && ft != null) {
+                                    try {
+                                        TeamMember ftm = tms.search(ft, fm);
+
+                                        if (ftm != null) {
+                                            try {
+                                                tms.expel(findMember, ftm);
+                                                return ResponseEntity.status(HttpStatus.OK).body("Expel Member Success");
+                                            } catch (AccessException e) {
+                                                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Not Admin");
+                                            } catch (IllegalArgumentException e) {
+                                                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Expel Member Fail");
+                                            }
+                                        }
+                                    } catch (IllegalArgumentException e) {
+                                        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found Member In Team Fail");
+                                    }
+                                }
+                            } catch (IllegalArgumentException e) {
+                                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found Team Fail");
+                            }
+                        } catch (IllegalArgumentException e) {
+                            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found Member Fail");
                         }
                     }
+                } catch (IllegalArgumentException e) {
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found Member Fail");
                 }
             }
         }
@@ -172,7 +220,7 @@ public class TeamController {
      *
      * @param updateForm 그룹 수정 폼
      * @param request    요청
-     * @return 성공 시 200 상태 코드, 실패 시 401 상태 코드
+     * @return 성공 시 200 상태 코드, 실패 시 404 상태 코드, 권한 없을 시 401 상태 코드, 세션 없을 시 401 상태 코드
      */
     @PostMapping("/update")
     public ResponseEntity<?> updateTeam(@RequestBody TeamUpdateForm updateForm, HttpServletRequest request) {
@@ -182,22 +230,31 @@ public class TeamController {
             MemberDTO loginMember = (MemberDTO) session.getAttribute("member");
 
             if (loginMember != null) {
-                Member findMember = ms.search(loginMember.getMemberId());
+                try {
+                    Member findMember = ms.search(loginMember.getMemberId());
 
-                if (findMember != null) {
-                    Team ft = ts.search(updateForm.getTeamId());
-
-                    if (ft != null) {
-                        ft.changeName(updateForm.getName());
-
+                    if (findMember != null) {
                         try {
-                            ts.update(findMember, ft);
-                        } catch (AccessException e) {
-                            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Not Admin");
-                        }
+                            Team ft = ts.search(updateForm.getTeamId());
 
-                        return ResponseEntity.status(HttpStatus.OK).build();
+                            if (ft != null) {
+                                ft.changeName(updateForm.getName());
+
+                                try {
+                                    ts.update(findMember, ft);
+                                    return ResponseEntity.status(HttpStatus.OK).body("Update Team Success");
+                                } catch (AccessException e) {
+                                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Not Admin");
+                                } catch (IllegalArgumentException e) {
+                                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Update Team Success");
+                                }
+                            }
+                        } catch (IllegalArgumentException e) {
+                            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found Team Fail");
+                        }
                     }
+                } catch (IllegalArgumentException e) {
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found Member Fail");
                 }
             }
         }
@@ -210,7 +267,7 @@ public class TeamController {
      *
      * @param teamDTO 그룹 DTO
      * @param request 요청
-     * @return 성공 시 200 상태 코드, 실패 시 401 상태 코드
+     * @return 성공 시 200 상태 코드, 실패 시 404 상태 코드, 세션 없을 시 401 상태 코드
      */
     @PostMapping("/delete")
     public ResponseEntity<?> deleteTeam(@RequestBody TeamDTO teamDTO, HttpServletRequest request) {
@@ -220,16 +277,27 @@ public class TeamController {
             MemberDTO loginMember = (MemberDTO) session.getAttribute("member");
 
             if (loginMember != null) {
-                Member findMember = ms.search(loginMember.getMemberId());
+                try {
+                    Member findMember = ms.search(loginMember.getMemberId());
 
-                if (findMember != null) {
-                    Team ft = ts.search(teamDTO.getTeamId());
+                    if (findMember != null) {
+                        try {
+                            Team ft = ts.search(teamDTO.getTeamId());
 
-                    if (ft != null) {
-                        ts.delete(findMember, ft);
-
-                        return ResponseEntity.status(HttpStatus.OK).build();
+                            if (ft != null) {
+                                try {
+                                    ts.delete(findMember, ft);
+                                    return ResponseEntity.status(HttpStatus.OK).body("Delete Team Success");
+                                } catch (IllegalArgumentException e) {
+                                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Delete Team Fail");
+                                }
+                            }
+                        } catch (IllegalArgumentException e) {
+                            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found Team Fail");
+                        }
                     }
+                } catch (IllegalArgumentException e) {
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found Member Fail");
                 }
             }
         }
@@ -242,7 +310,7 @@ public class TeamController {
      *
      * @param teamMemberDTO 그룹 회원 DTO
      * @param request       요청
-     * @return 성공 시 200 상태 코드, 실패 시 401 상태 코드
+     * @return 성공 시 200 상태 코드, 실패 시 404 상태 코드, 권한 없을 시 401 상태 코드, 세션 없을 시 401 상태 코드
      */
     @PostMapping("/authorize")
     public ResponseEntity<?> authorizeAdmin(@RequestBody TeamMemberDTO teamMemberDTO, HttpServletRequest request) {
@@ -252,25 +320,43 @@ public class TeamController {
             MemberDTO loginMember = (MemberDTO) session.getAttribute("member");
 
             if (loginMember != null) {
-                Member findMember = ms.search(loginMember.getMemberId());
+                try {
+                    Member findMember = ms.search(loginMember.getMemberId());
 
-                if (findMember != null) {
-                    Member fm = ms.search(teamMemberDTO.getMemberId());
-                    Team ft = ts.search(teamMemberDTO.getTeamId());
+                    if (findMember != null) {
+                        try {
+                            Member fm = ms.search(teamMemberDTO.getMemberId());
 
-                    if (fm != null && ft != null) {
-                        TeamMember ftm = tms.search(ft, fm);
-
-                        if (ftm != null) {
                             try {
-                                tms.authorizeAdmin(findMember, ftm);
-                            } catch (AccessException e) {
-                                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Not Admin");
-                            }
+                                Team ft = ts.search(teamMemberDTO.getTeamId());
 
-                            return ResponseEntity.status(HttpStatus.OK).build();
+                                if (fm != null && ft != null) {
+                                    try {
+                                        TeamMember ftm = tms.search(ft, fm);
+
+                                        if (ftm != null) {
+                                            try {
+                                                tms.authorizeAdmin(findMember, ftm);
+                                                return ResponseEntity.status(HttpStatus.OK).body("Authorize Admin Success");
+                                            } catch (AccessException e) {
+                                                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Not Admin");
+                                            } catch (IllegalArgumentException e) {
+                                                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Authorize Admin Fail");
+                                            }
+                                        }
+                                    } catch (IllegalArgumentException e) {
+                                        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found Member In Team Fail");
+                                    }
+                                }
+                            } catch (IllegalArgumentException e) {
+                                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found Team Fail");
+                            }
+                        } catch (IllegalArgumentException e) {
+                            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found Member Fail");
                         }
                     }
+                } catch (IllegalArgumentException e) {
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found Member Fail");
                 }
             }
         }
@@ -283,7 +369,7 @@ public class TeamController {
      *
      * @param teamMemberDTO 그룹 회원 DTO
      * @param request       요청
-     * @return 성공 시 200 상태 코드, 실패 시 401 상태 코드
+     * @return 성공 시 200 상태 코드, 실패 시 404 상태 코드, 권한 없을 시 401 상태 코드, 세션 없을 시 401 상태 코드
      */
     @PostMapping("/revoke")
     public ResponseEntity<?> revokeAdmin(@RequestBody TeamMemberDTO teamMemberDTO, HttpServletRequest request) {
@@ -293,25 +379,42 @@ public class TeamController {
             MemberDTO loginMember = (MemberDTO) session.getAttribute("member");
 
             if (loginMember != null) {
-                Member findMember = ms.search(loginMember.getMemberId());
+                try {
+                    Member findMember = ms.search(loginMember.getMemberId());
 
-                if (findMember != null) {
-                    Member fm = ms.search(teamMemberDTO.getMemberId());
-                    Team ft = ts.search(teamMemberDTO.getTeamId());
-
-                    if (fm != null && ft != null) {
-                        TeamMember ftm = tms.search(ft, fm);
-
-                        if (ftm != null) {
+                    if (findMember != null) {
+                        try {
+                            Member fm = ms.search(teamMemberDTO.getMemberId());
                             try {
-                                tms.revokeAdmin(findMember, ftm);
-                            } catch (AccessException e) {
-                                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Not Admin");
-                            }
+                                Team ft = ts.search(teamMemberDTO.getTeamId());
 
-                            return ResponseEntity.status(HttpStatus.OK).build();
+                                if (fm != null && ft != null) {
+                                     try {
+                                         TeamMember ftm = tms.search(ft, fm);
+
+                                         if (ftm != null) {
+                                             try {
+                                                 tms.revokeAdmin(findMember, ftm);
+                                                 return ResponseEntity.status(HttpStatus.OK).body("Revoke Admin Success");
+                                             } catch (AccessException e) {
+                                                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Not Admin");
+                                             } catch (IllegalArgumentException e) {
+                                                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Revoke Admin Fail");
+                                             }
+                                         }
+                                     } catch (IllegalArgumentException e) {
+                                         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found Member In Team Fail");
+                                     }
+                                }
+                            } catch (IllegalArgumentException e) {
+                                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found Team Fail");
+                            }
+                        } catch (IllegalArgumentException e) {
+                            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found Member Fail");
                         }
                     }
+                } catch (IllegalArgumentException e) {
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found Member Fail");
                 }
             }
         }
@@ -323,7 +426,7 @@ public class TeamController {
      * 회원이 가진 그룹 리스트
      *
      * @param request 요청
-     * @return 성공 시 200 상태 코드와 그룹 리스트, 실패 시 401 상태 코드
+     * @return 성공 시 200 상태 코드와 그룹 리스트, 실패 시 404 상태 코드, 세션 없을 시 401 상태 코드
      */
     @GetMapping("/list")
     public ResponseEntity<?> teamListByMember(HttpServletRequest request) {
@@ -333,18 +436,26 @@ public class TeamController {
             MemberDTO loginMember = (MemberDTO) session.getAttribute("member");
 
             if (loginMember != null) {
-                Member findMember = ms.search(loginMember.getMemberId());
+                try {
+                    Member findMember = ms.search(loginMember.getMemberId());
 
-                if (findMember != null) {
-                    List<Team> teamList = tms.searchTeamList(findMember);
-                    List<TeamDTO> teamDTOList = new ArrayList<>();
+                    if (findMember != null) {
+                        try {
+                            List<Team> teamList = tms.searchTeamList(findMember);
+                            List<TeamDTO> teamDTOList = new ArrayList<>();
 
-                    for (Team team : teamList) {
-                        TeamDTO teamDTO = mapping(team);
-                        teamDTOList.add(teamDTO);
+                            for (Team team : teamList) {
+                                TeamDTO teamDTO = mapping(team);
+                                teamDTOList.add(teamDTO);
+                            }
+
+                            return ResponseEntity.status(HttpStatus.OK).body(teamDTOList);
+                        } catch (IllegalArgumentException e) {
+                            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found TeamList Fail");
+                        }
                     }
-
-                    return ResponseEntity.status(HttpStatus.OK).body(teamDTOList);
+                } catch (IllegalArgumentException e) {
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found Member Fail");
                 }
             }
         }
@@ -357,7 +468,7 @@ public class TeamController {
      *
      * @param name    그룹 이름
      * @param request 요청
-     * @return 성공 시 200 상태 코드와 그룹 리스트, 실패 시 401 상태 코드
+     * @return 성공 시 200 상태 코드와 그룹 리스트, 실패 시 404 상태 코드, 세션 없을 시 401 상태 코드
      */
     @GetMapping("/list/name")
     public ResponseEntity<?> searchTeamByTeamName(@RequestParam("name") String name, HttpServletRequest request) {
@@ -367,18 +478,26 @@ public class TeamController {
             MemberDTO loginMember = (MemberDTO) session.getAttribute("member");
 
             if (loginMember != null) {
-                Member findMember = ms.search(loginMember.getMemberId());
+                try {
+                    Member findMember = ms.search(loginMember.getMemberId());
 
-                if (findMember != null) {
-                    List<Team> teamList = tms.searchTeamList(findMember, name);
-                    List<TeamDTO> teamDTOList = new ArrayList<>();
+                    if (findMember != null) {
+                        try {
+                            List<Team> teamList = tms.searchTeamList(findMember, name);
+                            List<TeamDTO> teamDTOList = new ArrayList<>();
 
-                    for (Team team : teamList) {
-                        TeamDTO teamDTO = mapping(team);
-                        teamDTOList.add(teamDTO);
+                            for (Team team : teamList) {
+                                TeamDTO teamDTO = mapping(team);
+                                teamDTOList.add(teamDTO);
+                            }
+
+                            return ResponseEntity.status(HttpStatus.OK).body(teamDTOList);
+                        } catch (IllegalArgumentException e) {
+                            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found TeamList Fail");
+                        }
                     }
-
-                    return ResponseEntity.status(HttpStatus.OK).body(teamDTOList);
+                } catch (IllegalArgumentException e) {
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found Member Fail");
                 }
             }
         }
@@ -391,7 +510,7 @@ public class TeamController {
      *
      * @param teamId  그룹 id
      * @param request 요청
-     * @return 성공 시 200 상태 코드와 회원 리스트, 실패 시 401 상태 코드
+     * @return 성공 시 200 상태 코드와 회원 리스트, 실패 시 404 상태 코드, 세션 없을 시 401 상태 코드
      */
     @GetMapping("/memberlist/teamId")
     public ResponseEntity<?> memberListByTeam(@RequestParam("teamId") Long teamId, HttpServletRequest request) {
@@ -401,37 +520,57 @@ public class TeamController {
             MemberDTO loginMember = (MemberDTO) session.getAttribute("member");
 
             if (loginMember != null) {
-                Member findMember = ms.search(loginMember.getMemberId());
+                try {
+                    Member findMember = ms.search(loginMember.getMemberId());
 
-                if (findMember != null) {
-                    Team ft = ts.search(teamId);
+                    if (findMember != null) {
+                        try {
+                            Team ft = ts.search(teamId);
 
-                    if (ft != null) {
-                        Member owner = ft.getOwner();
-                        List<Team> teamList = tms.searchTeamList(findMember);
+                            if (ft != null) {
+                                Member owner = ft.getOwner();
+                                try {
+                                    List<Team> teamList = tms.searchTeamList(findMember);
 
-                        if (teamList.contains(ft)) {
-                            List<Member> memberList = tms.searchMemberList(ft);
-                            List<Member> adminList = tms.searchAdminList(ft);
-                            List<MemberInTeamDTO> memberDTOList = new ArrayList<>();
+                                    if (teamList.contains(ft)) {
+                                        try {
+                                            List<Member> memberList = tms.searchMemberList(ft);
+                                            try {
+                                                List<Member> adminList = tms.searchAdminList(ft);
+                                                List<MemberInTeamDTO> memberDTOList = new ArrayList<>();
 
-                            for (Member member : memberList) {
-                                MemberInTeamDTO memberDTO = mapping(member);
+                                                for (Member member : memberList) {
+                                                    MemberInTeamDTO memberDTO = mapping(member);
 
-                                if (owner.equals(member)) {
-                                    memberDTO.setIsOwner(true);
+                                                    if (owner.equals(member)) {
+                                                        memberDTO.setIsOwner(true);
+                                                    }
+
+                                                    if (adminList.contains(member)) {
+                                                        memberDTO.setIsAdmin(true);
+                                                    }
+
+                                                    memberDTOList.add(memberDTO);
+                                                }
+
+                                                return ResponseEntity.status(HttpStatus.OK).body(memberDTOList);
+                                            } catch (IllegalArgumentException e) {
+                                                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found AdminList Fail");
+                                            }
+                                        } catch (IllegalArgumentException e) {
+                                            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found MemberList Fail");
+                                        }
+                                    }
+                                } catch (IllegalArgumentException e) {
+                                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found TeamList Fail");
                                 }
-
-                                if (adminList.contains(member)) {
-                                    memberDTO.setIsAdmin(true);
-                                }
-
-                                memberDTOList.add(memberDTO);
                             }
-
-                            return ResponseEntity.status(HttpStatus.OK).body(memberDTOList);
+                        } catch (IllegalArgumentException e) {
+                            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found Team Fail");
                         }
                     }
+                } catch (IllegalArgumentException e) {
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found Member Fail");
                 }
             }
         }
@@ -444,7 +583,7 @@ public class TeamController {
      *
      * @param teamId  그룹 id
      * @param request 요청
-     * @return 성공 시 200 상태 코드와 관리자 리스트, 실패 시 401 상태 코드
+     * @return 성공 시 200 상태 코드와 관리자 리스트, 실패 시 404 상태 코드, 세션 없을 시 401 상태 코드
      */
     @GetMapping("/adminlist/teamId")
     public ResponseEntity<?> adminListByTeam(@RequestParam("teamId") Long teamId, HttpServletRequest request) {
@@ -454,29 +593,41 @@ public class TeamController {
             MemberDTO loginMember = (MemberDTO) session.getAttribute("member");
 
             if (loginMember != null) {
-                Member findMember = ms.search(loginMember.getMemberId());
+                try {
+                    Member findMember = ms.search(loginMember.getMemberId());
 
-                if (findMember != null) {
-                    Team ft = ts.search(teamId);
+                    if (findMember != null) {
+                        try {
+                            Team ft = ts.search(teamId);
 
-                    if (ft != null) {
-                        Member owner = ft.getOwner();
+                            if (ft != null) {
+                                Member owner = ft.getOwner();
 
-                        if (owner.equals(findMember)) {
-                            List<Member> adminList = tms.searchAdminList(ft);
-                            List<MemberInTeamDTO> memberDTOList = new ArrayList<>();
+                                if (owner.equals(findMember)) {
+                                    try {
+                                        List<Member> adminList = tms.searchAdminList(ft);
+                                        List<MemberInTeamDTO> memberDTOList = new ArrayList<>();
 
-                            for (Member member : adminList) {
-                                MemberInTeamDTO memberDTO = mapping(member);
-                                memberDTO.setIsAdmin(true);
-                                memberDTOList.add(memberDTO);
+                                        for (Member member : adminList) {
+                                            MemberInTeamDTO memberDTO = mapping(member);
+                                            memberDTO.setIsAdmin(true);
+                                            memberDTOList.add(memberDTO);
+                                        }
+
+                                        return ResponseEntity.status(HttpStatus.OK).body(memberDTOList);
+                                    } catch (IllegalArgumentException e) {
+                                        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found AdminList Fail");
+                                    }
+                                } else {
+                                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Not Owner");
+                                }
                             }
-
-                            return ResponseEntity.status(HttpStatus.OK).body(memberDTOList);
-                        } else {
-                            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Not Owner");
+                        } catch (IllegalArgumentException e) {
+                            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found Team Fail");
                         }
                     }
+                } catch (IllegalArgumentException e) {
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found Member Fail");
                 }
             }
         }
