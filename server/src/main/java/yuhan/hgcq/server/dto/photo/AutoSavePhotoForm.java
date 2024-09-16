@@ -12,7 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 @ToString
 public class AutoSavePhotoForm implements Serializable {
-    private List<Long> albumIds;
+    private Long teamId;
     private List<MultipartFile> files;
     private List<LocalDateTime> creates;
 }
