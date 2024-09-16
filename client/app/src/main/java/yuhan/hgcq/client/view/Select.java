@@ -2,8 +2,11 @@ package yuhan.hgcq.client.view;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -11,12 +14,22 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import yuhan.hgcq.client.R;
+import yuhan.hgcq.client.controller.MemberController;
 
 public class Select extends AppCompatActivity {
 
     /* View */
     ImageButton privated, share;
+
+    /* 서버와 통신 */
+    MemberController mc;
+
+    /* Toast */
+    Handler handler = new Handler(Looper.getMainLooper());
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +46,9 @@ public class Select extends AppCompatActivity {
             return insets;
         });
 
+        /* 서버와 연결할 Controller 생성 */
+        mc = new MemberController(this);
+
         /* View와 Layout 연결 */
         privated = (ImageButton) findViewById(R.id.privated);
         share = (ImageButton) findViewById(R.id.share);
@@ -40,6 +56,7 @@ public class Select extends AppCompatActivity {
         /* 관련된 페이지 */
         Intent loginPage = new Intent(this, Login.class);
         Intent albumMainPage = new Intent(this, AlbumMain.class);
+        Intent groupMainPage = new Intent(this, GroupMain.class);
 
         /* 개인 버튼 눌림 */
         privated.setOnClickListener(new View.OnClickListener() {
@@ -54,7 +71,27 @@ public class Select extends AppCompatActivity {
         share.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(loginPage);
+                mc.isLogin(new Callback<Boolean>() {
+                    @Override
+                    public void onResponse(Call<Boolean> call, Response<Boolean> response) {
+                        if (response.isSuccessful()) {
+                            Boolean isLogin = response.body();
+
+                            if (isLogin) {
+                                startActivity(groupMainPage);
+                            } else {
+                                startActivity(loginPage);
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<Boolean> call, Throwable t) {
+                        handler.post(() -> {
+                            Toast.makeText(Select.this, "서버와 통신 실패했습니다. 네트워크를 확인해주세요.", Toast.LENGTH_SHORT).show();
+                        });
+                    }
+                });
             }
         });
     }

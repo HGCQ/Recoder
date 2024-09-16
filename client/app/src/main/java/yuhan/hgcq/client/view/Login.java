@@ -7,11 +7,14 @@ import android.os.Bundle;
 import android.content.DialogInterface;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -21,18 +24,29 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import yuhan.hgcq.client.R;
+import yuhan.hgcq.client.config.NetworkClient;
+import yuhan.hgcq.client.controller.MemberController;
+import yuhan.hgcq.client.model.dto.member.LoginForm;
 
 public class Login extends AppCompatActivity {
 
     /* View */
+    ImageButton login, join;
+    EditText email, pw;
 
     /* 서버와 통신 */
+    MemberController mc;
+
+    /* 쿠기 */
+    NetworkClient client;
 
     /* Toast */
     Handler handler = new Handler(Looper.getMainLooper());
-
-    /* Request Code */
 
     /* 뒤로 가기 */
     @Override
@@ -63,15 +77,70 @@ public class Login extends AppCompatActivity {
             return insets;
         });
 
+        /* 쿠키 */
+        client = NetworkClient.getInstance(this.getApplicationContext());
+
         /* 서버와 연결할 Controller 생성 */
+        mc = new MemberController(this);
 
         /* View와 Layout 연결 */
+        login = findViewById(R.id.login);
+        join = findViewById(R.id.join);
+
+        email = findViewById(R.id.id);
+        pw = findViewById(R.id.password);
 
         /* 관련된 페이지 */
+        Intent groupMainPage = new Intent(this, GroupMain.class);
+        Intent joinPage = new Intent(this, Join.class);
 
-        /* 받아 올 값 */
+        /* 로그인 버튼 눌림 */
+        login.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String userEmail = email.getText().toString();
+                String userPw = pw.getText().toString();
 
-        /* 공유 초기 설정 */
+                LoginForm form = new LoginForm();
+                form.setEmail(userEmail);
+                form.setPassword(userPw);
+
+                mc.loginMember(form, new Callback<ResponseBody>() {
+                    @Override
+                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                        if (response.isSuccessful()) {
+                            handler.post(() -> {
+                                Toast.makeText(Login.this, "로그인 성공", Toast.LENGTH_SHORT).show();
+                            });
+                            Log.i("Login", "Success");
+                            client.saveCookie();
+                            startActivity(groupMainPage);
+                        } else {
+                            handler.post(() -> {
+                                Toast.makeText(Login.this, "로그인 실패", Toast.LENGTH_SHORT).show();
+                            });
+                            Log.i("Login", "Fail");
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<ResponseBody> call, Throwable t) {
+                        handler.post(() -> {
+                            Toast.makeText(Login.this, "서버와 통신 실패했습니다. 네트워크를 확인해주세요.", Toast.LENGTH_SHORT).show();
+                        });
+                        Log.e("Login Error", t.getMessage());
+                    }
+                });
+            }
+        });
+
+        /* 회원 가입 버튼 눌림 */
+        join.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(joinPage);
+            }
+        });
     }
 
     /* Confirm 창 */
