@@ -21,7 +21,7 @@ public interface AlbumService {
     Call<ResponseBody> deleteAlbum(@Body AlbumDTO albumDTO);
 
     @POST("/album/delete/cancel")
-    Call<ResponseBody> cancelDeleteAlbum(@Body AlbumDTO albumDTO);
+    Call<ResponseBody> deleteCancelAlbum(@Body AlbumDTO albumDTO);
 
     @POST("/album/update")
     Call<ResponseBody> updateAlbum(@Body AlbumUpdateForm albumUpdateForm);
@@ -30,8 +30,8 @@ public interface AlbumService {
     Call<List<AlbumDTO>> albumList(@Query("teamId") Long teamId);
 
     @GET("/album/list/teamId/name")
-    Call<List<AlbumDTO>> searchAlbum(@Query("teamId") Long teamId, @Query("name") String name);
+    Call<List<AlbumDTO>> searchAlbumByName(@Query("teamId") Long teamId, @Query("name") String name);
 
     @GET("/album/list/teamId/trash")
-    Call<List<AlbumDTO>> albumTrash(@Query("teamId") Long teamId);
+    Call<List<AlbumDTO>> albumTrashList(@Query("teamId") Long teamId);
 }

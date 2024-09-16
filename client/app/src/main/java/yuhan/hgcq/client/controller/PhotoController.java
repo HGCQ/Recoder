@@ -1,9 +1,7 @@
 package yuhan.hgcq.client.controller;
 
 import android.content.Context;
-import android.database.Cursor;
 import android.net.Uri;
-import android.provider.MediaStore;
 
 import java.io.File;
 import java.time.LocalDateTime;
@@ -24,15 +22,20 @@ import yuhan.hgcq.client.model.service.PhotoService;
 public class PhotoController {
 
     private PhotoService photoService;
-    private Context context; // 액티비티
 
     public PhotoController(Context context) {
-        this.context = context;
         NetworkClient client = NetworkClient.getInstance(context.getApplicationContext());
         photoService = client.getPhotoService();
     }
 
-
+    /**
+     * 사진 업로드
+     *
+     * @param albumId   앨범 id
+     * @param photoUris 사진 uri
+     * @param creates   사진 날짜
+     * @param callback  비동기 콜백
+     */
     public void uploadPhoto(Long albumId, List<Uri> photoUris, List<LocalDateTime> creates, Callback<ResponseBody> callback) {
         RequestBody albumIdPart = RequestBody.create(
                 MediaType.parse("text/plain"),
@@ -41,8 +44,7 @@ public class PhotoController {
 
         List<MultipartBody.Part> fileParts = new ArrayList<>();
         for (Uri uri : photoUris) {
-            String filePath = getRealPathFromURI(uri);
-            File file = new File(filePath);
+            File file = new File(String.valueOf(uri));
             RequestBody reqFile = RequestBody.create(MediaType.parse("image/*"), file);
             MultipartBody.Part image = MultipartBody.Part.createFormData("image", file.getName(), reqFile);
             fileParts.add(image);
@@ -64,37 +66,53 @@ public class PhotoController {
     /**
      * 사진 삭제
      *
-     * @param photoDTO 사진 객체
-     * @param callback 콜백
+     * @param photoDTO 사진 DTO
+     * @param callback 비동기 콜백
      */
     public void deletePhoto(PhotoDTO photoDTO, Callback<ResponseBody> callback) {
         Call<ResponseBody> call = photoService.deletePhoto(photoDTO);
         call.enqueue(callback);
     }
 
+    /**
+     * 사진 삭제 취소
+     *
+     * @param photoDTO 사진 DTO
+     * @param callback 비동기 콜백
+     */
     public void cancelDeletePhoto(PhotoDTO photoDTO, Callback<ResponseBody> callback) {
         Call<ResponseBody> call = photoService.cancelDeletePhoto(photoDTO);
         call.enqueue(callback);
     }
 
-    public void movePhoto(MovePhotoForm movePhotoForm, Callback<ResponseBody> callback) {
-        Call<ResponseBody> call = photoService.movePhoto(movePhotoForm);
+    /**
+     * 앨범 이동
+     *
+     * @param movePhotoForm 앨범 이동 폼
+     * @param callback      비동기 콜백
+     */
+    public void moveAlbumPhoto(MovePhotoForm movePhotoForm, Callback<ResponseBody> callback) {
+        Call<ResponseBody> call = photoService.moveAlbumPhoto(movePhotoForm);
         call.enqueue(callback);
     }
 
-    public void autosavePhoto(List<Uri> photoUris, List<Long> albumIds, List<LocalDateTime> creates, Callback<ResponseBody> callback) {
-        List<RequestBody> albumIdParts = new ArrayList<>();
-        for (Long albumId : albumIds) {
-            RequestBody albumIdPart = RequestBody.create(
-                    MediaType.parse("text/plain"),
-                    String.valueOf(albumId)
-            );
-            albumIdParts.add(albumIdPart);
-        }
+    /**
+     * 사진 자동 저장
+     *
+     * @param photoUris 사진 uri
+     * @param teamId    팀 id
+     * @param creates   사진 날짜
+     * @param callback  비동기 콜백
+     */
+    public void autoSavePhoto(List<Uri> photoUris, Long teamId, List<LocalDateTime> creates, Callback<ResponseBody> callback) {
+        RequestBody teamIdPart = RequestBody.create(
+                MediaType.parse("text/plain"),
+                String.valueOf(teamId)
+        );
+
         List<MultipartBody.Part> fileParts = new ArrayList<>();
         for (Uri uri : photoUris) {
-            String filePath = getRealPathFromURI(uri);
-            File file = new File(filePath);
+            File file = new File(String.valueOf(uri));
             RequestBody reqFile = RequestBody.create(MediaType.parse("image/*"), file);
             MultipartBody.Part image = MultipartBody.Part.createFormData("image", file.getName(), reqFile);
             fileParts.add(image);
@@ -109,36 +127,29 @@ public class PhotoController {
             createParts.add(createPart);
         }
 
-        Call<ResponseBody> call = photoService.autosavePhoto(fileParts, albumIdParts, createParts);
+        Call<ResponseBody> call = photoService.autoSavePhoto(fileParts, teamIdPart, createParts);
         call.enqueue(callback);
     }
 
     /**
-     * 사진 리스트 조회
+     * 사진 리스트
      *
-     *
-     * @param callback  콜백
+     * @param albumId  앨범 id
+     * @param callback 비동기 콜백
      */
-    public void getPhotos(Long albumId, Callback<List<PhotoDTO>> callback) {
-        Call<List<PhotoDTO>> call = photoService.getPhotos(albumId);
+    public void photoList(Long albumId, Callback<List<PhotoDTO>> callback) {
+        Call<List<PhotoDTO>> call = photoService.photoList(albumId);
         call.enqueue(callback);
     }
 
-    public void trashPhotos(Long albumId, Callback<List<PhotoDTO>> callback) {
-        Call<List<PhotoDTO>> call = photoService.trashPhotos(albumId);
+    /**
+     * 사진 휴지통 리스트
+     *
+     * @param albumId  앨범 id
+     * @param callback 비동기 콜백
+     */
+    public void photoTrashList(Long albumId, Callback<List<PhotoDTO>> callback) {
+        Call<List<PhotoDTO>> call = photoService.photoTrashList(albumId);
         call.enqueue(callback);
     }
-
-
-
-    private String getRealPathFromURI(Uri contentUri) {
-        String[] proj = {MediaStore.Images.Media.DATA};
-        Cursor cursor = context.getContentResolver().query(contentUri, proj, null, null, null);
-        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-        cursor.moveToFirst();
-        String path = cursor.getString(column_index);
-        cursor.close();
-        return path;
-    }
-
 }

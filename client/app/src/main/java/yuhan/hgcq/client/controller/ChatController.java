@@ -21,19 +21,36 @@ public class ChatController {
         chatService = client.getChatService();
     }
 
+    /**
+     * 채팅 생성
+     *
+     * @param createChatForm 채팅 생성 폼
+     * @param callback       비동기 콜백
+     */
     public void addChat(CreateChatForm createChatForm, Callback<ResponseBody> callback) {
         Call<ResponseBody> call = chatService.addChat(createChatForm);
         call.enqueue(callback);
     }
 
+    /**
+     * 채팅 삭제
+     *
+     * @param chatDTO  채팅 DTO
+     * @param callback 비동기 콜백
+     */
     public void deleteChat(ChatDTO chatDTO, Callback<ResponseBody> callback) {
         Call<ResponseBody> call = chatService.deleteChat(chatDTO);
         call.enqueue(callback);
     }
 
+    /**
+     * 채팅 리스트
+     *
+     * @param albumId  앨범 id
+     * @param callback 비동기 콜백
+     */
     public void chatList(Long albumId, Callback<List<ChatDTO>> callback) {
         Call<List<ChatDTO>> call = chatService.chatList(albumId);
         call.enqueue(callback);
     }
-
 }

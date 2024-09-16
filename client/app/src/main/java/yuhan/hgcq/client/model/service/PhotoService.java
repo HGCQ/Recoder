@@ -32,19 +32,19 @@ public interface PhotoService {
     Call<ResponseBody> cancelDeletePhoto(@Body PhotoDTO photoDTO);
 
     @POST("/photo/move")
-    Call<ResponseBody> movePhoto(@Body MovePhotoForm movePhotoForm);
+    Call<ResponseBody> moveAlbumPhoto(@Body MovePhotoForm movePhotoForm);
 
     @Multipart
     @POST("/photo/autosave")
-    Call<ResponseBody> autosavePhoto(
+    Call<ResponseBody> autoSavePhoto(
             @Part List<MultipartBody.Part> files,
-            @Part("albumIds") List<RequestBody> albumIds,
+            @Part("teamId") RequestBody teamId,
             @Part("creates") List<RequestBody> creates
     );
 
     @GET("/photo/list/albumId")
-    Call<List<PhotoDTO>> getPhotos(@Query("albumId") Long albumId);
+    Call<List<PhotoDTO>> photoList(@Query("albumId") Long albumId);
 
     @GET("/photo/list/albumId/trash")
-    Call<List<PhotoDTO>> trashPhotos(@Query("albumId") Long albumId);
+    Call<List<PhotoDTO>> photoTrashList(@Query("albumId") Long albumId);
 }

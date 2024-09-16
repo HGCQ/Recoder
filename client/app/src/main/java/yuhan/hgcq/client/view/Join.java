@@ -4,6 +4,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -14,6 +17,7 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
@@ -36,8 +40,11 @@ public class Join extends AppCompatActivity {
     EditText name, email, pw, pwCheck;
     ImageButton nameCheck, emailCheck, join;
 
-    /* http */
+    /* 서버와 통신 */
     MemberController mc;
+
+    /* Toast */
+    Handler handler = new Handler(Looper.getMainLooper());
 
     /* 중복 확인용 */
     String checkedName, checkedEmail;
@@ -48,6 +55,20 @@ public class Join extends AppCompatActivity {
     String regName = "^[가-힣A-Za-z0-9]{1,8}$";
     String regPw = "^[A-Za-z][A-Za-z0-9!@#$%^&*()_+]{7,19}$";
     String regEmail = "\\w+@\\w+\\.\\w+(\\.\\w+)?";
+
+    /* 뒤로 가기 */
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                Intent loginPage = new Intent(this, Login.class);
+                startActivity(loginPage);
+                finish();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,8 +101,6 @@ public class Join extends AppCompatActivity {
         /* 관련된 페이지 */
         Intent loginPage = new Intent(this, Login.class);
 
-        /* 뒤로 가기 버튼 눌림 */
-
         /* 이름 중복 확인 버튼 눌림 */
         nameCheck.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -94,17 +113,23 @@ public class Join extends AppCompatActivity {
                             if (response.body()) {
                                 isDuplicateName = true;
                                 checkedName = userName;
-                                Toast.makeText(Join.this, "사용 가능한 닉네임입니다.", Toast.LENGTH_SHORT).show();
+                                handler.post(() -> {
+                                    Toast.makeText(Join.this, "사용 가능한 닉네임입니다.", Toast.LENGTH_SHORT).show();
+                                });
                                 email.requestFocus();
                             } else {
-                                Toast.makeText(Join.this, "중복된 닉네임입니다.", Toast.LENGTH_SHORT).show();
+                                handler.post(() -> {
+                                    Toast.makeText(Join.this, "중복된 닉네임입니다.", Toast.LENGTH_SHORT).show();
+                                });
                                 name.requestFocus();
                             }
                         }
 
                         @Override
                         public void onFailure(Call<Boolean> call, Throwable t) {
-                            Toast.makeText(Join.this, "서버와 통신 실패했습니다. 네트워크를 확인해주세요.", Toast.LENGTH_SHORT).show();
+                            handler.post(() -> {
+                                Toast.makeText(Join.this, "서버와 통신 실패했습니다. 네트워크를 확인해주세요.", Toast.LENGTH_SHORT).show();
+                            });
                         }
                     });
                 } else {
@@ -125,17 +150,23 @@ public class Join extends AppCompatActivity {
                             if (response.body()) {
                                 isDuplicateEmail = true;
                                 checkedEmail = userEmail;
-                                Toast.makeText(Join.this, "사용 가능한 이메일입니다.", Toast.LENGTH_SHORT).show();
+                                handler.post(() -> {
+                                    Toast.makeText(Join.this, "사용 가능한 이메일입니다.", Toast.LENGTH_SHORT).show();
+                                });
                                 pw.requestFocus();
                             } else {
-                                Toast.makeText(Join.this, "중복된 이메일입니다.", Toast.LENGTH_SHORT).show();
+                                handler.post(() -> {
+                                    Toast.makeText(Join.this, "중복된 이메일입니다.", Toast.LENGTH_SHORT).show();
+                                });
                                 email.requestFocus();
                             }
                         }
 
                         @Override
                         public void onFailure(Call<Boolean> call, Throwable t) {
-                            Toast.makeText(Join.this, "서버와 통신 실패했습니다. 네트워크를 확인해주세요.", Toast.LENGTH_SHORT).show();
+                            handler.post(() -> {
+                                Toast.makeText(Join.this, "서버와 통신 실패했습니다. 네트워크를 확인해주세요.", Toast.LENGTH_SHORT).show();
+                            });
                         }
                     });
                 } else {
@@ -192,16 +223,22 @@ public class Join extends AppCompatActivity {
                                         @Override
                                         public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                                             if (response.isSuccessful()) {
-                                                Toast.makeText(Join.this, "회원 가입 성공했습니다.", Toast.LENGTH_SHORT).show();
+                                                handler.post(() -> {
+                                                    Toast.makeText(Join.this, "회원 가입 성공했습니다.", Toast.LENGTH_SHORT).show();
+                                                });
                                                 startActivity(loginPage);
                                             } else {
-                                                Toast.makeText(Join.this, "회원 가입 실패했습니다.", Toast.LENGTH_SHORT).show();
+                                                handler.post(() -> {
+                                                    Toast.makeText(Join.this, "회원 가입 실패했습니다.", Toast.LENGTH_SHORT).show();
+                                                });
                                             }
                                         }
 
                                         @Override
                                         public void onFailure(Call<ResponseBody> call, Throwable t) {
-                                            Toast.makeText(Join.this, "회원 가입 실패했습니다.", Toast.LENGTH_SHORT).show();
+                                            handler.post(() -> {
+                                                Toast.makeText(Join.this, "회원 가입 실패했습니다.", Toast.LENGTH_SHORT).show();
+                                            });
                                         }
                                     });
                                 }
@@ -225,6 +262,20 @@ public class Join extends AppCompatActivity {
         });
     }
 
+    /* Confirm 창 */
+    public void onClick_setting_costume_save(String message,
+                                             DialogInterface.OnClickListener positive,
+                                             DialogInterface.OnClickListener negative) {
+
+        new AlertDialog.Builder(this)
+                .setTitle("Recoder")
+                .setMessage(message)
+                .setIcon(R.drawable.album)
+                .setPositiveButton(android.R.string.yes, positive)
+                .setNegativeButton(android.R.string.no, negative)
+                .show();
+    }
+
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
         if (ev.getAction() == MotionEvent.ACTION_DOWN) {
@@ -242,19 +293,6 @@ public class Join extends AppCompatActivity {
             }
         }
         return super.dispatchTouchEvent(ev);
-    }
-
-    public void onClick_setting_costume_save(String message,
-                                             DialogInterface.OnClickListener positive,
-                                             DialogInterface.OnClickListener negative) {
-
-        new AlertDialog.Builder(this)
-                .setTitle("Recoder")
-                .setMessage(message)
-                .setIcon(R.drawable.album)
-                .setPositiveButton(android.R.string.yes, positive)
-                .setNegativeButton(android.R.string.no, negative)
-                .show();
     }
 }
 

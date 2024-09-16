@@ -18,13 +18,17 @@ import yuhan.hgcq.client.R;
 
 public class Loading extends AppCompatActivity {
 
-    private MediaPlayer mediaPlayer;
+    /* View */
+    MediaPlayer mediaPlayer;
+
+    /* Setting */
     private static final int LOADING_TIME = 3000; // 3초
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         getSupportActionBar().setTitle("Recoder");
         super.onCreate(savedInstanceState);
+
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_loading);
 
@@ -56,6 +60,7 @@ public class Loading extends AppCompatActivity {
             finish();
         }, LOADING_TIME);
     }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
