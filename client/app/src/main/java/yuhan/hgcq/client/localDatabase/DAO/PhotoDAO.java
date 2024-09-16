@@ -29,6 +29,7 @@ public interface PhotoDAO {
 
     @Query("SELECT * FROM photo")
     List<Photo> findAll();
+
     @Query("select * from photo where is_deleted = 1")
     List<Photo> findByIsDeleted();
 

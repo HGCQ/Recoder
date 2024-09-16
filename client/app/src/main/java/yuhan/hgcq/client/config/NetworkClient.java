@@ -134,13 +134,13 @@ public class NetworkClient {
         sharedPrefsCookiePersistor.saveAll(cookies);
 
         for (Cookie ck : cookies) {
-            Log.d("받아온 쿠키", "Name: " + ck.name() + " Value: " + ck.value());
+            Log.i("Get Cookie", "Name: " + ck.name() + " Value: " + ck.value());
         }
 
         List<Cookie> cookies1 = sharedPrefsCookiePersistor.loadAll();
 
         for (Cookie ck : cookies1) {
-            Log.d("쿠키 저장", "Name: " + ck.name() + " Value: " + ck.value());
+            Log.i("Save Cookie", "Name: " + ck.name() + " Value: " + ck.value());
         }
     }
 
@@ -151,6 +151,6 @@ public class NetworkClient {
                 .loadForRequest(Objects.requireNonNull(HttpUrl.parse(client.getServerIp())));
         sharedPrefsCookiePersistor.removeAll(cookies);
 
-        Log.d("쿠키 삭제", "성공");
+        Log.i("Delete Cookie", "Success");
     }
 }

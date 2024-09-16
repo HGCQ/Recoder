@@ -5,14 +5,6 @@ import android.util.Log;
 
 import androidx.room.Transaction;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -36,11 +28,10 @@ public class PhotoRepository {
     private AlbumDAO adao;
     private ExecutorService executor;
     private final static int DELETE_DAY = 30;
-    Context context;
-
 
     public PhotoRepository(Context context) {
         dao = AppDatabase.getInstance(context).photoDAO();
+        adao = AppDatabase.getInstance(context).albumDAO();
         executor = Executors.newSingleThreadExecutor();
     }
 
@@ -124,7 +115,6 @@ public class PhotoRepository {
         });
     }
 
-
     //휴지통에서 찾기List
     public void searchTrash(Callback<List<PPhotoDTO>> callback) {
         executor.execute(() -> {
@@ -143,7 +133,6 @@ public class PhotoRepository {
             }
         });
     }
-
 
     public void Liked(Long id, Callback<Boolean> callback) {
         executor.execute(() -> {
@@ -197,30 +186,31 @@ public class PhotoRepository {
         });
     }
 
-
     /**
      * 선택된 앨범에 사진 자동으로 저장
      */
     @Transaction
-    public void autoSave(AutoSavePhotoForm form,Callback callback) {
+    public void autoSave(AutoSavePhotoForm form, Callback<Boolean> callback) {
         executor.execute(() -> {
             try {
                 List<String> paths = form.getPaths();
-                List<Long> albumIds = form.getAlbumIds();
+                List<Album> albumList = adao.findAll();
                 List<LocalDateTime> creates = form.getCreates();
-                int size=paths.size();
+                int size = paths.size();
                 for (int i = 0; i < size; i++) {
                     LocalDateTime photoCreate = creates.get(i);
                     // 앨범 정보 조회
-                    for (Long albumId : albumIds) {
+                    for (Album album : albumList) {
                         // 앨범 시작일과 종료일을 Room DB에서 가져오는 로직
-                        Album album = adao.findById(albumId);
                         LocalDateTime startDate = album.getStartDate();
                         LocalDateTime endDate = album.getEndDate();
+                        Log.d("startDate", startDate.toString());
+                        Log.d("endDate", endDate.toString());
 
                         // 사진 시간이 앨범 기간 내에 있는지 확인
                         if (photoCreate.isAfter(startDate) && photoCreate.isBefore(endDate)) {
-                            Photo photo = Photo.create(paths.get(i), albumId, photoCreate);
+                            Photo photo = Photo.create(paths.get(i), album.getAlbumId(), photoCreate);
+                            Log.d("photo", photo.toString());
                             dao.save(photo);
                         }
                     }
@@ -234,6 +224,7 @@ public class PhotoRepository {
             }
         });
     }
+
     //휴지통
     private void trash(List<Photo> photos) {
         LocalDateTime now = LocalDateTime.now();

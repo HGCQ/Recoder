@@ -22,39 +22,81 @@ public class AlbumController {
         albumService = client.getAlbumService();
     }
 
+    /**
+     * 앨범 생성
+     *
+     * @param albumCreateForm 앨범 생성 폼
+     * @param callback        비동기 콜백
+     */
     public void createAlbum(AlbumCreateForm albumCreateForm, Callback<ResponseBody> callback) {
         Call<ResponseBody> call = albumService.createAlbum(albumCreateForm);
         call.enqueue(callback);
     }
 
+    /**
+     * 앨범 삭제
+     *
+     * @param albumDTO 앨범 DTO
+     * @param callback 비동기 콜백
+     */
     public void deleteAlbum(AlbumDTO albumDTO, Callback<ResponseBody> callback) {
         Call<ResponseBody> call = albumService.deleteAlbum(albumDTO);
         call.enqueue(callback);
     }
 
-    public void cancelDeleteAlbum(AlbumDTO albumDTO, Callback<ResponseBody> callback) {
-        Call<ResponseBody> call = albumService.cancelDeleteAlbum(albumDTO);
+    /**
+     * 앨범 삭제 취소
+     *
+     * @param albumDTO 앨범 DTO
+     * @param callback 비동기 콜백
+     */
+    public void deleteCancelAlbum(AlbumDTO albumDTO, Callback<ResponseBody> callback) {
+        Call<ResponseBody> call = albumService.deleteCancelAlbum(albumDTO);
         call.enqueue(callback);
     }
 
+    /**
+     * 앨범 수정
+     *
+     * @param albumUpdateForm 앨범 수정 폼
+     * @param callback        비동기 콜백
+     */
     public void updateAlbum(AlbumUpdateForm albumUpdateForm, Callback<ResponseBody> callback) {
         Call<ResponseBody> call = albumService.updateAlbum(albumUpdateForm);
         call.enqueue(callback);
     }
 
+    /**
+     * 앨범 리스트
+     *
+     * @param teamId   팀 id
+     * @param callback 비동기 콜백
+     */
     public void albumList(Long teamId, Callback<List<AlbumDTO>> callback) {
         Call<List<AlbumDTO>> call = albumService.albumList(teamId);
         call.enqueue(callback);
     }
 
-    public void searchAlbum(Long teamId, String name, Callback<List<AlbumDTO>> callback) {
-        Call<List<AlbumDTO>> call = albumService.searchAlbum(teamId, name);
+    /**
+     * 앨범 검색
+     *
+     * @param teamId   팀 id
+     * @param name     앨범 이름
+     * @param callback 비동기 콜백
+     */
+    public void searchAlbumByName(Long teamId, String name, Callback<List<AlbumDTO>> callback) {
+        Call<List<AlbumDTO>> call = albumService.searchAlbumByName(teamId, name);
         call.enqueue(callback);
     }
 
-    public void albumTrash(Long teamId, Callback<List<AlbumDTO>> callback) {
-        Call<List<AlbumDTO>> call = albumService.albumTrash(teamId);
+    /**
+     * 앨범 휴지통
+     *
+     * @param teamId   팀 id
+     * @param callback 비동기 콜백
+     */
+    public void albumTrashList(Long teamId, Callback<List<AlbumDTO>> callback) {
+        Call<List<AlbumDTO>> call = albumService.albumTrashList(teamId);
         call.enqueue(callback);
     }
-
 }

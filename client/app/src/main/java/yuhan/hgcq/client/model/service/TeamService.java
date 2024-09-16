@@ -33,10 +33,10 @@ public interface TeamService {
     Call<ResponseBody> deleteTeam(@Body TeamDTO teamDTO);
 
     @POST("/team/authorize")
-    Call<ResponseBody> authorizeTeam(@Body TeamMemberDTO teamMemberDTO);
+    Call<ResponseBody> authorizeAdmin(@Body TeamMemberDTO teamMemberDTO);
 
     @POST("/team/revoke")
-    Call<ResponseBody> revokeTeam(@Body TeamMemberDTO teamMemberDTO);
+    Call<ResponseBody> revokeAdmin(@Body TeamMemberDTO teamMemberDTO);
 
     @GET("/team/list")
     Call<List<TeamDTO>> teamList();
@@ -45,9 +45,9 @@ public interface TeamService {
     Call<List<TeamDTO>> searchTeam(@Query("name") String name);
 
     @GET("/team/memberlist/teamId")
-    Call<List<MemberInTeamDTO>> memberlistTeam(@Query("teamId") Long teamId);
+    Call<List<MemberInTeamDTO>> memberListInTeam(@Query("teamId") Long teamId);
 
     @GET("/team/adminlist/teamId")
-    Call<List<MemberInTeamDTO>> adminlistTeam(@Query("teamId") Long teamId);
+    Call<List<MemberInTeamDTO>> adminListInTeam(@Query("teamId") Long teamId);
 
 }

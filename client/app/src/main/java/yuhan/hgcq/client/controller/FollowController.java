@@ -8,9 +8,7 @@ import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import yuhan.hgcq.client.config.NetworkClient;
-import yuhan.hgcq.client.model.dto.chat.ChatDTO;
 import yuhan.hgcq.client.model.dto.member.MemberDTO;
-import yuhan.hgcq.client.model.service.ChatService;
 import yuhan.hgcq.client.model.service.FollowService;
 
 public class FollowController {

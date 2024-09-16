@@ -12,7 +12,6 @@ import yuhan.hgcq.client.localDatabase.entity.Album;
 import yuhan.hgcq.client.localDatabase.entity.Photo;
 
 @Database(entities = {Album.class, Photo.class}, version = 1, exportSchema = false)
-//@TypeConverters({Converters.class})
 public abstract class AppDatabase extends RoomDatabase {
     private static AppDatabase instance;
 

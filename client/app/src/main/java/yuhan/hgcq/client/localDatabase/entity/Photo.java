@@ -11,8 +11,6 @@ import java.time.LocalDateTime;
 
 import yuhan.hgcq.client.localDatabase.Converters;
 
-//import yuhan.hgcq.client.localDatabase.Converters;
-
 @Entity(tableName = "photo",
         foreignKeys = @ForeignKey(
                 entity = Album.class,
@@ -35,7 +33,6 @@ public class Photo {
         return photo;
     }
 
-
     @PrimaryKey(autoGenerate = true)
     private Long photoId;
     @NonNull
@@ -50,8 +47,6 @@ public class Photo {
     private LocalDateTime created;
 
     private LocalDateTime deletedTime;
-
-
 
     public Long getPhotoId() {
         return photoId;
