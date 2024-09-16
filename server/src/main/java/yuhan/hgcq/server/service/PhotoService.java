@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import yuhan.hgcq.server.domain.Album;
 import yuhan.hgcq.server.domain.Photo;
+import yuhan.hgcq.server.domain.Team;
 import yuhan.hgcq.server.dto.photo.AutoSavePhotoForm;
 import yuhan.hgcq.server.dto.photo.UploadPhotoForm;
 import yuhan.hgcq.server.repository.AlbumRepository;
@@ -218,16 +219,12 @@ public class PhotoService {
      */
     @Transactional
     public void autoSave(AutoSavePhotoForm form) throws IOException {
-        List<Long> albumIds = form.getAlbumIds();
+        Long teamId = form.getTeamId();
+        Team ft = tr.findOne(teamId);
+
+        List<Album> albumList = ar.findAll(ft);
         List<MultipartFile> files = form.getFiles();
         List<LocalDateTime> creates = form.getCreates();
-
-        List<Album> albumList = new ArrayList<>();
-
-        for (Long albumId : albumIds) {
-            Album fa = ar.findOne(albumId);
-            albumList.add(fa);
-        }
 
         int size = files.size();
 
