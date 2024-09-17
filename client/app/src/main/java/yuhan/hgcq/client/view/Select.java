@@ -19,6 +19,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import yuhan.hgcq.client.R;
 import yuhan.hgcq.client.controller.MemberController;
+import yuhan.hgcq.client.model.dto.member.MemberDTO;
 
 public class Select extends AppCompatActivity {
 
@@ -71,22 +72,20 @@ public class Select extends AppCompatActivity {
         share.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mc.isLogin(new Callback<Boolean>() {
+                mc.isLogin(new Callback<MemberDTO>() {
                     @Override
-                    public void onResponse(Call<Boolean> call, Response<Boolean> response) {
+                    public void onResponse(Call<MemberDTO> call, Response<MemberDTO> response) {
                         if (response.isSuccessful()) {
-                            Boolean isLogin = response.body();
-
-                            if (isLogin) {
-                                startActivity(groupMainPage);
-                            } else {
-                                startActivity(loginPage);
-                            }
+                            MemberDTO loginMember = response.body();
+                            groupMainPage.putExtra("loginMember", loginMember);
+                            startActivity(groupMainPage);
+                        } else {
+                            startActivity(loginPage);
                         }
                     }
 
                     @Override
-                    public void onFailure(Call<Boolean> call, Throwable t) {
+                    public void onFailure(Call<MemberDTO> call, Throwable t) {
                         handler.post(() -> {
                             Toast.makeText(Select.this, "서버와 통신 실패했습니다. 네트워크를 확인해주세요.", Toast.LENGTH_SHORT).show();
                         });

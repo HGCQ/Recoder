@@ -207,7 +207,7 @@ public class MemberController {
      * 로그인 유무 확인
      *
      * @param request 요청
-     * @return 성공 시 200 상태 코드와 로그인 유무
+     * @return 성공 시 200 상태 코드와 회원 정보, 실패 시 401 상태 코드
      */
     @GetMapping("/islogin")
     public ResponseEntity<?> isLogin(HttpServletRequest request) {
@@ -231,11 +231,12 @@ public class MemberController {
             Session session = sessionRepository.findById(decodedString);
 
             if (session != null) {
-                return ResponseEntity.status(HttpStatus.OK).body(true);
+                MemberDTO loginMember = (MemberDTO) session.getAttribute("member");
+                return ResponseEntity.status(HttpStatus.OK).body(loginMember);
             }
         }
 
-        return ResponseEntity.status(HttpStatus.OK).body(false);
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Not Login");
     }
 
     /**
