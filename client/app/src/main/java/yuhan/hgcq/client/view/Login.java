@@ -32,6 +32,7 @@ import yuhan.hgcq.client.R;
 import yuhan.hgcq.client.config.NetworkClient;
 import yuhan.hgcq.client.controller.MemberController;
 import yuhan.hgcq.client.model.dto.member.LoginForm;
+import yuhan.hgcq.client.model.dto.member.MemberDTO;
 
 public class Login extends AppCompatActivity {
 
@@ -105,15 +106,17 @@ public class Login extends AppCompatActivity {
                 form.setEmail(userEmail);
                 form.setPassword(userPw);
 
-                mc.loginMember(form, new Callback<ResponseBody>() {
+                mc.loginMember(form, new Callback<MemberDTO>() {
                     @Override
-                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                    public void onResponse(Call<MemberDTO> call, Response<MemberDTO> response) {
                         if (response.isSuccessful()) {
+                            client.saveCookie();
+                            MemberDTO loginMember = response.body();
+                            groupMainPage.putExtra("loginMember", loginMember);
                             handler.post(() -> {
                                 Toast.makeText(Login.this, "로그인 성공", Toast.LENGTH_SHORT).show();
                             });
                             Log.i("Login", "Success");
-                            client.saveCookie();
                             startActivity(groupMainPage);
                         } else {
                             handler.post(() -> {
@@ -124,7 +127,7 @@ public class Login extends AppCompatActivity {
                     }
 
                     @Override
-                    public void onFailure(Call<ResponseBody> call, Throwable t) {
+                    public void onFailure(Call<MemberDTO> call, Throwable t) {
                         handler.post(() -> {
                             Toast.makeText(Login.this, "서버와 통신 실패했습니다. 네트워크를 확인해주세요.", Toast.LENGTH_SHORT).show();
                         });
