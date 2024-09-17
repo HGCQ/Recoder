@@ -40,6 +40,7 @@ import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Response;
 import yuhan.hgcq.client.R;
+import yuhan.hgcq.client.adapter.AlbumAdapter;
 import yuhan.hgcq.client.controller.AlbumController;
 import yuhan.hgcq.client.controller.PhotoController;
 import yuhan.hgcq.client.localDatabase.Repository.AlbumRepository;
@@ -54,7 +55,7 @@ public class AlbumMain extends AppCompatActivity {
     /* View */
     ImageButton search, auto, albumPlus, trashAll;
     EditText searchText;
-    RecyclerView albumList;
+    RecyclerView albumlist;
 
     /* 개인, 공유 확인 */
     private boolean isPrivate;
@@ -100,6 +101,7 @@ public class AlbumMain extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         super.onCreate(savedInstanceState);
 
+
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_album_main);
 
@@ -124,9 +126,8 @@ public class AlbumMain extends AppCompatActivity {
         trashAll = findViewById(R.id.trashall);
 
         searchText = findViewById(R.id.searchText);
-
-        albumList = findViewById(R.id.albumList);
-
+        /*어뎁터 연걸*/
+        albumlist = findViewById(R.id.albumList);
         /* 관련된 페이지 */
         Intent createAlbumPage = new Intent(this, CreateAlbum.class);
         Intent albumTrashPage = new Intent(this, AlbumTrash.class);
@@ -149,6 +150,11 @@ public class AlbumMain extends AppCompatActivity {
                 @Override
                 public void onSuccess(List<PAlbumDTO> result) {
                     /* 어뎁터 만들어서 넣기 */
+                    if (result != null) {
+                        AlbumAdapter adapter = new AlbumAdapter(AlbumMain.this, result, false);
+                        albumlist.setAdapter(adapter);
+                        adapter.updatePAlbumList(result);
+                    }
                     Log.i("Found Private AlbumList", "Success");
                 }
 
@@ -159,6 +165,7 @@ public class AlbumMain extends AppCompatActivity {
             });
         }
 
+
         /* 공유 초기 설정 */
         else {
             ac.albumList(teamId, new retrofit2.Callback<List<AlbumDTO>>() {
@@ -167,7 +174,9 @@ public class AlbumMain extends AppCompatActivity {
                     if (response.isSuccessful()) {
                         List<AlbumDTO> albumList = response.body();
                         /* 어뎁터 만들어서 넣기 */
-
+                        AlbumAdapter adapter = new AlbumAdapter(AlbumMain.this, true, albumList);
+                        albumlist.setAdapter(adapter);
+                        adapter.updateAlbumList(albumList);
                         Log.i("Found Shared AlbumList", "Success");
                     } else {
                         Log.i("Found Shared AlbumList", "Fail");
@@ -193,6 +202,8 @@ public class AlbumMain extends AppCompatActivity {
                         @Override
                         public void onSuccess(List<PAlbumDTO> result) {
                             /* 어뎁터 만들어서 넣기 */
+                            AlbumAdapter adapter = new AlbumAdapter(AlbumMain.this, result, true);
+                            albumlist.setAdapter(adapter);
 
                             /* 테스트 용도 */
                             for (PAlbumDTO dto : result) {
@@ -219,6 +230,8 @@ public class AlbumMain extends AppCompatActivity {
                             if (response.isSuccessful()) {
                                 List<AlbumDTO> albumList = response.body();
                                 /* 어뎁터 만들어서 넣기 */
+                                AlbumAdapter adapter = new AlbumAdapter(AlbumMain.this, false, albumList);
+                                albumlist.setAdapter(adapter);
 
                                 Log.i("Found Album By Name", "Success");
                             } else {

@@ -3,7 +3,7 @@ package yuhan.hgcq.client.model.dto.album;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-public class AlbumDTO implements Serializable {
+public class PAlbumDTO implements Serializable {
 
     private Long albumId;
     private Long teamId;
@@ -11,10 +11,10 @@ public class AlbumDTO implements Serializable {
     private LocalDateTime endDate;
     private String name;
 
-    public AlbumDTO() {
+    public PAlbumDTO() {
     }
 
-    public AlbumDTO(Long albumId, Long teamId, LocalDateTime startDate, LocalDateTime endDate, String name) {
+    public PAlbumDTO(Long albumId, Long teamId, LocalDateTime startDate, LocalDateTime endDate, String name) {
         this.albumId = albumId;
         this.teamId = teamId;
         this.startDate = startDate;
