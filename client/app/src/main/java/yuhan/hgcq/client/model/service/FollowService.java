@@ -8,19 +8,26 @@ import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Query;
+import yuhan.hgcq.client.model.dto.follow.FollowDTO;
 import yuhan.hgcq.client.model.dto.member.MemberDTO;
 
 public interface FollowService {
 
     @POST("/follow/add")
-    Call<ResponseBody> addFollow(@Body MemberDTO memberDTO);
+    Call<ResponseBody> addFollow(@Body FollowDTO followDTO);
 
     @POST("/follow/delete")
-    Call<ResponseBody> deleteFollow(@Body MemberDTO memberDTO);
+    Call<ResponseBody> deleteFollow(@Body FollowDTO followDTO);
 
-    @GET("/follow/list")
-    Call<List<MemberDTO>> followList();
+    @GET("/follow/followinglist")
+    Call<List<MemberDTO>> followingList();
 
-    @GET("/follow/search")
-    Call<List<MemberDTO>> searchFollow(@Query("name") String name);
+    @GET("/follow/followinglist/name")
+    Call<List<MemberDTO>> searchFollowingByName(@Query("name") String name);
+
+    @GET("/follow/followerlist")
+    Call<List<MemberDTO>> followerList();
+
+    @GET("/follow/followerlist/name")
+    Call<List<MemberDTO>> searchFollowerByName(@Query("name") String name);
 }

@@ -8,6 +8,7 @@ import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import yuhan.hgcq.client.config.NetworkClient;
+import yuhan.hgcq.client.model.dto.follow.FollowDTO;
 import yuhan.hgcq.client.model.dto.member.MemberDTO;
 import yuhan.hgcq.client.model.service.FollowService;
 
@@ -20,23 +21,33 @@ public class FollowController {
         followService = client.getFollowService();
     }
 
-    public void addFollow(MemberDTO memberDTO, Callback<ResponseBody> callback) {
-        Call<ResponseBody> call = followService.addFollow(memberDTO);
+    public void addFollow(FollowDTO followDTO, Callback<ResponseBody> callback) {
+        Call<ResponseBody> call = followService.addFollow(followDTO);
         call.enqueue(callback);
     }
 
-    public void deleteFollow(MemberDTO memberDTO, Callback<ResponseBody> callback) {
-        Call<ResponseBody> call = followService.deleteFollow(memberDTO);
+    public void deleteFollow(FollowDTO followDTO, Callback<ResponseBody> callback) {
+        Call<ResponseBody> call = followService.deleteFollow(followDTO);
         call.enqueue(callback);
     }
 
-    public void followList(MemberDTO memberDTO, Callback<List<MemberDTO>> callback) {
-        Call<List<MemberDTO>> call = followService.followList();
+    public void followingList(Callback<List<MemberDTO>> callback) {
+        Call<List<MemberDTO>> call = followService.followingList();
         call.enqueue(callback);
     }
 
-    public void searchFollow(String name, Callback<List<MemberDTO>> callback) {
-        Call<List<MemberDTO>> call = followService.searchFollow(name);
+    public void searchFollowingByName(String name, Callback<List<MemberDTO>> callback) {
+        Call<List<MemberDTO>> call = followService.searchFollowingByName(name);
+        call.enqueue(callback);
+    }
+
+    public void followerList(Callback<List<MemberDTO>> callback) {
+        Call<List<MemberDTO>> call = followService.followerList();
+        call.enqueue(callback);
+    }
+
+    public void searchFollowerByName(String name, Callback<List<MemberDTO>> callback) {
+        Call<List<MemberDTO>> call = followService.searchFollowerByName(name);
         call.enqueue(callback);
     }
 }

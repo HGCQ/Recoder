@@ -2,11 +2,14 @@ package yuhan.hgcq.client.controller;
 
 import android.content.Context;
 
+import java.util.List;
+
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import yuhan.hgcq.client.config.NetworkClient;
 import yuhan.hgcq.client.model.dto.member.LoginForm;
+import yuhan.hgcq.client.model.dto.member.MemberDTO;
 import yuhan.hgcq.client.model.dto.member.SignupForm;
 import yuhan.hgcq.client.model.dto.member.MemberUpdateForm;
 import yuhan.hgcq.client.model.service.MemberService;
@@ -25,18 +28,8 @@ public class MemberController {
         call.enqueue(callback);
     }
 
-    public void duplicateName(String name, Callback<Boolean> callback) {
-        Call<Boolean> call = memberService.duplicateName(name);
-        call.enqueue(callback);
-    }
-
-    public void duplicateEmail(String email, Callback<Boolean> callback) {
-        Call<Boolean> call = memberService.duplicateEmail(email);
-        call.enqueue(callback);
-    }
-
-    public void loginMember(LoginForm loginForm, Callback<ResponseBody> callback) {
-        Call<ResponseBody> call = memberService.loginMember(loginForm);
+    public void loginMember(LoginForm loginForm, Callback<MemberDTO> callback) {
+        Call<MemberDTO> call = memberService.loginMember(loginForm);
         call.enqueue(callback);
     }
 
@@ -45,8 +38,28 @@ public class MemberController {
         call.enqueue(callback);
     }
 
-    public void updateMember(MemberUpdateForm updateForm, Callback<ResponseBody> callback) {
-        Call<ResponseBody> call = memberService.updateMember(updateForm);
+    public void updateMember(MemberUpdateForm memberUpdateForm, Callback<ResponseBody> callback) {
+        Call<ResponseBody> call = memberService.updateMember(memberUpdateForm);
+        call.enqueue(callback);
+    }
+
+    public void duplicateEmail(String email, Callback<Boolean> callback) {
+        Call<Boolean> call = memberService.duplicateEmail(email);
+        call.enqueue(callback);
+    }
+
+    public void duplicateName(String name, Callback<Boolean> callback) {
+        Call<Boolean> call = memberService.duplicateName(name);
+        call.enqueue(callback);
+    }
+
+    public void memberList(Callback<List<MemberDTO>> callback) {
+        Call<List<MemberDTO>> call = memberService.memberList();
+        call.enqueue(callback);
+    }
+
+    public void isloginMember(Callback<MemberDTO> callback) {
+        Call<MemberDTO> call = memberService.isloginMember();
         call.enqueue(callback);
     }
 
