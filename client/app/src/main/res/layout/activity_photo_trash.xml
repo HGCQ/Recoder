@@ -6,22 +6,9 @@
     android:layout_height="match_parent"
     android:id="@+id/main">
 
-    <Button
-        android:id="@+id/albumtrash"
-        android:layout_width="150dp"
-        android:layout_height="39dp"
-        android:layout_marginTop="40dp"
-        android:background="@drawable/border"
-        android:scaleType="fitCenter"
-        android:text="앨범 휴지통"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.061"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:tint="#234567" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/phototrashList"
+        android:id="@+id/photoTrashList"
         android:layout_width="412dp"
         android:layout_height="520dp"
         android:gravity="center"
