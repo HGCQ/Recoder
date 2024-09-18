@@ -7,17 +7,6 @@
     android:layout_height="match_parent"
     tools:context=".view.AlbumMain">
 
-    <TextView
-        android:layout_width="234dp"
-        android:layout_height="35dp"
-        android:layout_marginTop="140dp"
-        android:text="친구 목록"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.09"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/friendList"
         android:layout_width="412dp"
@@ -44,32 +33,45 @@
     <TextView
         android:layout_width="234dp"
         android:layout_height="35dp"
-        android:layout_marginTop="68dp"
+        android:layout_marginTop="48dp"
+        android:fontFamily="@font/notosans_bold"
         android:text="그룹 이름"
-        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.31"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <EditText
-        android:id="@+id/Groupname"
-        android:layout_width="233dp"
-        android:layout_height="46dp"
-        android:layout_marginTop="84dp"
-        android:gravity="right"
-        android:hint="그룹 이름 입력"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.314"
+        app:layout_constraintHorizontal_bias="0.389"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
+        android:id="@+id/createGroupText"
+        android:layout_width="233dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="84dp"
+        android:background="@drawable/text"
+        android:gravity="center"
+        android:hint="그룹 이름"
+        android:fontFamily="@font/notosans_medium"
+        android:textSize="17dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:layout_width="417dp"
+        android:layout_height="2dp"
+        android:background="#D3D3D3"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.183" />
+
+    <TextView
         android:layout_width="234dp"
         android:layout_height="35dp"
-        android:layout_marginTop="140dp"
+        android:layout_marginTop="136dp"
+        android:fontFamily="@font/notosans_bold"
         android:text="친구 목록"
-        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.09"
         app:layout_constraintStart_toStartOf="parent"
@@ -80,14 +82,15 @@
         android:layout_width="244dp"
         android:layout_height="44dp"
         android:layout_marginTop="644dp"
-        android:background="@drawable/border"
+        android:background="@drawable/text"
         android:onClick="onClick_setting_costume_save"
         android:scaleType="fitCenter"
         android:text="그룹방 나가기"
+        android:fontFamily="@font/notosans_bold"
+        android:textColor="@color/colorRed"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:tint="#234567" />
-        
 </androidx.constraintlayout.widget.ConstraintLayout>

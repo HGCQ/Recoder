@@ -7,27 +7,55 @@
     android:layout_height="match_parent"
     tools:context=".view.Loading">
 
+    <View
+        android:layout_width="181dp"
+        android:layout_height="261dp"
+        android:background="@drawable/round"
+        android:elevation="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.069"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.551" />
+
+    <View
+        android:layout_width="181dp"
+        android:layout_height="261dp"
+        android:background="@drawable/round"
+        android:elevation="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.93"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.551" />
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:fontFamily="@font/notosans_bold"
         android:text="RECODER"
+        android:textColor="@color/black"
         android:textSize="40dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.169" />
+        app:layout_constraintVertical_bias="0.129" />
 
     <View
         android:layout_width="2dp"
-        android:layout_height="300dp"
+        android:layout_height="350dp"
         android:background="#D3D3D3"
+        android:elevation="10dp"
+        android:outlineProvider="none"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.538" />
+        app:layout_constraintVertical_bias="0.572" />
 
     <ImageButton
         android:id="@+id/privated"
@@ -36,6 +64,7 @@
         android:background="#00000000"
         android:scaleType="fitCenter"
         android:src="@drawable/privated"
+        android:elevation="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.103"
@@ -48,6 +77,8 @@
         android:layout_height="wrap_content"
         android:text="개인"
         android:textSize="20dp"
+        android:elevation="10dp"
+        android:fontFamily="@font/notosans_medium"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.223"
@@ -62,6 +93,7 @@
         android:background="#00000000"
         android:scaleType="fitCenter"
         android:src="@drawable/share"
+        android:elevation="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.892"
@@ -74,6 +106,8 @@
         android:layout_height="wrap_content"
         android:text="공유"
         android:textSize="20dp"
+        android:fontFamily="@font/notosans_medium"
+        android:elevation="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.764"

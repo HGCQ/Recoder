@@ -26,6 +26,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:text="Recorder"
+                android:fontFamily="@font/notosans_bold"
                 android:textSize="40sp"
                 android:textStyle="bold" />
 
@@ -43,6 +44,7 @@
                 android:layout_gravity="center"
                 android:layout_marginTop="40dp"
                 android:layout_marginRight="80dp"
+                android:fontFamily="@font/notosans_medium"
                 android:text="이메일" />
 
             <EditText
@@ -53,7 +55,7 @@
                 android:textSize="15dp"
                 android:hint="email@domain.com"
                 android:inputType="textEmailAddress"
-
+                android:fontFamily="@font/notosans_medium"
                 android:maxLength="20" />
 
             <TextView
@@ -62,7 +64,8 @@
                 android:layout_gravity="center"
                 android:layout_marginTop="40dp"
                 android:layout_marginRight="73dp"
-                android:text="비밀번호" />
+                android:text="비밀번호"
+                android:fontFamily="@font/notosans_medium"/>
 
             <EditText
                 android:id="@+id/password"
@@ -71,6 +74,7 @@
                 android:layout_gravity="center"
                 android:hint="password"
                 android:textSize="15dp"
+                android:fontFamily="@font/notosans_medium"
                 android:inputType="textPassword"
                 android:maxLength="20" />
 
@@ -98,6 +102,7 @@
                     android:id="@+id/JButtonText"
                     android:layout_width="30dp"
                     android:layout_height="25dp"
+                    android:fontFamily="@font/notosans_regular"
                     android:layout_alignParentStart="true"
                     android:layout_alignParentTop="true"
                     android:layout_marginStart="143dp"
@@ -125,6 +130,7 @@
                     android:layout_marginStart="39dp"
                     android:layout_marginTop="55dp"
                     android:text="Login"
+                    android:fontFamily="@font/notosans_regular"
                     android:textSize="12dp" />
 
                 <TextView
@@ -141,14 +147,15 @@
             </RelativeLayout>
 
             <Button
-                android:layout_width="250dp"
-                android:layout_height="40dp"
+                android:layout_width="237dp"
+                android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
                 android:layout_alignParentTop="true"
                 android:layout_gravity="center"
                 android:layout_marginTop="-20dp"
-                android:background="#F6F6F6"
-                android:shadowColor="#F6F6F6"
+                android:textColor="@color/colorRed"
+                android:background="#00000"
+                android:fontFamily="@font/notosans_medium"
                 android:text="비밀번호를 잊어버리셨나요?" />
         </LinearLayout>
 
