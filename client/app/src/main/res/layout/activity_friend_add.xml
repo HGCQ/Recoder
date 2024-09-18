@@ -28,7 +28,7 @@
         android:gravity="center"
         android:text="비어있음"
         android:textSize="18dp"
-        android:textStyle="bold"
+        android:fontFamily="@font/notosans_bold"
         android:visibility="invisible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
@@ -43,6 +43,7 @@
         android:background="@drawable/border"
         android:scaleType="fitCenter"
         android:text="팔로워"
+        android:fontFamily="@font/notosans_bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.009"
         app:layout_constraintStart_toStartOf="parent"
@@ -56,10 +57,22 @@
         android:layout_marginTop="32dp"
         android:background="@drawable/border"
         android:text="팔로잉"
+        android:fontFamily="@font/notosans_bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:layout_width="417dp"
+        android:layout_height="2dp"
+        android:background="#D3D3D3"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.105" />
 
     <Button
         android:id="@+id/save"
@@ -68,7 +81,7 @@
         android:layout_marginTop="612dp"
         android:background="@drawable/border"
         android:hint="추가"
-        android:textStyle="bold"
+        android:fontFamily="@font/notosans_bold"
         android:onClick="onClick_setting_costume_save"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
