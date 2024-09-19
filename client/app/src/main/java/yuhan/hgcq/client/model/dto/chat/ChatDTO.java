@@ -1,7 +1,6 @@
 package yuhan.hgcq.client.model.dto.chat;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
 
 public class ChatDTO implements Serializable {
 
@@ -9,12 +8,12 @@ public class ChatDTO implements Serializable {
     private Long writerId;
     private String writerName;
     private String message;
-    private LocalDateTime time;
+    private String time;
 
     public ChatDTO() {
     }
 
-    public ChatDTO(Long chatId, Long writerId, String writerName, String message, LocalDateTime time) {
+    public ChatDTO(Long chatId, Long writerId, String writerName, String message, String time) {
         this.chatId = chatId;
         this.writerId = writerId;
         this.writerName = writerName;
@@ -54,11 +53,11 @@ public class ChatDTO implements Serializable {
         this.message = message;
     }
 
-    public LocalDateTime getTime() {
+    public String getTime() {
         return time;
     }
 
-    public void setTime(LocalDateTime time) {
+    public void setTime(String time) {
         this.time = time;
     }
 
