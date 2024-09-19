@@ -72,7 +72,7 @@ public class Select extends AppCompatActivity {
         share.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mc.isLogin(new Callback<MemberDTO>() {
+                mc.isloginMember(new Callback<MemberDTO>() {
                     @Override
                     public void onResponse(Call<MemberDTO> call, Response<MemberDTO> response) {
                         if (response.isSuccessful()) {
