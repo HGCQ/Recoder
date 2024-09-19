@@ -1,8 +1,9 @@
 package yuhan.hgcq.client.localDatabase.dto;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
-public class PPhotoDTO {
+public class PPhotoDTO implements Serializable {
     private Long photoId;
     private String path;
     private Long albumId;

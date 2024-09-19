@@ -1,19 +1,18 @@
 package yuhan.hgcq.client.model.dto.album;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
 
 public class AlbumCreateForm implements Serializable {
 
     private Long teamId;
     private String name;
-    private LocalDateTime startTime;
-    private LocalDateTime endTime;
+    private String startTime;
+    private String endTime;
 
     public AlbumCreateForm() {
     }
 
-    public AlbumCreateForm(Long teamId, String name, LocalDateTime startTime, LocalDateTime endTime) {
+    public AlbumCreateForm(Long teamId, String name, String startTime, String endTime) {
         this.teamId = teamId;
         this.name = name;
         this.startTime = startTime;
@@ -36,19 +35,19 @@ public class AlbumCreateForm implements Serializable {
         this.name = name;
     }
 
-    public LocalDateTime getStartTime() {
+    public String getStartTime() {
         return startTime;
     }
 
-    public void setStartTime(LocalDateTime startTime) {
+    public void setStartTime(String startTime) {
         this.startTime = startTime;
     }
 
-    public LocalDateTime getEndTime() {
+    public String getEndTime() {
         return endTime;
     }
 
-    public void setEndTime(LocalDateTime endTime) {
+    public void setEndTime(String endTime) {
         this.endTime = endTime;
     }
 

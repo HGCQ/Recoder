@@ -1,8 +1,9 @@
 package yuhan.hgcq.client.localDatabase.dto;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
-public class PAlbumDTO {
+public class PAlbumDTO implements Serializable {
     private Long albumId;
     private LocalDateTime startDate;
     private LocalDateTime endDate;

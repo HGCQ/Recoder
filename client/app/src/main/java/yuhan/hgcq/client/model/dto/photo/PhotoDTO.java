@@ -1,7 +1,6 @@
 package yuhan.hgcq.client.model.dto.photo;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
 
 public class PhotoDTO implements Serializable {
 
@@ -9,12 +8,12 @@ public class PhotoDTO implements Serializable {
     private Long albumId;
     private String name;
     private String path;
-    private LocalDateTime created;
+    private String created;
 
     public PhotoDTO() {
     }
 
-    public PhotoDTO(Long photoId, Long albumId, String name, String path, LocalDateTime created) {
+    public PhotoDTO(Long photoId, Long albumId, String name, String path, String created) {
         this.photoId = photoId;
         this.albumId = albumId;
         this.name = name;
@@ -54,11 +53,11 @@ public class PhotoDTO implements Serializable {
         this.path = path;
     }
 
-    public LocalDateTime getCreated() {
+    public String getCreated() {
         return created;
     }
 
-    public void setCreated(LocalDateTime created) {
+    public void setCreated(String created) {
         this.created = created;
     }
 
