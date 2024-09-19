@@ -11,7 +11,6 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@ToString
 public class Chat {
     @Id @GeneratedValue
     @Column(name = "chat_id")
@@ -46,5 +45,16 @@ public class Chat {
         this.message = message;
         this.album = album;
         this.time = LocalDateTime.now();
+    }
+
+    @Override
+    public String toString() {
+        return "Chat{" +
+                "id=" + id +
+                ", album=" + album +
+                ", writer=" + writer +
+                ", message='" + message + '\'' +
+                ", time=" + time +
+                '}';
     }
 }

@@ -44,4 +44,12 @@ public class Follow {
         this.memberId = member.getId();
         this.followId = follow.getId();
     }
+
+    @Override
+    public String toString() {
+        return "Follow{" +
+                "memberId=" + memberId +
+                ", followId=" + followId +
+                '}';
+    }
 }

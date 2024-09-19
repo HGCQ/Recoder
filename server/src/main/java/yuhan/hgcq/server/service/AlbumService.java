@@ -12,6 +12,7 @@ import yuhan.hgcq.server.domain.Team;
 import yuhan.hgcq.server.repository.AlbumRepository;
 import yuhan.hgcq.server.repository.TeamMemberRepository;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -137,7 +138,7 @@ public class AlbumService {
     public void trash(List<Album> albums) {
         LocalDateTime now = LocalDateTime.now();
         for (Album album : albums) {
-            LocalDateTime deletedAt = album.getDeletedAt();
+            LocalDate deletedAt = album.getDeletedAt();
             long between = ChronoUnit.DAYS.between(deletedAt, now);
 
             if (between >= DELETE_DAY) {

@@ -4,7 +4,6 @@ import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter @Setter
@@ -13,5 +12,5 @@ import java.util.List;
 public class UploadPhotoForm implements Serializable {
     private Long albumId;
     private List<MultipartFile> files;
-    private List<LocalDateTime> creates;
+    private List<String> creates;
 }

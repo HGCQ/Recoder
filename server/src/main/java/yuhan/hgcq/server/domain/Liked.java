@@ -9,7 +9,6 @@ import lombok.ToString;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@ToString
 public class Liked {
     @Id
     @Column(name = "member_id")
@@ -46,5 +45,14 @@ public class Liked {
 
     public void addLiked() {
         this.isLiked = true;
+    }
+
+    @Override
+    public String toString() {
+        return "Liked{" +
+                "memberId=" + memberId +
+                ", photoId=" + photoId +
+                ", isLiked=" + isLiked +
+                '}';
     }
 }

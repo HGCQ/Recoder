@@ -7,24 +7,22 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@ToString
 public class Album {
     @Id @GeneratedValue
     @Column(name = "album_id")
     private Long id;
 
-    private LocalDateTime startDate;
-    private LocalDateTime endDate;
+    private LocalDate startDate;
+    private LocalDate endDate;
     private String name;
     private Boolean isDeleted;
-    private LocalDateTime deletedAt;
+    private LocalDate deletedAt;
 
     @OneToMany(mappedBy = "album", cascade = CascadeType.ALL)
     private List<Chat> chats = new ArrayList<>();
@@ -44,7 +42,7 @@ public class Album {
         }
     }
 
-    public Album(Team team, LocalDateTime startDate, LocalDateTime endDate, String name) {
+    public Album(Team team, LocalDate startDate, LocalDate endDate, String name) {
         if (team == null) {
             throw new IllegalStateException("Team cannot be null");
         }
@@ -59,18 +57,18 @@ public class Album {
         this.name = name;
     }
 
-    public void changeStartDate(LocalDateTime startDate) {
+    public void changeStartDate(LocalDate startDate) {
         this.startDate = startDate;
     }
 
-    public void changeEndDate(LocalDateTime endDate) {
+    public void changeEndDate(LocalDate endDate) {
         this.endDate = endDate;
     }
 
     public void deleteAlbum() {
         isDeleted = true;
 
-        deletedAt = LocalDateTime.now();
+        deletedAt = LocalDate.now();
     }
 
     public void cancelDeleteAlbum() {
@@ -80,8 +78,20 @@ public class Album {
     }
 
     /* 테스트용(추후 삭제) */
-    public void test(LocalDateTime date) {
+    public void test(LocalDate date) {
         isDeleted = true;
         deletedAt = date;
+    }
+
+    @Override
+    public String toString() {
+        return "Album{" +
+                "id=" + id +
+                ", startDate=" + startDate +
+                ", endDate=" + endDate +
+                ", name='" + name + '\'' +
+                ", isDeleted=" + isDeleted +
+                ", deletedAt=" + deletedAt +
+                '}';
     }
 }

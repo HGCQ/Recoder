@@ -11,7 +11,6 @@ import yuhan.hgcq.server.domain.id.TeamMemberId;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @IdClass(TeamMemberId.class)
-@ToString
 public class TeamMember {
     @Id
     @Column(name = "team_id")
@@ -48,5 +47,14 @@ public class TeamMember {
 
     public void revokeAdmin() {
         this.isAdmin = false;
+    }
+
+    @Override
+    public String toString() {
+        return "TeamMember{" +
+                "teamId=" + teamId +
+                ", memberId=" + memberId +
+                ", isAdmin=" + isAdmin +
+                '}';
     }
 }

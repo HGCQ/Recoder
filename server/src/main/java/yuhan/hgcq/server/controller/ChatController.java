@@ -174,7 +174,7 @@ public class ChatController {
         ChatDTO dto = new ChatDTO();
         dto.setChatId(chat.getId());
         dto.setMessage(chat.getMessage());
-        dto.setTime(chat.getTime());
+        dto.setTime(chat.getTime().toString());
         dto.setWriterId(chat.getWriter().getId());
         dto.setWriterName(chat.getWriter().getName());
         return dto;
