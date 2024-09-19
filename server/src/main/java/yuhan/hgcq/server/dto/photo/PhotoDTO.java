@@ -3,7 +3,6 @@ package yuhan.hgcq.server.dto.photo;
 import lombok.*;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
 
 @Getter @Setter
 @NoArgsConstructor
@@ -14,5 +13,5 @@ public class PhotoDTO implements Serializable {
     private Long albumId;
     private String name;
     private String path;
-    private LocalDateTime created;
+    private String created;
 }

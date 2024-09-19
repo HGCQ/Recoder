@@ -18,7 +18,7 @@ import yuhan.hgcq.server.service.AlbumService;
 import yuhan.hgcq.server.service.MemberService;
 import yuhan.hgcq.server.service.TeamService;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,7 +54,7 @@ public class AlbumController {
                             Team ft = ts.search(albumCreateForm.getTeamId());
 
                             if (ft != null) {
-                                Album newAlbum = new Album(ft, albumCreateForm.getStartTime(), albumCreateForm.getEndTime(), albumCreateForm.getName());
+                                Album newAlbum = new Album(ft, LocalDate.parse(albumCreateForm.getStartTime()), LocalDate.parse(albumCreateForm.getEndTime()), albumCreateForm.getName());
 
                                 try {
                                     as.create(findMember, newAlbum);
@@ -192,8 +192,8 @@ public class AlbumController {
 
                             if (fa != null) {
                                 String updateName = albumUpdateForm.getName();
-                                LocalDateTime updateStartDate = albumUpdateForm.getStartDate();
-                                LocalDateTime updateEndDate = albumUpdateForm.getEndDate();
+                                LocalDate updateStartDate = LocalDate.parse(albumUpdateForm.getStartDate());
+                                LocalDate updateEndDate = LocalDate.parse(albumUpdateForm.getEndDate());
 
                                 if (updateName != null) {
                                     fa.changeName(updateName);
@@ -397,8 +397,8 @@ public class AlbumController {
         AlbumDTO dto = new AlbumDTO();
         dto.setAlbumId(album.getId());
         dto.setName(album.getName());
-        dto.setStartDate(album.getStartDate());
-        dto.setEndDate(album.getEndDate());
+        dto.setStartDate(album.getStartDate().toString());
+        dto.setEndDate(album.getEndDate().toString());
         dto.setTeamId(album.getTeam().getId());
         return dto;
     }

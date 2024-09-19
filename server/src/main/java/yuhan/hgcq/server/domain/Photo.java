@@ -11,7 +11,6 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@ToString
 public class Photo {
     @Id @GeneratedValue
     @Column(name = "photo_id")
@@ -66,5 +65,17 @@ public class Photo {
     /* 테스트 코드(나중에 삭제) */
     public void test(LocalDateTime date) {
         deleted = date;
+    }
+
+    @Override
+    public String toString() {
+        return "Photo{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", path='" + path + '\'' +
+                ", created=" + created +
+                ", isDeleted=" + isDeleted +
+                ", deleted=" + deleted +
+                '}';
     }
 }

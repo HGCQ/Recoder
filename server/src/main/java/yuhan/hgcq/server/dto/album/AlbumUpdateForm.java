@@ -3,7 +3,6 @@ package yuhan.hgcq.server.dto.album;
 import lombok.*;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
 
 @Getter @Setter
 @NoArgsConstructor
@@ -11,7 +10,7 @@ import java.time.LocalDateTime;
 @ToString
 public class AlbumUpdateForm implements Serializable {
     private Long albumId;
-    private LocalDateTime startDate;
-    private LocalDateTime endDate;
+    private String startDate;
+    private String endDate;
     private String name;
 }

@@ -367,7 +367,7 @@ public class PhotoController {
         PhotoDTO dto = new PhotoDTO();
         dto.setPhotoId(photo.getId());
         dto.setAlbumId(photo.getAlbum().getId());
-        dto.setCreated(photo.getCreated());
+        dto.setCreated(photo.getCreated().toString());
         dto.setName(photo.getName());
         dto.setPath(photo.getPath());
         return dto;

@@ -19,9 +19,9 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -71,7 +71,7 @@ public class PhotoService {
     @Transactional
     public void save(UploadPhotoForm form) throws IOException, IllegalArgumentException {
         List<MultipartFile> files = form.getFiles();
-        List<LocalDateTime> creates = form.getCreates();
+        List<String> creates = form.getCreates();
 
         ensureNotNull(files, "Files");
         ensureNotNull(creates, "Creates");
@@ -95,7 +95,7 @@ public class PhotoService {
                 file.transferTo(path);
                 String imagePath = "/images/" + albumId + "/" + name;
 
-                Photo p = new Photo(fa, name, imagePath, creates.get(i));
+                Photo p = new Photo(fa, name, imagePath, LocalDateTime.parse(creates.get(i)));
                 pr.save(p);
 
                 log.info("Save Photos : {}", p);
@@ -224,18 +224,18 @@ public class PhotoService {
 
         List<Album> albumList = ar.findAll(ft);
         List<MultipartFile> files = form.getFiles();
-        List<LocalDateTime> creates = form.getCreates();
+        List<String> creates = form.getCreates();
 
         int size = files.size();
 
         for (int i = 0; i < size; i++) {
-            LocalDateTime photoTime = creates.get(i);
+            LocalDateTime photoTime = LocalDateTime.parse(creates.get(i));
 
             for (Album album : albumList) {
-                LocalDateTime startDate = album.getStartDate();
-                LocalDateTime endDate = album.getEndDate();
+                LocalDate startDate = album.getStartDate();
+                LocalDate endDate = album.getEndDate();
 
-                if (photoTime.isAfter(startDate) && photoTime.isBefore(endDate)) {
+                if (photoTime.isAfter(startDate.atStartOfDay()) && photoTime.isBefore(endDate.atStartOfDay())) {
                     Long albumId = album.getId();
 
                     try {
@@ -252,7 +252,7 @@ public class PhotoService {
                         file.transferTo(path);
                         String imagePath = "/images/" + albumId + "/" + name;
 
-                        Photo p = new Photo(album, name, imagePath, creates.get(i));
+                        Photo p = new Photo(album, name, imagePath, LocalDateTime.parse(creates.get(i)));
                         pr.save(p);
 
                         log.info("Save Photo : {}", p);
