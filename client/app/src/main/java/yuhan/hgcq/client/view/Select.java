@@ -2,11 +2,8 @@ package yuhan.hgcq.client.view;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.view.View;
 import android.widget.ImageButton;
-import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -29,13 +26,12 @@ public class Select extends AppCompatActivity {
     /* 서버와 통신 */
     MemberController mc;
 
-    /* Toast */
-    Handler handler = new Handler(Looper.getMainLooper());
+    /* 받아올 값 */
+    MemberDTO loginMember;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         getSupportActionBar().setTitle("Recoder");
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         super.onCreate(savedInstanceState);
 
         EdgeToEdge.enable(this);
@@ -59,11 +55,30 @@ public class Select extends AppCompatActivity {
         Intent albumMainPage = new Intent(this, AlbumMain.class);
         Intent groupMainPage = new Intent(this, GroupMain.class);
 
+        /* 초기 설정 */
+        mc.isloginMember(new Callback<MemberDTO>() {
+            @Override
+            public void onResponse(Call<MemberDTO> call, Response<MemberDTO> response) {
+                if (response.isSuccessful()) {
+                    loginMember = response.body();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<MemberDTO> call, Throwable t) {
+
+            }
+        });
+
+
         /* 개인 버튼 눌림 */
         privated.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 albumMainPage.putExtra("isPrivate", true);
+                if (loginMember != null) {
+                    albumMainPage.putExtra("loginMember", loginMember);
+                }
                 startActivity(albumMainPage);
             }
         });
@@ -72,25 +87,12 @@ public class Select extends AppCompatActivity {
         share.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mc.isloginMember(new Callback<MemberDTO>() {
-                    @Override
-                    public void onResponse(Call<MemberDTO> call, Response<MemberDTO> response) {
-                        if (response.isSuccessful()) {
-                            MemberDTO loginMember = response.body();
-                            groupMainPage.putExtra("loginMember", loginMember);
-                            startActivity(groupMainPage);
-                        } else {
-                            startActivity(loginPage);
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<MemberDTO> call, Throwable t) {
-                        handler.post(() -> {
-                            Toast.makeText(Select.this, "서버와 통신 실패했습니다. 네트워크를 확인해주세요.", Toast.LENGTH_SHORT).show();
-                        });
-                    }
-                });
+                if (loginMember != null) {
+                    groupMainPage.putExtra("loginMember", loginMember);
+                    startActivity(groupMainPage);
+                } else {
+                    startActivity(loginPage);
+                }
             }
         });
     }
