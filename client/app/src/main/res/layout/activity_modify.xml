@@ -5,169 +5,150 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".view.AlbumMain">
+    tools:context=".view.Join">
 
-    <View
-        android:layout_width="417dp"
-        android:layout_height="282dp"
-        android:background="#F0F8FF"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.498" />
-
-    <TextView
-        android:layout_width="100dp"
-        android:layout_height="30dp"
-        android:background="#00000000"
-        android:scaleType="fitCenter"
-        android:src="@drawable/profile"
-        android:text="이름"
-        android:fontFamily="@font/notosans_bold"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.118"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.368"
-        app:tint="#234567" />
 
     <EditText
         android:id="@+id/name"
-        android:layout_width="329dp"
-        android:layout_height="45dp"
-        android:layout_marginTop="288dp"
-        android:background="@drawable/text"
+        android:layout_width="310dp"
+        android:layout_height="48dp"
+        android:background="@android:drawable/editbox_background"
+        android:hint="특수문자 제외 8자 이하"
+        android:inputType="text"
+        android:maxLength="8"
+        android:textSize="15dp"
         android:fontFamily="@font/notosans_medium"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.451"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <View
-        android:layout_width="417dp"
-        android:layout_height="2dp"
-        android:background="#D3D3D3"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.228"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.307" />
-
-    <View
-        android:layout_width="417dp"
-        android:layout_height="2dp"
-        android:background="#D3D3D3"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.694" />
-
-    <TextView
-        android:layout_width="100dp"
-        android:layout_height="30dp"
-        android:background="#00000000"
-        android:scaleType="fitCenter"
-        android:src="@drawable/profile"
-        android:text="이메일"
-        android:fontFamily="@font/notosans_bold"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.118"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.499"
-        app:tint="#234567" />
-
-    <EditText
-        android:id="@+id/email"
-        android:layout_width="329dp"
-        android:layout_height="45dp"
-        android:layout_marginTop="380dp"
-        android:background="@drawable/text"
-        android:fontFamily="@font/notosans_medium"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.451"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <ImageView
-        android:id="@+id/profile"
-        android:layout_width="148dp"
-        android:layout_height="128dp"
-        android:background="#00000000"
-        android:scaleType="fitCenter"
-        android:src="@drawable/profile"
-        android:foregroundGravity="center"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.121" />
+        app:layout_constraintVertical_bias="0.356" />
 
     <ImageButton
-        android:id="@+id/profileadd"
-        android:layout_width="31dp"
-        android:layout_height="36dp"
-        android:background="#00000000"
+        android:id="@+id/join"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
         android:scaleType="fitCenter"
-        android:src="@drawable/profileadd"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.673"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.237"/>
-    <Button
-        android:id="@+id/save"
-        android:layout_width="200dp"
-        android:layout_height="50dp"
         android:background="#00000000"
-        android:scaleType="fitCenter"
-        android:text="저장"
-        android:textColor="@color/black"
-        android:fontFamily="@font/notosans_bold"
+        android:src="@drawable/saveicon"
         android:onClick="onClick_setting_costume_save"
+        app:tint="#234567"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.784"
-        app:tint="#234567" />
+        app:layout_constraintVertical_bias="1" />
 
-    <Button
-        android:id="@+id/cancel"
-        android:layout_width="200dp"
-        android:layout_height="50dp"
+
+    <EditText
+        android:id="@+id/password"
+        android:layout_width="360dp"
+        android:layout_height="48dp"
+        android:background="@android:drawable/editbox_background"
+        android:fontFamily="@font/notosans_medium"
+        android:hint="문자, 숫자, 특수문자 포함 8~20자"
+        android:inputType="textPassword"
+        android:maxLength="20"
+        android:textSize="15dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.45"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.48" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="비밀번호"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.083"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.432" />
+
+    <EditText
+        android:id="@+id/passwordCheck"
+        android:layout_width="360dp"
+        android:layout_height="48dp"
+        android:background="@android:drawable/editbox_background"
+        android:ems="9"
+        android:fontFamily="@font/notosans_medium"
+        android:importantForAccessibility="no"
+        android:inputType="textPassword"
+        android:maxLength="20"
+        android:textSize="15dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.45"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.597" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="비밀번호 확인"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.09"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.545" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="닉네임"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.079"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.317" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="Recorder"
+        android:textSize="35sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.511"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.097" />
+
+    <ImageButton
+        android:id="@+id/nameCheck"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
         android:background="#00000000"
         android:scaleType="fitCenter"
-        android:text="취소"
-        android:textColor="@color/black"
-        android:fontFamily="@font/notosans_bold"
-        android:onClick="onClick_setting_costume_cancel"
+        android:src="@drawable/saveicon"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.94"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.856"
+        app:layout_constraintVertical_bias="0.351"
         app:tint="#234567" />
 
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottom_navigation_view"
-        android:layout_width="410dp"
-        android:layout_height="85dp"
-        app:itemIconTint="#2196F3"
-        app:itemTextColor="@color/black"
-        app:labelVisibilityMode="labeled"
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Check"
+        android:textSize="12dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.938"
         app:layout_constraintStart_toStartOf="parent"
-        app:menu="@menu/menu_bottom_nav" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.389" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

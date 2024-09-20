@@ -9,8 +9,8 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/friendList"
-        android:layout_width="410dp"
-        android:layout_height="523dp"
+        android:layout_width="412dp"
+        android:layout_height="489dp"
         android:gravity="center"
         android:padding="17dp"
         app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
@@ -20,6 +20,32 @@
         app:layout_constraintVertical_bias="0.591"
         app:spanCount="1" />
 
+    <EditText
+        android:id="@+id/searchText"
+        android:layout_width="234dp"
+        android:layout_height="35dp"
+        android:layout_marginTop="88dp"
+        android:background="@drawable/text"
+        android:fontFamily="@font/notosans_medium"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.401"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageButton
+        android:id="@+id/search"
+        android:layout_width="42dp"
+        android:layout_height="35dp"
+        android:layout_marginTop="88dp"
+        android:background="@drawable/text"
+        android:scaleType="fitCenter"
+        android:src="@drawable/search"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.826"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="#234567" />
+
     <TextView
         android:id="@+id/empty"
         android:layout_width="200dp"
@@ -27,7 +53,7 @@
         android:layout_marginTop="284dp"
         android:gravity="center"
         android:text="비어있음"
-        android:fontFamily="@font/notosans_bold"
+        android:fontFamily="@font/notosans_medium"
         android:textSize="18dp"
         android:textStyle="bold"
         android:visibility="invisible"
@@ -39,48 +65,51 @@
     <Button
         android:id="@+id/follower"
         android:layout_width="204dp"
-        android:layout_height="41dp"
-        android:layout_marginTop="72dp"
+        android:layout_height="54dp"
+        android:layout_marginTop="16dp"
         android:background="@drawable/border"
+        android:fontFamily="@font/notosans_bold"
         android:scaleType="fitCenter"
         android:text="팔로워"
-        android:fontFamily="@font/notosans_bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:tint="#234567" />
 
-    <Button
-        android:id="@+id/following"
-        android:layout_width="208dp"
-        android:layout_height="41dp"
-        android:layout_marginTop="72dp"
-        android:background="@drawable/border"
-        android:text="팔로잉"
-        android:fontFamily="@font/notosans_bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-    <View
-        android:layout_width="417dp"
-        android:layout_height="2dp"
-        android:background="#D3D3D3"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.160" />
     <FrameLayout
         android:id="@+id/main_container"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@+id/bottom_navigation_view"
         app:layout_constraintEnd_toEndOf="@+id/bottom_navigation_view"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <Button
+        android:id="@+id/following"
+        android:layout_width="207dp"
+        android:layout_height="54dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/border"
+        android:fontFamily="@font/notosans_bold"
+        android:text="팔로잉"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:layout_width="417dp"
+        android:layout_height="2dp"
+        android:background="#D3D3D3"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.193" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation_view"

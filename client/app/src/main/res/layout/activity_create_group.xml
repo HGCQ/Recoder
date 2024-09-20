@@ -22,7 +22,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:tint="#234567" />
     <EditText
-        android:id="@+id/createGroupText"
+        android:id="@+id/GroupText"
         android:layout_width="380dp"
         android:layout_height="45dp"
         android:layout_marginTop="84dp"
@@ -126,15 +126,14 @@
         android:id="@+id/createGroupList"
         android:layout_width="391dp"
         android:layout_height="354dp"
-        android:layout_marginEnd="4dp"
+        android:layout_marginEnd="16dp"
         android:gravity="center"
         android:padding="17dp"
         app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.716"
-        app:spanCount="2" />
-
+        app:layout_constraintVertical_bias="0.737"
+        app:spanCount="1" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

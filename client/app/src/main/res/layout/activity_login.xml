@@ -154,7 +154,7 @@
                 android:layout_gravity="center"
                 android:layout_marginTop="-20dp"
                 android:textColor="@color/colorRed"
-                android:background="#00000"
+                android:background="#000000"
                 android:fontFamily="@font/notosans_medium"
                 android:text="비밀번호를 잊어버리셨나요?" />
         </LinearLayout>

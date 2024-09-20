@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:id="@+id/main">
 
-    <FrameLayout
+   <FrameLayout
         android:id="@+id/main_container"
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -15,7 +15,23 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
 
-    <com.google.android.material.bottomnavigation.BottomNavigationView
+ <androidx.recyclerview.widget.RecyclerView
+     android:id="@+id/albumList"
+     android:layout_width="350dp"
+     android:layout_height="410dp"
+     android:layout_marginEnd="32dp"
+     android:background="@drawable/text"
+     android:gravity="center"
+     android:padding="17dp"
+     android:visibility="invisible"
+     app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+     app:layout_constraintBottom_toBottomOf="parent"
+     app:layout_constraintEnd_toEndOf="parent"
+     app:layout_constraintTop_toTopOf="parent"
+     app:layout_constraintVertical_bias="0.408"
+     app:spanCount="2" />
+
+ <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation_view"
         android:layout_width="410dp"
         android:layout_height="85dp"
@@ -28,7 +44,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:menu="@menu/menu_bottom_nav" />
 
-    <androidx.viewpager2.widget.ViewPager2
+   <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/viewPager"
         android:layout_width="325dp"
         android:layout_height="500dp"
@@ -93,4 +109,5 @@
         app:layout_constraintHorizontal_bias="0.803"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
