@@ -16,10 +16,10 @@
         android:src="@drawable/calendar"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.96"
+        app:layout_constraintHorizontal_bias="0.957"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.563" />
+        app:layout_constraintVertical_bias="0.291" />
 
     <View
         android:layout_width="417dp"
@@ -27,15 +27,14 @@
         android:background="#D3D3D3"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.422" />
+        app:layout_constraintVertical_bias="0.187" />
 
     <TextView
         android:layout_width="100dp"
         android:layout_height="30dp"
-        android:layout_marginTop="184dp"
+        android:layout_marginTop="32dp"
         android:background="#00000000"
         android:scaleType="fitCenter"
         android:src="@drawable/profile"
@@ -48,23 +47,23 @@
         app:tint="#234567" />
 
     <EditText
-        android:id="@+id/createAlbumText"
+        android:id="@+id/AlbumText"
         android:layout_width="380dp"
         android:layout_height="45dp"
-        android:layout_marginTop="224dp"
+        android:layout_marginTop="76dp"
         android:background="@drawable/text"
         android:fontFamily="@font/notosans_medium"
         android:gravity="center"
         android:hint="앨범 이름을 입력해주세요."
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.516"
+        app:layout_constraintHorizontal_bias="0.483"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:layout_width="100dp"
         android:layout_height="30dp"
-        android:layout_marginTop="348dp"
+        android:layout_marginTop="156dp"
         android:background="#00000000"
         android:scaleType="fitCenter"
         android:src="@drawable/profile"
@@ -76,24 +75,24 @@
         app:layout_constraintTop_toTopOf="parent"
         app:tint="#234567" />
 
-    <EditText
+    <TextView
         android:id="@+id/startDate"
         android:layout_width="141dp"
         android:layout_height="45dp"
-        android:layout_marginTop="388dp"
+        android:layout_marginTop="200dp"
         android:background="@drawable/text"
         android:fontFamily="@font/notosans_medium"
         android:gravity="center"
         android:hint="시작 날짜"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.059"
+        app:layout_constraintHorizontal_bias="0.055"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:layout_width="50dp"
         android:layout_height="30dp"
-        android:layout_marginTop="392dp"
+        android:layout_marginTop="208dp"
         android:background="#00000000"
         android:gravity="center"
         android:scaleType="fitCenter"
@@ -102,24 +101,35 @@
         android:textSize="25sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.437"
+        app:layout_constraintHorizontal_bias="0.432"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:tint="#234567" />
 
-    <EditText
+    <TextView
         android:id="@+id/endDate"
         android:layout_width="141dp"
         android:layout_height="45dp"
-        android:layout_marginTop="388dp"
+        android:layout_marginTop="200dp"
         android:background="@drawable/text"
         android:fontFamily="@font/notosans_medium"
         android:gravity="center"
         android:hint="끝 날짜"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.77"
+        app:layout_constraintHorizontal_bias="0.762"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:layout_width="417dp"
+        android:layout_height="2dp"
+        android:background="#D3D3D3"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.333"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.358" />
 
     <Button
         android:id="@+id/save"

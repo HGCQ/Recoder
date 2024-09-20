@@ -7,6 +7,32 @@
     android:layout_height="match_parent"
     tools:context=".view.AlbumMain">
 
+    <EditText
+        android:id="@+id/searchText"
+        android:layout_width="234dp"
+        android:layout_height="35dp"
+        android:layout_marginTop="64dp"
+        android:background="@drawable/text"
+        android:fontFamily="@font/notosans_medium"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.401"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageButton
+        android:id="@+id/search"
+        android:layout_width="42dp"
+        android:layout_height="35dp"
+        android:layout_marginTop="64dp"
+        android:background="@drawable/text"
+        android:scaleType="fitCenter"
+        android:src="@drawable/search"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.826"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="#234567" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/friendList"
         android:layout_width="410dp"
@@ -17,7 +43,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.389"
+        app:layout_constraintVertical_bias="0.548"
         app:spanCount="1" />
 
     <TextView
@@ -28,38 +54,10 @@
         android:gravity="center"
         android:text="비어있음"
         android:textSize="18dp"
-        android:fontFamily="@font/notosans_bold"
+        android:fontFamily="@font/notosans_medium"
         android:visibility="invisible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <Button
-        android:id="@+id/follower"
-        android:layout_width="204dp"
-        android:layout_height="41dp"
-        android:layout_marginTop="32dp"
-        android:background="@drawable/border"
-        android:scaleType="fitCenter"
-        android:text="팔로워"
-        android:fontFamily="@font/notosans_bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.009"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:tint="#234567" />
-
-    <Button
-        android:id="@+id/following"
-        android:layout_width="208dp"
-        android:layout_height="41dp"
-        android:layout_marginTop="32dp"
-        android:background="@drawable/border"
-        android:text="팔로잉"
-        android:fontFamily="@font/notosans_bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -72,20 +70,6 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.105" />
+        app:layout_constraintVertical_bias="0.153" />
 
-    <Button
-        android:id="@+id/save"
-        android:layout_width="104dp"
-        android:layout_height="39dp"
-        android:layout_marginTop="612dp"
-        android:background="@drawable/border"
-        android:hint="추가"
-        android:fontFamily="@font/notosans_bold"
-        android:onClick="onClick_setting_costume_save"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-        
 </androidx.constraintlayout.widget.ConstraintLayout>

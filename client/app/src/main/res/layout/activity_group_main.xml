@@ -9,16 +9,16 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/GroupList"
-        android:layout_width="382dp"
-        android:layout_height="498dp"
-        android:layout_marginEnd="12dp"
+        android:layout_width="390dp"
+        android:layout_height="475dp"
+        android:layout_marginEnd="4dp"
         android:gravity="center"
         android:padding="17dp"
         app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.635"
+        app:layout_constraintVertical_bias="0.382"
         app:spanCount="3" />
 
     <TextView
@@ -29,7 +29,7 @@
         android:gravity="center"
         android:text="비어있음"
         android:textSize="18dp"
-        android:fontFamily="@font/notosans_bold"
+        android:fontFamily="@font/notosans_medium"
         android:textStyle="bold"
         android:visibility="invisible"
         app:layout_constraintEnd_toEndOf="parent"
@@ -41,19 +41,28 @@
         android:id="@+id/searchText"
         android:layout_width="234dp"
         android:layout_height="35dp"
-        android:layout_marginTop="52dp"
+        android:layout_marginTop="40dp"
         android:background="@drawable/text"
         android:fontFamily="@font/notosans_medium"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.18"
+        app:layout_constraintHorizontal_bias="0.186"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <FrameLayout
+         android:id="@+id/main_container"
+         android:layout_width="match_parent"
+         android:layout_height="0dp"
+         app:layout_constraintBottom_toTopOf="@+id/bottom_navigation_view"
+         app:layout_constraintEnd_toEndOf="@+id/bottom_navigation_view"
+         app:layout_constraintStart_toStartOf="parent"
+         app:layout_constraintTop_toTopOf="parent"/>
 
     <ImageButton
         android:id="@+id/search"
         android:layout_width="42dp"
         android:layout_height="35dp"
-        android:layout_marginTop="52dp"
+        android:layout_marginTop="40dp"
         android:background="@drawable/text"
         android:scaleType="fitCenter"
         android:src="@drawable/search"
@@ -63,25 +72,16 @@
         app:layout_constraintTop_toTopOf="parent"
         app:tint="#234567" />
 
-    <!-- <FrameLayout
-         android:id="@+id/main_container"
-         android:layout_width="match_parent"
-         android:layout_height="0dp"
-         app:layout_constraintBottom_toTopOf="@+id/bottom_navigation_view"
-         app:layout_constraintEnd_toEndOf="@+id/bottom_navigation_view"
-         app:layout_constraintStart_toStartOf="parent"
-         app:layout_constraintTop_toTopOf="parent"/>-->
-
     <ImageButton
         android:id="@+id/groupAdd"
-        android:layout_width="39dp"
-        android:layout_height="37dp"
-        android:layout_marginTop="48dp"
+        android:layout_width="50dp"
+        android:layout_height="45dp"
+        android:layout_marginTop="588dp"
         android:background="#00000000"
         android:scaleType="fitCenter"
         android:src="@drawable/groupadd"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.908"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -94,7 +94,8 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.196" />
+        app:layout_constraintVertical_bias="0.116" />
+
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation_view"
         android:layout_width="410dp"
