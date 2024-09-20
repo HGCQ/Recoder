@@ -23,7 +23,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import yuhan.hgcq.client.R;
 
-public class chat extends AppCompatActivity {
+public class Chat extends AppCompatActivity {
 
     /* View */
 

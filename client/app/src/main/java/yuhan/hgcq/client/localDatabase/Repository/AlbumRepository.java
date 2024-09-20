@@ -14,8 +14,8 @@ import java.util.concurrent.Executors;
 import yuhan.hgcq.client.localDatabase.AppDatabase;
 import yuhan.hgcq.client.localDatabase.DAO.AlbumDAO;
 import yuhan.hgcq.client.localDatabase.callback.Callback;
-import yuhan.hgcq.client.localDatabase.dto.PAlbumDTO;
 import yuhan.hgcq.client.localDatabase.entity.Album;
+import yuhan.hgcq.client.model.dto.album.AlbumDTO;
 
 public class AlbumRepository {
     private AlbumDAO dao;
@@ -71,11 +71,11 @@ public class AlbumRepository {
     }
 
     //찾기
-    public void search(Long id, Callback<PAlbumDTO> callback) {
+    public void search(Long id, Callback<AlbumDTO> callback) {
         executor.execute(() -> {
             try {
                 Album fa = dao.findById(id);
-                PAlbumDTO dto = mapping(fa);
+                AlbumDTO dto = mapping(fa);
 
                 callback.onSuccess(dto);
             } catch (Exception e) {
@@ -85,18 +85,18 @@ public class AlbumRepository {
     }
 
     //이름으로 찾기
-    public void searchByName(String name, Callback<List<PAlbumDTO>> callback){
+    public void searchByName(String name, Callback<List<AlbumDTO>> callback){
         executor.execute(() -> {
             try {
 
                 List<Album> albumList = dao.findByName(name);
-                List<PAlbumDTO> dtoList = new ArrayList<>();
+                List<AlbumDTO> dtoList = new ArrayList<>();
                 if (albumList == null) {
                     albumList = new ArrayList<>(); // null을 빈 리스트로 처리
                 }
 
                 for (Album album : albumList) {
-                    PAlbumDTO dto = mapping(album);
+                    AlbumDTO dto = mapping(album);
                     dtoList.add(dto);
                 }
 
@@ -109,14 +109,14 @@ public class AlbumRepository {
     }
 
     // 전체 찾기
-    public void searchAll(Callback<List<PAlbumDTO>> callback) {
+    public void searchAll(Callback<List<AlbumDTO>> callback) {
         executor.execute(() -> {
             try {
                 List<Album> albumList = dao.findAll();
-                List<PAlbumDTO> dtoList = new ArrayList<>();
+                List<AlbumDTO> dtoList = new ArrayList<>();
 
                 for (Album album : albumList) {
-                    PAlbumDTO dto = mapping(album);
+                    AlbumDTO dto = mapping(album);
                     dtoList.add(dto);
                 }
 
@@ -128,14 +128,14 @@ public class AlbumRepository {
     }
 
     //휴지통에서 찾기
-    public void searchTrash(Callback<List<PAlbumDTO>> callback) {
+    public void searchTrash(Callback<List<AlbumDTO>> callback) {
         executor.execute(() -> {
             try {
                 List<Album> albumList = dao.findByIsDeleted();
-                List<PAlbumDTO> dtoList = new ArrayList<>();
+                List<AlbumDTO> dtoList = new ArrayList<>();
 
                 for (Album album : albumList) {
-                    PAlbumDTO dto = mapping(album);
+                    AlbumDTO dto = mapping(album);
                     dtoList.add(dto);
                 }
 
@@ -162,14 +162,12 @@ public class AlbumRepository {
         });
     }
 
-    private PAlbumDTO mapping(Album album) {
-        PAlbumDTO dto = new PAlbumDTO();
+    private AlbumDTO mapping(Album album) {
+        AlbumDTO dto = new AlbumDTO();
         dto.setAlbumId(album.getAlbumId());
         dto.setName(album.getName());
-        dto.setStartDate(album.getStartDate());
-        dto.setEndDate(album.getEndDate());
-        dto.setDeleted(album.getDeleted());
-        dto.setDeletedTime(album.getDeletedTime());
+        dto.setStartDate(album.getStartDate().toString());
+        dto.setEndDate(album.getEndDate().toString());
         return dto;
     }
 

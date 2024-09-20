@@ -24,7 +24,7 @@
             android:name=".view.AlbumTrash"
             android:exported="true" />
         <activity
-            android:name=".view.chat"
+            android:name=".view.Chat"
             android:exported="true" />
         <activity
             android:name=".view.FriendAdd"
