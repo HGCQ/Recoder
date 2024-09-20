@@ -16,12 +16,10 @@ import yuhan.hgcq.client.localDatabase.AppDatabase;
 import yuhan.hgcq.client.localDatabase.DAO.AlbumDAO;
 import yuhan.hgcq.client.localDatabase.DAO.PhotoDAO;
 import yuhan.hgcq.client.localDatabase.callback.Callback;
-import yuhan.hgcq.client.localDatabase.dto.AutoSavePhotoForm;
-import yuhan.hgcq.client.localDatabase.dto.PMovePhotoForm;
-import yuhan.hgcq.client.localDatabase.dto.PPhotoDTO;
-import yuhan.hgcq.client.localDatabase.dto.PUploadPhotoForm;
 import yuhan.hgcq.client.localDatabase.entity.Album;
 import yuhan.hgcq.client.localDatabase.entity.Photo;
+import yuhan.hgcq.client.model.dto.photo.MovePhotoForm;
+import yuhan.hgcq.client.model.dto.photo.PhotoDTO;
 
 public class PhotoRepository {
     private PhotoDAO dao;
@@ -36,15 +34,12 @@ public class PhotoRepository {
     }
 
     @Transaction
-    public void create(PUploadPhotoForm form, Callback<Boolean> callback) {
+    public void create(Long albumId, List<String> paths, List<String> times, Callback<Boolean> callback) {
         executor.execute(() -> {
             try {
-                Long albumId = form.getAlbumId();
-                List<String> paths = form.getPaths();
-                List<LocalDateTime> times = form.getTimes();
                 int size = paths.size();
                 for (int i = 0; i < size; i++) {
-                    Photo photo = Photo.create(paths.get(i), albumId, times.get(i));
+                    Photo photo = Photo.create(paths.get(i), albumId, LocalDateTime.parse(times.get(i)));
                     dao.save(photo);
                 }
                 callback.onSuccess(Boolean.TRUE);
@@ -95,7 +90,7 @@ public class PhotoRepository {
 
     //찾기
     //널 비교
-    public void search(Long id, Callback<PPhotoDTO> callback) {
+    public void search(Long id, Callback<PhotoDTO> callback) {
         executor.execute(() -> {
             try {
                 List<Photo> photoList = dao.findById(id);
@@ -105,7 +100,7 @@ public class PhotoRepository {
                     return;
                 }
                 Photo photo = photoList.get(0);
-                PPhotoDTO dto = mapping(photo);
+                PhotoDTO dto = mapping(photo);
                 ;
 
                 callback.onSuccess(dto);
@@ -116,14 +111,14 @@ public class PhotoRepository {
     }
 
     //휴지통에서 찾기List
-    public void searchTrash(Callback<List<PPhotoDTO>> callback) {
+    public void searchTrash(Callback<List<PhotoDTO>> callback) {
         executor.execute(() -> {
             try {
                 List<Photo> photoList = dao.findByIsDeleted();
-                List<PPhotoDTO> dtoList = new ArrayList<>();
+                List<PhotoDTO> dtoList = new ArrayList<>();
 
                 for (Photo photo : photoList) {
-                    PPhotoDTO dto = mapping(photo);
+                    PhotoDTO dto = mapping(photo);
                     dtoList.add(dto);
                 }
 
@@ -152,13 +147,13 @@ public class PhotoRepository {
     }
 
     //앨범 안에 있는 사진 리스트
-    public void searchByAlbum(Long albumId, Callback<List<PPhotoDTO>> callback) {
+    public void searchByAlbum(Long albumId, Callback<List<PhotoDTO>> callback) {
         executor.execute(() -> {
             try {
                 List<Photo> photoList = dao.findByAlbumId(albumId);
-                List<PPhotoDTO> dtoList = new ArrayList<>();
+                List<PhotoDTO> dtoList = new ArrayList<>();
                 for (Photo p : photoList) {
-                    PPhotoDTO dto = mapping(p);
+                    PhotoDTO dto = mapping(p);
                     dtoList.add(dto);
                 }
                 callback.onSuccess(dtoList);
@@ -169,12 +164,12 @@ public class PhotoRepository {
     }
 
     //사진 자동 분류 서비스에
-    public void move(PMovePhotoForm form, Callback<Boolean> callback) {
+    public void move(MovePhotoForm form, Callback<Boolean> callback) {
         executor.execute(() -> {
             try {
-                Long albumId = form.getAlbumId();
-                List<PPhotoDTO> photos = form.getPhotos();
-                for (PPhotoDTO p : photos) {
+                Long albumId = form.getNewAlbumId();
+                List<PhotoDTO> photos = form.getPhotos();
+                for (PhotoDTO p : photos) {
                     Photo photo = dao.findById(p.getPhotoId()).get(0);
                     photo.setAlbumId(albumId);
                     dao.update(photo);
@@ -190,12 +185,10 @@ public class PhotoRepository {
      * 선택된 앨범에 사진 자동으로 저장
      */
     @Transaction
-    public void autoSave(AutoSavePhotoForm form, Callback<Boolean> callback) {
+    public void autoSave(List<String> paths, List<LocalDateTime> creates, Callback<Boolean> callback) {
         executor.execute(() -> {
             try {
-                List<String> paths = form.getPaths();
                 List<Album> albumList = adao.findAll();
-                List<LocalDateTime> creates = form.getCreates();
                 int size = paths.size();
                 for (int i = 0; i < size; i++) {
                     LocalDateTime photoCreate = creates.get(i);
@@ -238,12 +231,11 @@ public class PhotoRepository {
         }
     }
 
-    private PPhotoDTO mapping(Photo photo) {
-        PPhotoDTO dto = new PPhotoDTO();
+    private PhotoDTO mapping(Photo photo) {
+        PhotoDTO dto = new PhotoDTO();
         dto.setPhotoId(photo.getPhotoId());
         dto.setAlbumId(photo.getAlbumId());
-        dto.setDeletedTime(photo.getDeletedTime());
-        dto.setCreated(photo.getCreated());
+        dto.setCreated(photo.getCreated().toString());
         dto.setPath(photo.getPath());
         return dto;
     }
