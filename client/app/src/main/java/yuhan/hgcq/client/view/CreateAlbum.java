@@ -107,7 +107,7 @@ public class CreateAlbum extends AppCompatActivity {
         /* View와 Layout 연결 */
         save = findViewById(R.id.save);
 
-        createAlbumName = findViewById(R.id.createAlbumText);
+        createAlbumName = findViewById(R.id.AlbumText);
         startDate = findViewById(R.id.startDate);
         endDate = findViewById(R.id.endDate);
 
