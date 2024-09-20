@@ -19,6 +19,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -29,6 +30,8 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -46,20 +49,28 @@ import yuhan.hgcq.client.controller.PhotoController;
 import yuhan.hgcq.client.localDatabase.Repository.AlbumRepository;
 import yuhan.hgcq.client.localDatabase.Repository.PhotoRepository;
 import yuhan.hgcq.client.localDatabase.callback.Callback;
-import yuhan.hgcq.client.localDatabase.dto.AutoSavePhotoForm;
-import yuhan.hgcq.client.localDatabase.dto.PAlbumDTO;
 import yuhan.hgcq.client.model.dto.album.AlbumDTO;
+import yuhan.hgcq.client.model.dto.member.MemberDTO;
+import yuhan.hgcq.client.model.dto.team.TeamDTO;
 
 public class AlbumMain extends AppCompatActivity {
 
     /* View */
-    ImageButton search, auto, albumPlus, trashAll;
+    ImageButton search, auto, albumPlus, albumTrash;
     EditText searchText;
-    RecyclerView albumlist;
+    TextView empty;
+    RecyclerView albumListView;
+    BottomNavigationView navi;
+
+    /* Adapter */
+    AlbumAdapter aa;
 
     /* 개인, 공유 확인 */
     private boolean isPrivate;
-    Long teamId;
+
+    /* 받아올 값 */
+    TeamDTO teamDTO;
+    MemberDTO loginMember;
 
     /* 서버와 통신 */
     AlbumController ac;
@@ -123,14 +134,24 @@ public class AlbumMain extends AppCompatActivity {
         search = findViewById(R.id.search);
         auto = findViewById(R.id.auto);
         albumPlus = findViewById(R.id.albumplus);
-        trashAll = findViewById(R.id.trashall);
+        albumTrash = findViewById(R.id.albumTrash);
 
         searchText = findViewById(R.id.searchText);
-        /*어뎁터 연걸*/
-        albumlist = findViewById(R.id.albumList);
+
+        empty = findViewById(R.id.empty);
+
+        albumListView = findViewById(R.id.albumList);
+
+        navi = findViewById(R.id.bottom_navigation_view);
+
         /* 관련된 페이지 */
+        Intent groupMainPage = new Intent(this, GroupMain.class);
+        Intent albumMainPage = new Intent(this, AlbumMain.class);
+        Intent friendListPage = new Intent(this, FriendList.class);
+        Intent likePage = new Intent(this, Like.class);
         Intent createAlbumPage = new Intent(this, CreateAlbum.class);
         Intent albumTrashPage = new Intent(this, AlbumTrash.class);
+        Intent galleryPage = new Intent(this, Gallery.class);
 
         /* 갤러리 */
         Intent gallery = new Intent(Intent.ACTION_GET_CONTENT);
@@ -142,20 +163,41 @@ public class AlbumMain extends AppCompatActivity {
         isPrivate = getIntent.getBooleanExtra("isPrivate", false);
 
         /* 받아 올 값 */
-        teamId = getIntent.getLongExtra("teamId", 0L);
+        teamDTO = (TeamDTO) getIntent.getSerializableExtra("teamDTO");
+        loginMember = (MemberDTO) getIntent.getSerializableExtra("loginMember");
+
+        if (isPrivate) {
+            getSupportActionBar().setTitle("개인 앨범");
+        } else if (teamDTO != null) {
+            getSupportActionBar().setTitle(teamDTO.getName());
+        }
 
         /* 개인 초기 설정 */
         if (isPrivate) {
-            ar.searchAll(new Callback<List<PAlbumDTO>>() {
+            ar.searchAll(new Callback<List<AlbumDTO>>() {
                 @Override
-                public void onSuccess(List<PAlbumDTO> result) {
-                    /* 어뎁터 만들어서 넣기 */
+                public void onSuccess(List<AlbumDTO> result) {
                     if (result != null) {
-                        AlbumAdapter adapter = new AlbumAdapter(AlbumMain.this, result, false);
-                        albumlist.setAdapter(adapter);
-                        adapter.updatePAlbumList(result);
+                        if (result.isEmpty()) {
+                            empty.setVisibility(View.VISIBLE);
+                        } else {
+                            empty.setVisibility(View.INVISIBLE);
+                        }
+                        aa = new AlbumAdapter(result);
+                        albumListView.setAdapter(aa);
+                        aa.setOnItemClickListener(new AlbumAdapter.OnItemClickListener() {
+                            @Override
+                            public void onItemClick(View view, int position) {
+                                AlbumDTO albumDTO = result.get(position);
+                                galleryPage.putExtra("albumDTO", albumDTO);
+                                galleryPage.putExtra("isPrivate", true);
+                                startActivity(galleryPage);
+                            }
+                        });
+                        Log.i("Found Private AlbumList", "Success");
+                    } else {
+                        Log.i("Found Private AlbumList", "Fail");
                     }
-                    Log.i("Found Private AlbumList", "Success");
                 }
 
                 @Override
@@ -165,29 +207,46 @@ public class AlbumMain extends AppCompatActivity {
             });
         }
 
-
         /* 공유 초기 설정 */
         else {
-            ac.albumList(teamId, new retrofit2.Callback<List<AlbumDTO>>() {
-                @Override
-                public void onResponse(Call<List<AlbumDTO>> call, Response<List<AlbumDTO>> response) {
-                    if (response.isSuccessful()) {
-                        List<AlbumDTO> albumList = response.body();
-                        /* 어뎁터 만들어서 넣기 */
-                        AlbumAdapter adapter = new AlbumAdapter(AlbumMain.this, true, albumList);
-                        albumlist.setAdapter(adapter);
-                        adapter.updateAlbumList(albumList);
-                        Log.i("Found Shared AlbumList", "Success");
-                    } else {
-                        Log.i("Found Shared AlbumList", "Fail");
+            if (teamDTO != null) {
+                Long teamId = teamDTO.getTeamId();
+                ac.albumList(teamId, new retrofit2.Callback<List<AlbumDTO>>() {
+                    @Override
+                    public void onResponse(Call<List<AlbumDTO>> call, Response<List<AlbumDTO>> response) {
+                        if (response.isSuccessful()) {
+                            List<AlbumDTO> albumList = response.body();
+                            if (albumList.isEmpty()) {
+                                empty.setVisibility(View.VISIBLE);
+                            } else {
+                                empty.setVisibility(View.INVISIBLE);
+                            }
+                            aa = new AlbumAdapter(albumList);
+                            albumListView.setAdapter(aa);
+                            aa.setOnItemClickListener(new AlbumAdapter.OnItemClickListener() {
+                                @Override
+                                public void onItemClick(View view, int position) {
+                                    AlbumDTO albumDTO = albumList.get(position);
+                                    galleryPage.putExtra("albumDTO", albumDTO);
+                                    galleryPage.putExtra("teamDTO", teamDTO);
+                                    galleryPage.putExtra("loginMember", loginMember);
+                                    startActivity(galleryPage);
+                                }
+                            });
+                            Log.i("Found Shared AlbumList", "Success");
+                        } else {
+                            Log.i("Found Shared AlbumList", "Fail");
+                        }
                     }
-                }
 
-                @Override
-                public void onFailure(Call<List<AlbumDTO>> call, Throwable t) {
-                    Log.e("Found Shared AlbumList Error", t.getMessage());
-                }
-            });
+                    @Override
+                    public void onFailure(Call<List<AlbumDTO>> call, Throwable t) {
+                        Log.e("Found Shared AlbumList Error", t.getMessage());
+                    }
+                });
+            } else {
+                Log.e("Intent Error", "teamDTO is Null");
+            }
         }
 
         /* 이름 검색 눌림 */
@@ -198,19 +257,22 @@ public class AlbumMain extends AppCompatActivity {
 
                 /* 개인 */
                 if (isPrivate) {
-                    ar.searchByName("%" + text + "%", new Callback<List<PAlbumDTO>>() {
+                    ar.searchByName("%" + text + "%", new Callback<List<AlbumDTO>>() {
                         @Override
-                        public void onSuccess(List<PAlbumDTO> result) {
-                            /* 어뎁터 만들어서 넣기 */
-                            AlbumAdapter adapter = new AlbumAdapter(AlbumMain.this, result, true);
-                            albumlist.setAdapter(adapter);
+                        public void onSuccess(List<AlbumDTO> result) {
+                            if (result != null) {
+                                aa.updateList(result);
 
-                            /* 테스트 용도 */
-                            for (PAlbumDTO dto : result) {
-                                Log.d("Found Album :", dto.toString());
+                                if (result.isEmpty()) {
+                                    empty.setVisibility(View.VISIBLE);
+                                } else {
+                                    empty.setVisibility(View.INVISIBLE);
+                                }
+
+                                Log.i("Found Private Album By Name", "Success");
+                            } else {
+                                Log.i("Found Private Album By Name", "Fail");
                             }
-
-                            Log.i("Found Album By Name", "Success");
                         }
 
                         @Override
@@ -224,32 +286,44 @@ public class AlbumMain extends AppCompatActivity {
                 }
                 /* 공유 */
                 else {
-                    ac.searchAlbumByName(teamId, text, new retrofit2.Callback<List<AlbumDTO>>() {
-                        @Override
-                        public void onResponse(Call<List<AlbumDTO>> call, Response<List<AlbumDTO>> response) {
-                            if (response.isSuccessful()) {
-                                List<AlbumDTO> albumList = response.body();
-                                /* 어뎁터 만들어서 넣기 */
-                                AlbumAdapter adapter = new AlbumAdapter(AlbumMain.this, false, albumList);
-                                albumlist.setAdapter(adapter);
+                    if (teamDTO != null) {
+                        Long teamId = teamDTO.getTeamId();
+                        ac.searchAlbumByName(teamId, text, new retrofit2.Callback<List<AlbumDTO>>() {
+                            @Override
+                            public void onResponse(Call<List<AlbumDTO>> call, Response<List<AlbumDTO>> response) {
+                                if (response.isSuccessful()) {
+                                    List<AlbumDTO> albumList = response.body();
 
-                                Log.i("Found Album By Name", "Success");
-                            } else {
-                                handler.post(() -> {
-                                    Toast.makeText(AlbumMain.this, "앨범 검색에 실패했습니다.", Toast.LENGTH_SHORT).show();
-                                });
-                                Log.i("Found Album By Name", "Fail");
+                                    if (albumList != null) {
+                                        if (albumList.isEmpty()) {
+                                            empty.setVisibility(View.VISIBLE);
+                                        } else {
+                                            empty.setVisibility(View.INVISIBLE);
+                                        }
+
+                                        aa.updateList(albumList);
+                                    }
+
+                                    Log.i("Found Album By Name", "Success");
+                                } else {
+                                    handler.post(() -> {
+                                        Toast.makeText(AlbumMain.this, "앨범 검색에 실패했습니다.", Toast.LENGTH_SHORT).show();
+                                    });
+                                    Log.i("Found Album By Name", "Fail");
+                                }
                             }
-                        }
 
-                        @Override
-                        public void onFailure(Call<List<AlbumDTO>> call, Throwable t) {
-                            handler.post(() -> {
-                                Toast.makeText(AlbumMain.this, "서버와 통신 실패했습니다. 네트워크를 확인해주세요.", Toast.LENGTH_SHORT).show();
-                            });
-                            Log.e("Found Album By Name Error", t.getMessage());
-                        }
-                    });
+                            @Override
+                            public void onFailure(Call<List<AlbumDTO>> call, Throwable t) {
+                                handler.post(() -> {
+                                    Toast.makeText(AlbumMain.this, "서버와 통신 실패했습니다. 네트워크를 확인해주세요.", Toast.LENGTH_SHORT).show();
+                                });
+                                Log.e("Found Album By Name Error", t.getMessage());
+                            }
+                        });
+                    } else {
+                        Log.e("Intent Error", "teamDTO is Null");
+                    }
                 }
             }
         });
@@ -286,14 +360,15 @@ public class AlbumMain extends AppCompatActivity {
                 }
                 /* 공유 */
                 else {
-                    createAlbumPage.putExtra("teamId", teamId);
+                    createAlbumPage.putExtra("teamDTO", teamDTO);
+                    createAlbumPage.putExtra("loginMember", loginMember);
                 }
                 startActivity(createAlbumPage);
             }
         });
 
         /* 휴지통 버튼 눌림 */
-        trashAll.setOnClickListener(new View.OnClickListener() {
+        albumTrash.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 /* 개인 */
@@ -302,9 +377,51 @@ public class AlbumMain extends AppCompatActivity {
                 }
                 /* 공유 */
                 else {
-                    albumTrashPage.putExtra("teamId", teamId);
+                    albumTrashPage.putExtra("loginMember", loginMember);
+                    albumTrashPage.putExtra("teamDTO", teamDTO);
                 }
                 startActivity(albumTrashPage);
+            }
+        });
+
+        /* 내비게이션 바 */
+        navi.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+                int itemId = menuItem.getItemId();
+                if (itemId == R.id.fragment_home) {
+                    if (isPrivate) {
+                        albumMainPage.putExtra("isPrivate", true);
+                        startActivity(albumMainPage);
+                    } else {
+                        groupMainPage.putExtra("loginMember", loginMember);
+                        startActivity(groupMainPage);
+                    }
+                    return true;
+                } else if (itemId == R.id.fragment_friend) {
+                    if (loginMember == null) {
+                        Toast.makeText(AlbumMain.this, "로그인 후 이용 가능합니다.", Toast.LENGTH_SHORT).show();
+                    } else {
+                        if (isPrivate) {
+                            friendListPage.putExtra("isPrivate", true);
+                        }
+                        friendListPage.putExtra("loginMember", loginMember);
+                        startActivity(friendListPage);
+                    }
+                    return true;
+                } else if (itemId == R.id.fragment_like) {
+                    if (isPrivate) {
+                        likePage.putExtra("isPrivate", true);
+                        startActivity(likePage);
+                    } else {
+                        likePage.putExtra("loginMember", loginMember);
+                        startActivity(likePage);
+                    }
+                    return true;
+                } else if (itemId == R.id.fragment_setting) {
+                    return true;
+                }
+                return false;
             }
         });
     }
@@ -339,10 +456,7 @@ public class AlbumMain extends AppCompatActivity {
 
                     /* 개인 */
                     if (isPrivate) {
-                        AutoSavePhotoForm form = new AutoSavePhotoForm();
-                        form.setPaths(paths);
-                        form.setCreates(creates);
-                        pr.autoSave(form, new Callback<Boolean>() {
+                        pr.autoSave(paths, creates, new Callback<Boolean>() {
                             @Override
                             public void onSuccess(Boolean result) {
                                 if (result) {
@@ -363,24 +477,29 @@ public class AlbumMain extends AppCompatActivity {
                     }
                     /* 공유 */
                     else {
-                        pc.autoSavePhoto(uriList, teamId, creates, new retrofit2.Callback<ResponseBody>() {
-                            @Override
-                            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                                if (response.isSuccessful()) {
-                                    handler.post(() -> {
-                                        Toast.makeText(AlbumMain.this, "사진이 저장되었습니다.", Toast.LENGTH_SHORT).show();
-                                    });
-                                    Log.i("Photo Auto Save In Shared Album", "Success");
-                                } else {
-                                    Log.i("Photo Auto Save In Shared Album", "Fail");
+                        if (teamDTO != null) {
+                            Long teamId = teamDTO.getTeamId();
+                            pc.autoSavePhoto(uriList, teamId, creates, new retrofit2.Callback<ResponseBody>() {
+                                @Override
+                                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                                    if (response.isSuccessful()) {
+                                        handler.post(() -> {
+                                            Toast.makeText(AlbumMain.this, "사진이 저장되었습니다.", Toast.LENGTH_SHORT).show();
+                                        });
+                                        Log.i("Photo Auto Save In Shared Album", "Success");
+                                    } else {
+                                        Log.i("Photo Auto Save In Shared Album", "Fail");
+                                    }
                                 }
-                            }
 
-                            @Override
-                            public void onFailure(Call<ResponseBody> call, Throwable t) {
-                                Log.e("Photo Auto Save In Shared Album", t.getMessage());
-                            }
-                        });
+                                @Override
+                                public void onFailure(Call<ResponseBody> call, Throwable t) {
+                                    Log.e("Photo Auto Save In Shared Album", t.getMessage());
+                                }
+                            });
+                        } else {
+                            Log.e("Intent Error", "teamDTO is Null");
+                        }
                     }
                 } else if (data.getData() != null) {
                     int count = data.getClipData().getItemCount();
@@ -405,10 +524,7 @@ public class AlbumMain extends AppCompatActivity {
 
                     /* 개인 */
                     if (isPrivate) {
-                        AutoSavePhotoForm form = new AutoSavePhotoForm();
-                        form.setPaths(paths);
-                        form.setCreates(creates);
-                        pr.autoSave(form, new Callback<Boolean>() {
+                        pr.autoSave(paths, creates, new Callback<Boolean>() {
                             @Override
                             public void onSuccess(Boolean result) {
                                 if (result) {
@@ -429,24 +545,29 @@ public class AlbumMain extends AppCompatActivity {
                     }
                     /* 공유 */
                     else {
-                        pc.autoSavePhoto(uriList, teamId, creates, new retrofit2.Callback<ResponseBody>() {
-                            @Override
-                            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                                if (response.isSuccessful()) {
-                                    handler.post(() -> {
-                                        Toast.makeText(AlbumMain.this, "사진이 저장되었습니다.", Toast.LENGTH_SHORT).show();
-                                    });
-                                    Log.i("Photo Auto Save In Shared Album", "Success");
-                                } else {
-                                    Log.i("Photo Auto Save In Shared Album", "Fail");
+                        if (teamDTO != null) {
+                            Long teamId = teamDTO.getTeamId();
+                            pc.autoSavePhoto(uriList, teamId, creates, new retrofit2.Callback<ResponseBody>() {
+                                @Override
+                                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                                    if (response.isSuccessful()) {
+                                        handler.post(() -> {
+                                            Toast.makeText(AlbumMain.this, "사진이 저장되었습니다.", Toast.LENGTH_SHORT).show();
+                                        });
+                                        Log.i("Photo Auto Save In Shared Album", "Success");
+                                    } else {
+                                        Log.i("Photo Auto Save In Shared Album", "Fail");
+                                    }
                                 }
-                            }
 
-                            @Override
-                            public void onFailure(Call<ResponseBody> call, Throwable t) {
-                                Log.e("Photo Auto Save In Shared Album", t.getMessage());
-                            }
-                        });
+                                @Override
+                                public void onFailure(Call<ResponseBody> call, Throwable t) {
+                                    Log.e("Photo Auto Save In Shared Album", t.getMessage());
+                                }
+                            });
+                        } else {
+                            Log.e("Intent Error", "teamDTO is Null");
+                        }
                     }
                 }
             }

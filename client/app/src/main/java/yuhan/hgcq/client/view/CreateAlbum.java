@@ -24,6 +24,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import okhttp3.ResponseBody;
@@ -35,16 +36,21 @@ import yuhan.hgcq.client.localDatabase.Repository.AlbumRepository;
 import yuhan.hgcq.client.localDatabase.callback.Callback;
 import yuhan.hgcq.client.localDatabase.entity.Album;
 import yuhan.hgcq.client.model.dto.album.AlbumCreateForm;
+import yuhan.hgcq.client.model.dto.member.MemberDTO;
+import yuhan.hgcq.client.model.dto.team.TeamDTO;
 
 public class CreateAlbum extends AppCompatActivity {
 
     /* View */
     Button save;
-    EditText createAlbumName;
+    EditText createAlbumName, startDate, endDate;
 
     /* 개인, 공유 확인 */
     boolean isPrivate;
-    Long teamId;
+
+    /* 받아올 값 */
+    MemberDTO loginMember;
+    TeamDTO teamDTO;
 
     /* 서버와 통신 */
     AlbumController ac;
@@ -63,6 +69,12 @@ public class CreateAlbum extends AppCompatActivity {
         switch (item.getItemId()) {
             case android.R.id.home:
                 Intent albumMainPage = new Intent(this, AlbumMain.class);
+                if (isPrivate) {
+                    albumMainPage.putExtra("isPrivate", true);
+                } else {
+                    albumMainPage.putExtra("loginMember", loginMember);
+                    albumMainPage.putExtra("teamDTO", teamDTO);
+                }
                 startActivity(albumMainPage);
                 finish();
                 return true;
@@ -96,6 +108,8 @@ public class CreateAlbum extends AppCompatActivity {
         save = findViewById(R.id.save);
 
         createAlbumName = findViewById(R.id.createAlbumText);
+        startDate = findViewById(R.id.startDate);
+        endDate = findViewById(R.id.endDate);
 
         /* 관련된 페이지 */
         Intent albumMainPage = new Intent(this, AlbumMain.class);
@@ -104,28 +118,36 @@ public class CreateAlbum extends AppCompatActivity {
         /* 개인, 공유 확인 */
         isPrivate = getIntent.getBooleanExtra("isPrivate", false);
 
-        /* 공유 값 */
-        teamId = getIntent.getLongExtra("teamId", 0L);
+        /* 받아올 값 */
+        teamDTO = (TeamDTO) getIntent.getSerializableExtra("teamDTO");
+        loginMember = (MemberDTO) getIntent.getSerializableExtra("loginMember");
+
+        if (isPrivate) {
+            getSupportActionBar().setTitle("개인 앨범 생성");
+        } else if (teamDTO != null) {
+            getSupportActionBar().setTitle("공유 앨범 생성");
+        }
 
         /* 생성 버튼 눌림 */
         save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String albumName = createAlbumName.getText().toString();
+                String editStartDate = startDate.getText().toString();
+                String editEndDate = endDate.getText().toString();
 
                 /* 개인 */
                 if (isPrivate) {
                     onClick_setting_costume_save("앨범을 생성하시겠습니까?", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            /* 나중에 입력된 날짜 값으로 바꾸기 */
-                            Album album = Album.create(LocalDateTime.of(2024, 8, 1, 1, 1, 1), LocalDateTime.of(2024, 9, 16, 1, 1, 1), albumName);
+                            Album album = Album.create((LocalDate.parse(editStartDate)).atStartOfDay(), (LocalDate.parse(editEndDate)).atStartOfDay(), albumName);
                             ar.create(album, new Callback<Boolean>() {
                                 @Override
                                 public void onSuccess(Boolean result) {
                                     if (result) {
                                         handler.post(() -> {
-                                           Toast.makeText(CreateAlbum.this, "앨범을 생성했습니다.", Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(CreateAlbum.this, "앨범을 생성했습니다.", Toast.LENGTH_SHORT).show();
                                         });
                                         Log.i("Private Album Create", "Success");
                                         albumMainPage.putExtra("isPrivate", true);
@@ -159,34 +181,40 @@ public class CreateAlbum extends AppCompatActivity {
                     onClick_setting_costume_save("앨범을 생성하시겠습니까?", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            /* 나중에 날짜 값으로 바꾸기 */
-                            AlbumCreateForm form = new AlbumCreateForm(teamId, albumName, LocalDateTime.now(), LocalDateTime.now());
-                            ac.createAlbum(form, new retrofit2.Callback<ResponseBody>() {
-                                @Override
-                                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                                    if (response.isSuccessful()) {
-                                        handler.post(() -> {
-                                            Toast.makeText(CreateAlbum.this, "앨범을 생성했습니다.", Toast.LENGTH_SHORT).show();
-                                        });
-                                        Log.i("Shared Album Create", "Success");
-                                        albumMainPage.putExtra("teamId", teamId);
-                                        startActivity(albumMainPage);
-                                    } else {
+                            if (teamDTO != null) {
+                                Long teamId = teamDTO.getTeamId();
+
+                                AlbumCreateForm form = new AlbumCreateForm(teamId, albumName, editStartDate, editEndDate);
+                                ac.createAlbum(form, new retrofit2.Callback<ResponseBody>() {
+                                    @Override
+                                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                                        if (response.isSuccessful()) {
+                                            handler.post(() -> {
+                                                Toast.makeText(CreateAlbum.this, "앨범을 생성했습니다.", Toast.LENGTH_SHORT).show();
+                                            });
+                                            Log.i("Shared Album Create", "Success");
+                                            albumMainPage.putExtra("teamDTO", teamDTO);
+                                            albumMainPage.putExtra("loginMember", loginMember);
+                                            startActivity(albumMainPage);
+                                        } else {
+                                            handler.post(() -> {
+                                                Toast.makeText(CreateAlbum.this, "앨범을 생성하는 데 실패했습니다.", Toast.LENGTH_SHORT).show();
+                                            });
+                                            Log.i("Shared Album Create", "Fail");
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onFailure(Call<ResponseBody> call, Throwable t) {
                                         handler.post(() -> {
                                             Toast.makeText(CreateAlbum.this, "앨범을 생성하는 데 실패했습니다.", Toast.LENGTH_SHORT).show();
                                         });
-                                        Log.i("Shared Album Create", "Fail");
+                                        Log.e("Shared Album Create", "Error");
                                     }
-                                }
-
-                                @Override
-                                public void onFailure(Call<ResponseBody> call, Throwable t) {
-                                    handler.post(() -> {
-                                        Toast.makeText(CreateAlbum.this, "앨범을 생성하는 데 실패했습니다.", Toast.LENGTH_SHORT).show();
-                                    });
-                                    Log.e("Shared Album Create", "Error");
-                                }
-                            });
+                                });
+                            } else {
+                                Log.e("Intent Error", "teamDTO is Null");
+                            }
                         }
                     }, new DialogInterface.OnClickListener() {
                         @Override
