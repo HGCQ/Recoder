@@ -44,12 +44,11 @@ public class FollowController {
 
                     if (findMember != null) {
                         Long followId = dto.getFollowId();
-                        Long memberId = dto.getMemberId();
 
                         try {
                             Member follow = ms.search(followId);
 
-                            if (follow != null && memberId.equals(findMember.getId())) {
+                            if (follow != null) {
                                 Follow following = new Follow(findMember, follow);
                                 try {
                                     fs.add(following);
@@ -91,12 +90,11 @@ public class FollowController {
 
                     if (findMember != null) {
                         Long followId = dto.getFollowId();
-                        Long memberId = dto.getMemberId();
 
                         try {
                             Member follow = ms.search(followId);
 
-                            if (follow != null && memberId.equals(findMember.getId())) {
+                            if (follow != null) {
                                 Follow ff = fs.search(findMember, follow);
 
                                 if (ff != null) {

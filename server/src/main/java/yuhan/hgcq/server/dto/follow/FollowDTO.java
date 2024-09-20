@@ -9,6 +9,5 @@ import java.io.Serializable;
 @AllArgsConstructor
 @ToString
 public class FollowDTO implements Serializable {
-    private Long memberId;
     private Long followId;
 }
