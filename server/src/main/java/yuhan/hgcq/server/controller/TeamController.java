@@ -3,6 +3,7 @@ package yuhan.hgcq.server.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.expression.AccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,7 @@ import yuhan.hgcq.server.service.TeamService;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/team")
@@ -61,6 +63,7 @@ public class TeamController {
                                     if (fm != null) {
                                         memberList.add(fm);
                                     }
+
                                 } catch (IllegalArgumentException e) {
                                     return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found Member Fail");
                                 }
@@ -544,10 +547,14 @@ public class TeamController {
 
                                                     if (owner.equals(member)) {
                                                         memberDTO.setIsOwner(true);
+                                                    } else {
+                                                        memberDTO.setIsOwner(false);
                                                     }
 
                                                     if (adminList.contains(member)) {
                                                         memberDTO.setIsAdmin(true);
+                                                    } else {
+                                                        memberDTO.setIsAdmin(false);
                                                     }
 
                                                     memberDTOList.add(memberDTO);
