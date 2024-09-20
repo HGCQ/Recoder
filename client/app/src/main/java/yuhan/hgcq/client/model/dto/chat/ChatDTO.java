@@ -5,6 +5,7 @@ import java.io.Serializable;
 public class ChatDTO implements Serializable {
 
     private Long chatId;
+    private Long albumId;
     private Long writerId;
     private String writerName;
     private String message;
@@ -13,8 +14,9 @@ public class ChatDTO implements Serializable {
     public ChatDTO() {
     }
 
-    public ChatDTO(Long chatId, Long writerId, String writerName, String message, String time) {
+    public ChatDTO(Long chatId, Long albumId, Long writerId, String writerName, String message, String time) {
         this.chatId = chatId;
+        this.albumId = albumId;
         this.writerId = writerId;
         this.writerName = writerName;
         this.message = message;
@@ -27,6 +29,14 @@ public class ChatDTO implements Serializable {
 
     public void setChatId(Long chatId) {
         this.chatId = chatId;
+    }
+
+    public Long getAlbumId() {
+        return albumId;
+    }
+
+    public void setAlbumId(Long albumId) {
+        this.albumId = albumId;
     }
 
     public Long getWriterId() {
@@ -65,10 +75,11 @@ public class ChatDTO implements Serializable {
     public String toString() {
         return "ChatDTO{" +
                 "chatId=" + chatId +
+                ", albumId=" + albumId +
                 ", writerId=" + writerId +
                 ", writerName='" + writerName + '\'' +
                 ", message='" + message + '\'' +
-                ", time=" + time +
+                ", time='" + time + '\'' +
                 '}';
     }
 }
