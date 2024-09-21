@@ -19,8 +19,11 @@ import yuhan.hgcq.server.service.MemberService;
 import yuhan.hgcq.server.service.PhotoService;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -243,6 +246,63 @@ public class PhotoController {
                             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Autosave Photo Error");
                         } catch (IllegalArgumentException e) {
                             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Autosave Photo Fail");
+                        }
+                    }
+                } catch (IllegalArgumentException e) {
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found Member Fail");
+                }
+            }
+        }
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Not Login");
+    }
+
+    /**
+     * 갤러리 맵
+     *
+     * @param albumId 앨범 id
+     * @param request 요청
+     * @return 성공 시 200 상태 코드와 갤러리 맵, 실패 시 404 상태 코드, 세션 없을 시 401 상태 코드
+     */
+    @GetMapping("/gallery/albumId")
+    public ResponseEntity<?> gallery(@RequestParam("albumId") Long albumId, HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+
+        if (session != null) {
+            MemberDTO loginMember = (MemberDTO) session.getAttribute("member");
+
+            if (loginMember != null) {
+                try {
+                    Member findMember = ms.search(loginMember.getMemberId());
+
+                    if (findMember != null) {
+                        try {
+                            Album fa = as.search(albumId);
+
+                            if (fa != null) {
+                                try {
+                                    List<Photo> photoList = ps.searchAll(fa);
+
+                                    Map<LocalDate, List<PhotoDTO>> gallery = new HashMap<>();
+
+                                    for (Photo photo : photoList) {
+                                        LocalDate create = photo.getCreated().toLocalDate();
+                                        PhotoDTO dto = mapping(photo);
+
+                                        List<PhotoDTO> photoDTOList = gallery.getOrDefault(create, new ArrayList<>());
+
+                                        photoDTOList.add(dto);
+
+                                        gallery.put(create, photoDTOList);
+                                    }
+
+                                    return ResponseEntity.status(HttpStatus.OK).body(gallery);
+                                } catch (IllegalArgumentException e) {
+                                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found PhotoList Fail");
+                                }
+                            }
+                        } catch (IllegalArgumentException e) {
+                            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found Album Fail");
                         }
                     }
                 } catch (IllegalArgumentException e) {

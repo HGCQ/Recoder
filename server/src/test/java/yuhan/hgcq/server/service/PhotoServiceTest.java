@@ -13,6 +13,7 @@ import yuhan.hgcq.server.domain.Photo;
 import yuhan.hgcq.server.domain.Team;
 import yuhan.hgcq.server.dto.member.SignupForm;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -69,8 +70,8 @@ class PhotoServiceTest {
         t1Id = ts.create(t1);
         t2Id = ts.create(t2);
 
-        Album a1 = new Album(t1, LocalDateTime.now(), LocalDateTime.now(), "a1");
-        Album a2 = new Album(t1, LocalDateTime.now(), LocalDateTime.now(), "a2");
+        Album a1 = new Album(t1, LocalDate.now(), LocalDate.now(), "a1");
+        Album a2 = new Album(t1, LocalDate.now(), LocalDate.now(), "a2");
 
         try {
             a1Id = as.create(fm1, a1);
@@ -141,7 +142,7 @@ class PhotoServiceTest {
         List<Photo> trashList = ps.trashList(a1);
         ps.trash(trashList);
 
-        assertThrows(IllegalStateException.class, () -> ps.search(saveId));
+        assertThrows(IllegalArgumentException.class, () -> ps.search(saveId));
     }
     
     @Test
