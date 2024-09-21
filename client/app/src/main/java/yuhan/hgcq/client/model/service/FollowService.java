@@ -9,6 +9,7 @@ import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Query;
 import yuhan.hgcq.client.model.dto.follow.FollowDTO;
+import yuhan.hgcq.client.model.dto.follow.Follower;
 import yuhan.hgcq.client.model.dto.member.MemberDTO;
 
 public interface FollowService {
@@ -26,8 +27,8 @@ public interface FollowService {
     Call<List<MemberDTO>> searchFollowingByName(@Query("name") String name);
 
     @GET("/follow/followerlist")
-    Call<List<MemberDTO>> followerList();
+    Call<Follower> followerList();
 
     @GET("/follow/followerlist/name")
-    Call<List<MemberDTO>> searchFollowerByName(@Query("name") String name);
+    Call<Follower> searchFollowerByName(@Query("name") String name);
 }
