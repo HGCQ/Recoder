@@ -66,7 +66,21 @@
         android:text="그룹방 나가기"
         android:textColor="@color/colorRed"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.855"
+        app:layout_constraintHorizontal_bias="0.926"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:layout_width="50dp"
+        android:layout_height="20dp"
+        android:layout_marginTop="96dp"
+        android:fontFamily="@font/notosans_medium"
+        android:gravity="center"
+        android:padding="0dp"
+        android:text="이름 수정"
+        android:textSize="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.955"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

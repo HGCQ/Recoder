@@ -37,14 +37,14 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <FrameLayout
+   <!-- <FrameLayout
          android:id="@+id/main_container"
          android:layout_width="match_parent"
          android:layout_height="0dp"
          app:layout_constraintBottom_toTopOf="@+id/bottom_navigation_view"
          app:layout_constraintEnd_toEndOf="@+id/bottom_navigation_view"
          app:layout_constraintStart_toStartOf="parent"
-         app:layout_constraintTop_toTopOf="parent"/>
+         app:layout_constraintTop_toTopOf="parent"/>-->
 
     <EditText
         android:id="@+id/searchText"
@@ -52,6 +52,9 @@
         android:layout_height="35dp"
         android:layout_marginTop="40dp"
         android:background="@drawable/text"
+        android:gravity="center"
+        android:hint="그룹 이름을 입력하세요."
+        android:padding="0dp"
         android:fontFamily="@font/notosans_medium"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.401"
@@ -82,6 +85,20 @@
         android:src="@drawable/plusicon"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:layout_width="50dp"
+        android:layout_height="20dp"
+        android:layout_marginTop="624dp"
+        android:fontFamily="@font/notosans_medium"
+        android:gravity="center"
+        android:padding="0dp"
+        android:text="그룹 추가"
+        android:textSize="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.502"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

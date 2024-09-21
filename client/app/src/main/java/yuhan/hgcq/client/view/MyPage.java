@@ -2,6 +2,7 @@ package yuhan.hgcq.client.view;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
@@ -10,6 +11,9 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AlertDialog;
@@ -18,14 +22,21 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+
 import yuhan.hgcq.client.R;
+import yuhan.hgcq.client.controller.MemberController;
+import yuhan.hgcq.client.model.dto.member.MemberDTO;
 
 public class MyPage extends AppCompatActivity {
 
     /* View */
-
+    ImageView profile;
+    TextView name, email;
+    ImageButton profileAdd, modify;
+    BottomNavigationView navi;
     /* 서버와 통신 */
-
+    MemberController mc;
     /* Toast */
     Handler handler = new Handler(Looper.getMainLooper());
 
@@ -51,9 +62,9 @@ public class MyPage extends AppCompatActivity {
         /* View와 Layout 연결 */
 
         /* 관련된 페이지 */
-
         /* 받아 올 값 */
-
+        boolean isPrivate;
+        MemberDTO loginMember;
         /* 공유 초기 설정 */
     }
 

@@ -57,8 +57,25 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <EditText
+  <TextView
+      android:layout_width="50dp"
+      android:layout_height="20dp"
+      android:layout_marginTop="90dp"
+      android:fontFamily="@font/notosans_medium"
+      android:gravity="center"
+      android:padding="0dp"
+      android:text="자동 정렬"
+      android:textSize="10dp"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintHorizontal_bias="0.869"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent" />
+
+  <EditText
         android:id="@+id/searchText"
+        android:hint="앨범 이름을 입력하세요."
+        android:gravity="center"
+        android:padding="0dp"
         android:layout_width="234dp"
         android:layout_height="35dp"
         android:layout_marginTop="40dp"
@@ -96,16 +113,30 @@
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintTop_toTopOf="parent" />
 
+  <TextView
+      android:layout_width="50dp"
+      android:layout_height="20dp"
+      android:layout_marginTop="624dp"
+      android:fontFamily="@font/notosans_medium"
+      android:gravity="center"
+      android:padding="0dp"
+      android:text="앨범 추가"
+      android:textSize="10dp"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintHorizontal_bias="0.5"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent" />
+
   <ImageButton
       android:id="@+id/auto"
       android:layout_width="35dp"
       android:layout_height="29dp"
-      android:layout_marginTop="80dp"
+      android:layout_marginTop="68dp"
       android:background="#00000000"
       android:scaleType="fitCenter"
       android:src="@drawable/photoplus"
       app:layout_constraintEnd_toEndOf="parent"
-      app:layout_constraintHorizontal_bias="0.898"
+      app:layout_constraintHorizontal_bias="0.856"
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintTop_toTopOf="parent" />
 
@@ -113,12 +144,26 @@
       android:id="@+id/albumTrash"
       android:layout_width="39dp"
       android:layout_height="31dp"
-      android:layout_marginTop="80dp"
+      android:layout_marginTop="65dp"
       android:background="#00000000"
       android:scaleType="fitCenter"
       android:src="@drawable/trash"
       app:layout_constraintEnd_toEndOf="parent"
-      app:layout_constraintHorizontal_bias="0.997"
+      app:layout_constraintHorizontal_bias="0.978"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent" />
+
+  <TextView
+      android:layout_width="50dp"
+      android:layout_height="20dp"
+      android:layout_marginTop="90dp"
+      android:fontFamily="@font/notosans_medium"
+      android:gravity="center"
+      android:padding="0dp"
+      android:text="앨범 휴지통"
+      android:textSize="10dp"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintHorizontal_bias="1.0"
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintTop_toTopOf="parent" />
 
