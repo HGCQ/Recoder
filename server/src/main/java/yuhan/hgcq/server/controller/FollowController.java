@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import yuhan.hgcq.server.domain.Follow;
 import yuhan.hgcq.server.domain.Member;
 import yuhan.hgcq.server.dto.follow.FollowDTO;
+import yuhan.hgcq.server.dto.follow.Follower;
 import yuhan.hgcq.server.dto.member.MemberDTO;
 import yuhan.hgcq.server.service.FollowService;
 import yuhan.hgcq.server.service.MemberService;
@@ -222,14 +223,26 @@ public class FollowController {
                     if (findMember != null) {
                         try {
                             List<Member> followerList = fs.searchFollower(findMember);
-                            List<MemberDTO> dtoList = new ArrayList<>();
+                            List<Member> followingList = fs.searchFollowing(findMember);
+                            List<MemberDTO> followerDtoList = new ArrayList<>();
+                            List<MemberDTO> followingDtoList = new ArrayList<>();
+
 
                             for (Member follower : followerList) {
                                 MemberDTO dto = mapping(follower);
-                                dtoList.add(dto);
+                                followerDtoList.add(dto);
                             }
 
-                            return ResponseEntity.status(HttpStatus.OK).body(dtoList);
+                            for (Member following : followingList) {
+                                MemberDTO dto = mapping(following);
+                                followingDtoList.add(dto);
+                            }
+
+                            Follower follower = new Follower();
+                            follower.setFollowerList(followerDtoList);
+                            follower.setFollowingList(followingDtoList);
+
+                            return ResponseEntity.status(HttpStatus.OK).body(follower);
                         } catch (IllegalArgumentException e) {
                             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found followerList Fail");
                         }
@@ -264,14 +277,26 @@ public class FollowController {
                     if (findMember != null) {
                         try {
                             List<Member> followerList = fs.searchFollowerByName(findMember, name);
-                            List<MemberDTO> dtoList = new ArrayList<>();
+                            List<Member> followingList = fs.searchFollowing(findMember);
+                            List<MemberDTO> followerDtoList = new ArrayList<>();
+                            List<MemberDTO> followingDtoList = new ArrayList<>();
+
 
                             for (Member follower : followerList) {
                                 MemberDTO dto = mapping(follower);
-                                dtoList.add(dto);
+                                followerDtoList.add(dto);
                             }
 
-                            return ResponseEntity.status(HttpStatus.OK).body(dtoList);
+                            for (Member following : followingList) {
+                                MemberDTO dto = mapping(following);
+                                followingDtoList.add(dto);
+                            }
+
+                            Follower follower = new Follower();
+                            follower.setFollowerList(followerDtoList);
+                            follower.setFollowingList(followingDtoList);
+
+                            return ResponseEntity.status(HttpStatus.OK).body(follower);
                         } catch (IllegalArgumentException e) {
                             return ResponseEntity.status(HttpStatus.OK).body("Found followerList By Name Fail");
                         }
