@@ -6,6 +6,15 @@
     android:layout_height="match_parent"
     tools:context=".view.Loading">
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_marginTop="70dp"
+        android:fontFamily="@font/notosans_bold"
+        android:gravity="center"
+        android:text="Recoder"
+        android:textSize="50dp" />
+
     <ImageView
         android:id="@+id/loading"
         android:layout_width="440dp"
