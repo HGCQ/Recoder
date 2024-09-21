@@ -85,7 +85,7 @@ class AlbumServiceTest {
         Member m1 = ms.search(m1Id);
         Team t1 = ts.search(t1Id);
 
-        Album a1 = new Album(t1, LocalDateTime.now(), LocalDateTime.now(), "a1");
+        Album a1 = new Album(t1, LocalDate.now(), LocalDate.now(), "a1");
 
         Long a1Id = null;
 
@@ -107,7 +107,7 @@ class AlbumServiceTest {
 
         Team t1 = ts.search(t1Id);
 
-        Album a1 = new Album(t1, LocalDateTime.now(), LocalDateTime.now(), "a1");
+        Album a1 = new Album(t1, LocalDate.now(), LocalDate.now(), "a1");
 
         Long a1Id = null;
 
@@ -120,7 +120,7 @@ class AlbumServiceTest {
         Member m1 = ms.search(m1Id);
         Team t1 = ts.search(t1Id);
 
-        Album a1 = new Album(t1, LocalDateTime.now(), LocalDateTime.now(), "a1");
+        Album a1 = new Album(t1, LocalDate.now(), LocalDate.now(), "a1");
 
         Long a1Id = null;
 
@@ -143,7 +143,7 @@ class AlbumServiceTest {
         Member m2 = ms.search(m2Id);
         Team t1 = ts.search(t1Id);
 
-        Album a1 = new Album(t1, LocalDateTime.now(), LocalDateTime.now(), "a1");
+        Album a1 = new Album(t1, LocalDate.now(), LocalDate.now(), "a1");
 
         Long a1Id = null;
 
@@ -162,7 +162,7 @@ class AlbumServiceTest {
         Member m1 = ms.search(m1Id);
         Team t1 = ts.search(t1Id);
 
-        Album a1 = new Album(t1, LocalDateTime.now(), LocalDateTime.now(), "a1");
+        Album a1 = new Album(t1, LocalDate.now(), LocalDate.now(), "a1");
 
         Long a1Id = null;
 
@@ -186,7 +186,7 @@ class AlbumServiceTest {
         Member m2 = ms.search(m2Id);
         Team t1 = ts.search(t1Id);
 
-        Album a1 = new Album(t1, LocalDateTime.now(), LocalDateTime.now(), "a1");
+        Album a1 = new Album(t1, LocalDate.now(), LocalDate.now(), "a1");
 
         Long a1Id = null;
 
@@ -207,20 +207,20 @@ class AlbumServiceTest {
         Member m2 = ms.search(m2Id);
         Team t1 = ts.search(t1Id);
 
-        Album a1 = new Album(t1, LocalDateTime.now(), LocalDateTime.now(), "a1");
+        Album a1 = new Album(t1, LocalDate.now(), LocalDate.now(), "a1");
 
         Long a1Id = null;
 
         try {
             a1Id = as.create(m1, a1);
             Album find = as.search(a1Id);
-            find.test(LocalDateTime.of(2024, 8, 1, 1, 1, 1));
+            find.test(LocalDate.of(2024, 8, 1));
 
             List<Album> trashList = as.searchTrash(t1);
             as.trash(trashList);
 
             Long finalA1Id = a1Id;
-            assertThrows(IllegalStateException.class, () -> as.search(finalA1Id));
+            assertThrows(IllegalArgumentException.class, () -> as.search(finalA1Id));
         } catch (AccessException e) {
             fail();
         }
@@ -232,7 +232,7 @@ class AlbumServiceTest {
         Member m1 = ms.search(m1Id);
         Team t1 = ts.search(t1Id);
 
-        Album a1 = new Album(t1, LocalDateTime.now(), LocalDateTime.now(), "a1");
+        Album a1 = new Album(t1, LocalDate.now(), LocalDate.now(), "a1");
 
         Long a1Id = null;
 
@@ -256,7 +256,7 @@ class AlbumServiceTest {
         Member m2 = ms.search(m2Id);
         Team t1 = ts.search(t1Id);
 
-        Album a1 = new Album(t1, LocalDateTime.now(), LocalDateTime.now(), "a1");
+        Album a1 = new Album(t1, LocalDate.now(), LocalDate.now(), "a1");
 
         Long a1Id = null;
 
@@ -279,8 +279,8 @@ class AlbumServiceTest {
         Member m2 = ms.search(m2Id);
         Team t1 = ts.search(t1Id);
 
-        Album a1 = new Album(t1, LocalDateTime.now(), LocalDateTime.now(), "a1");
-        Album a2 = new Album(t1, LocalDateTime.now(), LocalDateTime.now(), "a2");
+        Album a1 = new Album(t1, LocalDate.now(), LocalDate.now(), "a1");
+        Album a2 = new Album(t1, LocalDate.now(), LocalDate.now(), "a2");
 
         Long a1Id = null;
         Long a2Id = null;
@@ -303,8 +303,8 @@ class AlbumServiceTest {
         Member m2 = ms.search(m2Id);
         Team t1 = ts.search(t1Id);
 
-        Album a1 = new Album(t1, LocalDateTime.now(), LocalDateTime.now(), "a1");
-        Album a2 = new Album(t1, LocalDateTime.now(), LocalDateTime.now(), "a2");
+        Album a1 = new Album(t1, LocalDate.now(), LocalDate.now(), "a1");
+        Album a2 = new Album(t1, LocalDate.now(), LocalDate.now(), "a2");
 
         Long a1Id = null;
         Long a2Id = null;

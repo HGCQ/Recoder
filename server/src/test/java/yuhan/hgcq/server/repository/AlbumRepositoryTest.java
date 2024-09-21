@@ -67,7 +67,7 @@ class AlbumRepositoryTest {
     @Test
     void save() {
         Team team = tr.findOne(saveTeamId);
-        Album album = new Album(team, LocalDateTime.now(), LocalDateTime.now(), "a1");
+        Album album = new Album(team, LocalDate.now(), LocalDate.now(), "a1");
         Long saveId = ar.save(album);
 
         Album find = ar.findOne(saveId);
@@ -77,7 +77,7 @@ class AlbumRepositoryTest {
     @Test
     void delete() {
         Team team = tr.findOne(saveTeamId);
-        Album album = new Album(team, LocalDateTime.now(), LocalDateTime.now(), "a1");
+        Album album = new Album(team, LocalDate.now(), LocalDate.now(), "a1");
         Long saveId = ar.save(album);
 
         ar.delete(saveId);

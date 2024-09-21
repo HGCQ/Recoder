@@ -107,7 +107,7 @@ class TeamServiceTest {
 
         ts.delete(findMember, findTeam);
 
-        assertThrows(IllegalStateException.class, () -> ts.search(t1Id));
+        assertThrows(IllegalArgumentException.class, () -> ts.search(t1Id));
     }
 
     @Test

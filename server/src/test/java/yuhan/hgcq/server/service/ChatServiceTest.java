@@ -69,8 +69,8 @@ class ChatServiceTest {
         t1Id = ts.create(t1);
         t2Id = ts.create(t2);
 
-        Album a1 = new Album(t1, LocalDateTime.now(), LocalDateTime.now(), "a1");
-        Album a2 = new Album(t1, LocalDateTime.now(), LocalDateTime.now(), "a2");
+        Album a1 = new Album(t1, LocalDate.now(), LocalDate.now(), "a1");
+        Album a2 = new Album(t1, LocalDate.now(), LocalDate.now(), "a2");
 
         try {
             a1Id = as.create(fm1, a1);
@@ -110,7 +110,7 @@ class ChatServiceTest {
             fail();
         }
 
-        assertThrows(IllegalStateException.class, () -> cs.search(saveId));
+        assertThrows(IllegalArgumentException.class, () -> cs.search(saveId));
     }
     
     @Test
