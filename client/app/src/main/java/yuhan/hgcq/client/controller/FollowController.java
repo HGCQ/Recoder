@@ -9,6 +9,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import yuhan.hgcq.client.config.NetworkClient;
 import yuhan.hgcq.client.model.dto.follow.FollowDTO;
+import yuhan.hgcq.client.model.dto.follow.Follower;
 import yuhan.hgcq.client.model.dto.member.MemberDTO;
 import yuhan.hgcq.client.model.service.FollowService;
 
@@ -41,13 +42,13 @@ public class FollowController {
         call.enqueue(callback);
     }
 
-    public void followerList(Callback<List<MemberDTO>> callback) {
-        Call<List<MemberDTO>> call = followService.followerList();
+    public void followerList(Callback<Follower> callback) {
+        Call<Follower> call = followService.followerList();
         call.enqueue(callback);
     }
 
-    public void searchFollowerByName(String name, Callback<List<MemberDTO>> callback) {
-        Call<List<MemberDTO>> call = followService.searchFollowerByName(name);
+    public void searchFollowerByName(String name, Callback<Follower> callback) {
+        Call<Follower> call = followService.searchFollowerByName(name);
         call.enqueue(callback);
     }
 }
