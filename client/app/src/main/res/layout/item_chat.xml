@@ -9,12 +9,11 @@
     android:id="@+id/main">
 
     <ImageView
-        android:id="@+id/profile"
+        android:id="@+id/basicProfile"
         android:layout_width="60dp"
         android:layout_height="40dp"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="20dp"
         android:src="@drawable/profile"
-        android:text="팔로잉"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -33,7 +32,7 @@
 
     <TextView
         android:id="@+id/chatting"
-        android:layout_width="290dp"
+        android:layout_width="289dp"
         android:layout_height="35dp"
         android:layout_marginTop="28dp"
         android:background="@drawable/text"
