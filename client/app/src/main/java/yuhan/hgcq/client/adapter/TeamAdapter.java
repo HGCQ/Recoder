@@ -21,6 +21,7 @@ import java.util.List;
 import yuhan.hgcq.client.R;
 import yuhan.hgcq.client.model.dto.member.MemberDTO;
 import yuhan.hgcq.client.model.dto.team.TeamDTO;
+import yuhan.hgcq.client.view.GroupMain;
 import yuhan.hgcq.client.view.GroupSetting;
 
 public class TeamAdapter extends RecyclerView.Adapter<TeamAdapter.TeamViewHolder> {
@@ -46,14 +47,12 @@ public class TeamAdapter extends RecyclerView.Adapter<TeamAdapter.TeamViewHolder
 
     public static class TeamViewHolder extends RecyclerView.ViewHolder {
         public TextView name;
-        public TextView owner;
         public ImageButton setting;
 
         public TeamViewHolder(@NonNull View view, OnItemClickListener listener) {
             super(view);
 
-            name = view.findViewById(R.id.title);
-            owner = view.findViewById(R.id.date);
+            name = view.findViewById(R.id.groupText);
             setting = view.findViewById(R.id.groupset);
 
 
@@ -82,14 +81,12 @@ public class TeamAdapter extends RecyclerView.Adapter<TeamAdapter.TeamViewHolder
     public void onBindViewHolder(@NonNull TeamViewHolder holder, int position) {
         TeamDTO teamDTO = groupList.get(position);
         holder.name.setText(teamDTO.getName());
-        holder.owner.setText(teamDTO.getOwner());
         holder.setting.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent groupSettingPage = new Intent(context, GroupSetting.class);
                 groupSettingPage.putExtra("teamDTO", teamDTO);
                 groupSettingPage.putExtra("loginMember", loginMember);
-                Log.d("loginMember", loginMember.toString());
                 context.startActivity(groupSettingPage);
             }
         });

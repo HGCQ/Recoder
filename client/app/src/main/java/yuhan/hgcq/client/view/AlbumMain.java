@@ -152,6 +152,7 @@ public class AlbumMain extends AppCompatActivity {
         Intent createAlbumPage = new Intent(this, CreateAlbum.class);
         Intent albumTrashPage = new Intent(this, AlbumTrash.class);
         Intent galleryPage = new Intent(this, Gallery.class);
+        Intent myPage=new Intent(this, MyPage.class);
 
         /* 갤러리 */
         Intent gallery = new Intent(Intent.ACTION_GET_CONTENT);
@@ -419,6 +420,13 @@ public class AlbumMain extends AppCompatActivity {
                     }
                     return true;
                 } else if (itemId == R.id.fragment_setting) {
+                    //마이 페이지로 이동시키기
+                    if (loginMember == null) {
+                        Toast.makeText(AlbumMain.this, "로그인 후 이용 가능합니다.", Toast.LENGTH_SHORT).show();
+                    } else {
+                        myPage.putExtra("loginMember", loginMember);
+                        startActivity(myPage);
+                    }
                     return true;
                 }
                 return false;
