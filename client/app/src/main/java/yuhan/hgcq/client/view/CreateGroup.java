@@ -93,7 +93,7 @@ public class CreateGroup extends AppCompatActivity {
         fc = new FollowController(this);
 
         /* View와 Layout 연결 */
-        createGroupText = findViewById(R.id.createGroupText);
+        createGroupText = findViewById(R.id.GroupText);
 
         save = findViewById(R.id.save);
 
@@ -138,6 +138,7 @@ public class CreateGroup extends AppCompatActivity {
                         TeamCreateForm form = new TeamCreateForm();
                         form.setName(groupName);
                         form.setMembers(selectedFollowList);
+                        Log.d("form", form.toString());
                         tc.createTeam(form, new Callback<ResponseBody>() {
                             @Override
                             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {

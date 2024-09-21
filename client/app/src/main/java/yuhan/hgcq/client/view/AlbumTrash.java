@@ -13,6 +13,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -43,6 +44,7 @@ import yuhan.hgcq.client.model.dto.team.TeamDTO;
 public class AlbumTrash extends AppCompatActivity {
 
     /* View */
+    ImageButton recover;
     TextView empty;
     RecyclerView albumTrashListView;
     BottomNavigationView navi;
@@ -116,11 +118,14 @@ public class AlbumTrash extends AppCompatActivity {
 
         navi = findViewById(R.id.bottom_navigation_view);
 
+        recover=findViewById(R.id.recover);
+
         /* 관련된 페이지 */
         Intent groupMainPage = new Intent(this, GroupMain.class);
         Intent albumMainPage = new Intent(this, AlbumMain.class);
         Intent friendListPage = new Intent(this, FriendList.class);
         Intent likePage = new Intent(this, Like.class);
+        Intent myPage=new Intent(this, MyPage.class);
 
         Intent getIntent = getIntent();
         /* 개인, 공유 확인 */
@@ -130,6 +135,16 @@ public class AlbumTrash extends AppCompatActivity {
         teamDTO = (TeamDTO) getIntent.getSerializableExtra("teamDTO");
         loginMember = (MemberDTO) getIntent.getSerializableExtra("loginMember");
 
+        /*리사이클 뷰에 저장되어 있는 삭제된 앨범을 클릭하여 선택한 후 recover 버튼을 클릭하면 앨범메인 페이지에 다시 보여주기*/
+    /*    recover.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlbumDTO dto=new AlbumDTO();
+                albumMainPage.putExtra("albumDTO",dto);
+                notifyAll();
+
+            }
+        });*/
         /* 개인 초기 설정 */
         if (isPrivate) {
             ar.searchTrash(new Callback<List<AlbumDTO>>() {
@@ -178,7 +193,7 @@ public class AlbumTrash extends AppCompatActivity {
                             }
                             aa = new AlbumAdapter(albumList);
                             albumTrashListView.setAdapter(aa);
-                            aa.setOnItemClickListener(new AlbumAdapter.OnItemClickListener() {
+                                aa.setOnItemClickListener(new AlbumAdapter.OnItemClickListener() {
                                 @Override
                                 public void onItemClick(View view, int position) {
 
@@ -221,12 +236,9 @@ public class AlbumTrash extends AppCompatActivity {
                     } else {
                         if (isPrivate) {
                             friendListPage.putExtra("isPrivate", true);
-                            friendListPage.putExtra("loginMember", loginMember);
-                            startActivity(friendListPage);
-                        } else {
-                            friendListPage.putExtra("loginMember", loginMember);
-                            startActivity(friendListPage);
                         }
+                        friendListPage.putExtra("loginMember", loginMember);
+                        startActivity(friendListPage);
                     }
                     return true;
                 } else if (itemId == R.id.fragment_like) {
@@ -239,6 +251,13 @@ public class AlbumTrash extends AppCompatActivity {
                     }
                     return true;
                 } else if (itemId == R.id.fragment_setting) {
+                    //마이 페이지로 이동시키기
+                    if (loginMember == null) {
+                        Toast.makeText(AlbumTrash.this, "로그인 후 이용 가능합니다.", Toast.LENGTH_SHORT).show();
+                    } else {
+                        myPage.putExtra("loginMember", loginMember);
+                        startActivity(myPage);
+                    }
                     return true;
                 }
                 return false;

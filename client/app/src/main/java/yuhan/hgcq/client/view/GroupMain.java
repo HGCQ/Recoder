@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -43,6 +44,7 @@ public class GroupMain extends AppCompatActivity {
     EditText searchText;
     RecyclerView groupList;
     BottomNavigationView navi;
+    TextView empty;
 
     /* Adapter */
     TeamAdapter ta;
@@ -91,6 +93,7 @@ public class GroupMain extends AppCompatActivity {
         /* View와 Layout 연결 */
         search = findViewById(R.id.search);
         groupAdd = findViewById(R.id.groupAdd);
+        empty=findViewById(R.id.empty);
 
         searchText = findViewById(R.id.searchText);
 
@@ -100,11 +103,12 @@ public class GroupMain extends AppCompatActivity {
 
         /* 관련된 페이지 */
         Intent groupMainPage = new Intent(this, GroupMain.class);
-        Intent groupSettingPage = new Intent(this, GroupSetting.class);
         Intent friendListPage = new Intent(this, FriendList.class);
         Intent likePage = new Intent(this, Like.class);
         Intent createGroupPage = new Intent(this, CreateGroup.class);
         Intent albumMainPage = new Intent(this, AlbumMain.class);
+        Intent myPage =new Intent(this, MyPage.class);
+
 
         Intent getIntent = getIntent();
         /* 받아 올 값 */
@@ -112,18 +116,27 @@ public class GroupMain extends AppCompatActivity {
 
         /* 초기 설정 */
         tc.teamList(new Callback<List<TeamDTO>>() {
+
             @Override
             public void onResponse(Call<List<TeamDTO>> call, Response<List<TeamDTO>> response) {
                 if (response.isSuccessful()) {
                     List<TeamDTO> findGroupList = response.body();
+                    if (findGroupList.isEmpty()) {
+                        empty.setVisibility(View.VISIBLE);
+                    } else {
+                        empty.setVisibility(View.INVISIBLE);
+                    }
                     ta = new TeamAdapter(GroupMain.this, loginMember, findGroupList);
                     groupList.setAdapter(ta);
                     ta.setOnItemClickListener(new TeamAdapter.OnItemClickListener() {
+
                         @Override
                         public void onItemClick(View view, int position) {
                             TeamDTO teamDTO = findGroupList.get(position);
                             albumMainPage.putExtra("teamDTO", teamDTO);
                             albumMainPage.putExtra("loginMember", loginMember);
+                            Log.i("TeamDTO Check", "TeamDTO: " + teamDTO);
+
                             Log.i("Found GroupList", "Success");
                             startActivity(albumMainPage);
                         }
@@ -157,7 +170,13 @@ public class GroupMain extends AppCompatActivity {
                     @Override
                     public void onResponse(Call<List<TeamDTO>> call, Response<List<TeamDTO>> response) {
                         if (response.isSuccessful()) {
+
                             List<TeamDTO> findGroupList = response.body();
+                            if (findGroupList.isEmpty()) {
+                                empty.setVisibility(View.VISIBLE);
+                            } else {
+                                empty.setVisibility(View.INVISIBLE);
+                            }
                             ta = new TeamAdapter(GroupMain.this, loginMember, findGroupList);
                             groupList.setAdapter(ta);
                             ta.setOnItemClickListener(new TeamAdapter.OnItemClickListener() {
@@ -208,6 +227,8 @@ public class GroupMain extends AppCompatActivity {
                     startActivity(likePage);
                     return true;
                 } else if (itemId == R.id.fragment_setting) {
+                    myPage.putExtra("loginMember", loginMember);
+                    startActivity(myPage);
                     return true;
                 }
                 return false;

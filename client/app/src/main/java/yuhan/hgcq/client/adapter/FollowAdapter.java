@@ -18,7 +18,7 @@ import yuhan.hgcq.client.model.dto.member.MemberDTO;
 public class FollowAdapter extends RecyclerView.Adapter<FollowAdapter.FollowViewHolder> {
 
     private List<MemberDTO> followList;
-    private List<Long> selectedItems = new ArrayList<>();
+    private List<Integer> selectedItems = new ArrayList<>();
     private OnItemClickListener listener;
 
     public FollowAdapter(List<MemberDTO> followList) {
@@ -67,17 +67,17 @@ public class FollowAdapter extends RecyclerView.Adapter<FollowAdapter.FollowView
         MemberDTO memberDTO = followList.get(position);
         holder.name.setText(memberDTO.getName());
 
-        if (selectedItems.contains((long) position)) {
+        if (selectedItems.contains(position)) {
             holder.itemView.setBackgroundColor(Color.LTGRAY);
         } else {
             holder.itemView.setBackgroundColor(Color.WHITE);
         }
 
         holder.itemView.setOnClickListener(v -> {
-            if (selectedItems.contains((long) position)) {
+            if (selectedItems.contains(position)) {
                 selectedItems.remove(position);
             } else {
-                selectedItems.add((long) position);
+                selectedItems.add(position);
             }
             notifyItemChanged(position);
         });
@@ -89,7 +89,13 @@ public class FollowAdapter extends RecyclerView.Adapter<FollowAdapter.FollowView
     }
 
     public List<Long> getSelectedItems() {
-        return selectedItems;
+        List<Long> newList = new ArrayList<>(selectedItems.size());
+
+        for (int position : selectedItems) {
+            newList.add(followList.get(position).getMemberId());
+        }
+
+        return newList;
     }
 
     public void clearSelections() {
@@ -98,7 +104,8 @@ public class FollowAdapter extends RecyclerView.Adapter<FollowAdapter.FollowView
     }
 
     public void updateList(List<MemberDTO> newList) {
-        followList.clear();;
+        followList.clear();
+        ;
         followList.addAll(newList);
         notifyDataSetChanged();
     }

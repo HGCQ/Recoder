@@ -14,6 +14,8 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.content.DialogInterface;
+import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -21,11 +23,19 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
+import androidx.core.util.Pair;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.google.android.material.datepicker.CalendarConstraints;
+import com.google.android.material.datepicker.DateValidatorPointForward;
+import com.google.android.material.datepicker.MaterialDatePicker;
+import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
+
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.util.Date;
+import java.util.Locale;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -43,7 +53,9 @@ public class CreateAlbum extends AppCompatActivity {
 
     /* View */
     Button save;
-    EditText createAlbumName, startDate, endDate;
+    EditText createAlbumName;
+    TextView startDate1,endDate1;
+    ImageButton calendar;
 
     /* 개인, 공유 확인 */
     boolean isPrivate;
@@ -108,8 +120,9 @@ public class CreateAlbum extends AppCompatActivity {
         save = findViewById(R.id.save);
 
         createAlbumName = findViewById(R.id.AlbumText);
-        startDate = findViewById(R.id.startDate);
-        endDate = findViewById(R.id.endDate);
+        startDate1 = findViewById(R.id.startDate);
+        endDate1 = findViewById(R.id.endDate);
+        calendar=findViewById(R.id.date);
 
         /* 관련된 페이지 */
         Intent albumMainPage = new Intent(this, AlbumMain.class);
@@ -127,14 +140,49 @@ public class CreateAlbum extends AppCompatActivity {
         } else if (teamDTO != null) {
             getSupportActionBar().setTitle("공유 앨범 생성");
         }
+        calendar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MaterialDatePicker.Builder<Pair<Long, Long>> builder = MaterialDatePicker.Builder.dateRangePicker();
+                builder.setTitleText("기간 선택");
+                CalendarConstraints.Builder constraintsBuilder = new CalendarConstraints.Builder();
+                constraintsBuilder.setValidator(DateValidatorPointForward.now());
+
+                builder.setCalendarConstraints(constraintsBuilder.build());
+
+                final MaterialDatePicker<Pair<Long, Long>> datePicker = builder.build();
+                datePicker.show(getSupportFragmentManager(), "DATE_PICKER");
+                datePicker.addOnPositiveButtonClickListener(new MaterialPickerOnPositiveButtonClickListener<Pair<Long, Long>>() {
+                    @Override
+                    public void onPositiveButtonClick(Pair<Long, Long> selection) {
+                        // Handle date range selection
+                        Long startDate = selection.first;
+                        Long endDate = selection.second;
+
+                        // You can now work with the start and end dates
+                        // Convert the timestamps into a readable format if needed
+                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+                        String start = sdf.format(new Date(startDate));
+                        String end = sdf.format(new Date(endDate));
+                        startDate1.setText(start);
+                        endDate1.setText(end);
+
+
+                        Log.d("DATE_RANGE", "Start Date: " + start + " End Date: " + end);
+
+
+                    }
+                });
+            }
+        });
 
         /* 생성 버튼 눌림 */
         save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String albumName = createAlbumName.getText().toString();
-                String editStartDate = startDate.getText().toString();
-                String editEndDate = endDate.getText().toString();
+                String editStartDate = startDate1.getText().toString();
+                String editEndDate = endDate1.getText().toString();
 
                 /* 개인 */
                 if (isPrivate) {
@@ -151,6 +199,7 @@ public class CreateAlbum extends AppCompatActivity {
                                         });
                                         Log.i("Private Album Create", "Success");
                                         albumMainPage.putExtra("isPrivate", true);
+                                        albumMainPage.putExtra("loginMember", loginMember);
                                         startActivity(albumMainPage);
                                     } else {
                                         handler.post(() -> {
@@ -176,6 +225,7 @@ public class CreateAlbum extends AppCompatActivity {
                         }
                     });
                 }
+                /* 공유 */
                 /* 공유 */
                 else {
                     onClick_setting_costume_save("앨범을 생성하시겠습니까?", new DialogInterface.OnClickListener() {

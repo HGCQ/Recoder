@@ -31,13 +31,11 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.AlbumViewHol
 
     public static class AlbumViewHolder extends RecyclerView.ViewHolder {
         public TextView title;
-        public TextView date;
 
         public AlbumViewHolder(@NonNull View view, OnItemClickListener listener) {
             super(view);
 
             title = view.findViewById(R.id.title);
-            date = view.findViewById(R.id.date);
 
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -63,9 +61,7 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.AlbumViewHol
     @Override
     public void onBindViewHolder(@NonNull AlbumViewHolder holder, int position) {
         AlbumDTO albumDTO = albumList.get(position);
-        String date = albumDTO.getStartDate().toString() + " ~ " + albumDTO.getEndDate().toString();
         holder.title.setText(albumDTO.getName());
-        holder.date.setText(date);
     }
 
     @Override

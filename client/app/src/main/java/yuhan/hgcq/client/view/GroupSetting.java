@@ -33,6 +33,8 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import yuhan.hgcq.client.R;
+import yuhan.hgcq.client.adapter.FollowAdapter;
+import yuhan.hgcq.client.adapter.MemberInTeamAdapter;
 import yuhan.hgcq.client.controller.TeamController;
 import yuhan.hgcq.client.model.dto.member.MemberDTO;
 import yuhan.hgcq.client.model.dto.team.MemberInTeamDTO;
@@ -44,6 +46,9 @@ public class GroupSetting extends AppCompatActivity {
     TextView createGroupText;
     Button groupLeave;
     RecyclerView memberListView;
+
+    /* Adapter */
+    MemberInTeamAdapter mita;
 
     /* 받아올 값 */
     MemberDTO loginMember;
@@ -61,6 +66,7 @@ public class GroupSetting extends AppCompatActivity {
         switch (item.getItemId()) {
             case android.R.id.home:
                 Intent groupMainPage = new Intent(this, GroupMain.class);
+                groupMainPage.putExtra("loginMember", loginMember);
                 startActivity(groupMainPage);
                 finish();
                 return true;
@@ -90,9 +96,10 @@ public class GroupSetting extends AppCompatActivity {
         /* View와 Layout 연결 */
         createGroupText = findViewById(R.id.createGroupText);
 
+
         groupLeave = findViewById(R.id.groupLeave);
 
-        memberListView = findViewById(R.id.friendList);
+        memberListView = findViewById(R.id.followingList);
 
         /* 관련된 페이지 */
         Intent groupMainPage = new Intent(this, GroupMain.class);
@@ -109,6 +116,9 @@ public class GroupSetting extends AppCompatActivity {
                 @Override
                 public void onResponse(Call<List<MemberInTeamDTO>> call, Response<List<MemberInTeamDTO>> response) {
                     if (response.isSuccessful()) {
+                        List<MemberInTeamDTO> memberList = response.body();
+                        mita = new MemberInTeamAdapter(memberList);
+                        memberListView.setAdapter(mita);
                         Log.i("Found MemberList In Team", "Success");
                     } else {
                         Log.i("Found MemberList In Team", "Fail");
