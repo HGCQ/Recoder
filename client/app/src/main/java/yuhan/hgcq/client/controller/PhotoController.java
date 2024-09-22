@@ -127,10 +127,15 @@ public class PhotoController {
 
         List<MultipartBody.Part> fileParts = new ArrayList<>();
         for (Uri uri : photoUris) {
-            File file = new File(String.valueOf(uri));
-            RequestBody reqFile = RequestBody.create(MediaType.parse("image/*"), file);
-            MultipartBody.Part image = MultipartBody.Part.createFormData("image", file.getName(), reqFile);
-            fileParts.add(image);
+            try {
+                InputStream inputStream = context.getContentResolver().openInputStream(uri);
+                byte[] imageBytes = IOUtils.toByteArray(inputStream); // Apache commons-io 사용
+                RequestBody reqFile = RequestBody.create(MediaType.parse("image/*"), imageBytes);
+                MultipartBody.Part image = MultipartBody.Part.createFormData("files", getFileNameFromUri(uri), reqFile);
+                fileParts.add(image);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
         List<RequestBody> createParts = new ArrayList<>();
@@ -152,8 +157,8 @@ public class PhotoController {
      * @param albumId  앨범 id
      * @param callback 비동기 콜백
      */
-    public void galleryList(Long albumId, Callback<Map<LocalDate, List<PhotoDTO>>> callback) {
-        Call<Map<LocalDate, List<PhotoDTO>>> call = photoService.galleryList(albumId);
+    public void galleryList(Long albumId, Callback<Map<String, List<PhotoDTO>>> callback) {
+        Call<Map<String, List<PhotoDTO>>> call = photoService.galleryList(albumId);
         call.enqueue(callback);
     }
 
