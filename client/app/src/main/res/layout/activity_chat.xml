@@ -7,14 +7,14 @@
     android:layout_height="match_parent"
     tools:context=".view.AlbumMain">
 
-   <FrameLayout
+ <!--  <FrameLayout
         android:id="@+id/main_container"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@+id/bottom_navigation_view"
         app:layout_constraintEnd_toEndOf="@+id/bottom_navigation_view"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent"/>-->
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation_view"
@@ -32,14 +32,14 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/friendList"
         android:layout_width="409dp"
-        android:layout_height="481dp"
+        android:layout_height="540dp"
         android:gravity="center"
         android:padding="17dp"
         app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.396"
+        app:layout_constraintVertical_bias="0.167"
         app:spanCount="1" />
 
     <View
@@ -54,37 +54,22 @@
         app:layout_constraintVertical_bias="0.906"
         app:tint="#234567" />
 
- <EditText
-     android:id="@+id/chatting"
-     android:layout_width="352dp"
-     android:layout_height="44dp"
-     android:layout_marginTop="596dp"
-     android:background="@drawable/edittext"
-     android:fontFamily="@font/notosans_medium"
-     android:gravity="center"
-     android:hint="채팅을 입력해주세요"
-     android:textSize="18dp"
-     app:layout_constraintEnd_toEndOf="parent"
-     app:layout_constraintHorizontal_bias="0.152"
-     app:layout_constraintStart_toStartOf="parent"
-     app:layout_constraintTop_toTopOf="parent" />
+    <EditText
+        android:id="@+id/chatting"
+        android:layout_width="345dp"
+        android:layout_height="38dp"
+        android:layout_marginTop="570dp"
+        android:background="@drawable/edittext"
+        android:fontFamily="@font/notosans_medium"
+        android:gravity="center"
+        android:hint="채팅을 입력해주세요"
+        android:textSize="18dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.25"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
- <TextView
-     android:id="@+id/AlbumText"
-     android:layout_width="350dp"
-     android:layout_height="47dp"
-     android:layout_marginTop="28dp"
-     android:background="@drawable/text"
-     android:fontFamily="@font/notosans_medium"
-     android:gravity="center"
-     android:text="Title"
-     android:textSize="17dp"
-     app:layout_constraintEnd_toEndOf="parent"
-     app:layout_constraintHorizontal_bias="0.491"
-     app:layout_constraintStart_toStartOf="parent"
-     app:layout_constraintTop_toTopOf="parent" />
-
- <ImageButton
+    <ImageButton
      android:id="@+id/arrow"
      android:layout_width="30dp"
      android:layout_height="40dp"
@@ -94,10 +79,10 @@
      android:src="@drawable/arrow"
      app:layout_constraintBottom_toBottomOf="parent"
      app:layout_constraintEnd_toEndOf="parent"
-     app:layout_constraintHorizontal_bias="0.969"
+     app:layout_constraintHorizontal_bias="0.99"
      app:layout_constraintStart_toStartOf="parent"
      app:layout_constraintTop_toTopOf="parent"
-     app:layout_constraintVertical_bias="0.860" />
+     app:layout_constraintVertical_bias="0.86" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -12,6 +12,7 @@
         android:layout_marginTop="70dp"
         android:fontFamily="@font/notosans_bold"
         android:gravity="center"
+        android:textColor="@color/black"
         android:text="Recoder"
         android:textSize="50dp" />
 

@@ -128,7 +128,7 @@
     <ImageButton
         android:id="@+id/modify"
         android:layout_width="31dp"
-        android:layout_height="36dp"
+        android:layout_height="34dp"
         android:layout_marginTop="20dp"
         android:background="#00000000"
         android:scaleType="fitCenter"
@@ -143,11 +143,12 @@
     <TextView
         android:layout_width="50dp"
         android:layout_height="20dp"
-        android:layout_marginTop="484dp"
+        android:layout_marginTop="482dp"
         android:fontFamily="@font/notosans_medium"
         android:gravity="center"
         android:padding="0dp"
         android:text="정보 수정"
+        android:textColor="@color/black"
         android:textSize="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.98"

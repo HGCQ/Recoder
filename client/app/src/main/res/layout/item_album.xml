@@ -24,13 +24,13 @@
         android:id="@+id/albumDelete"
         android:layout_width="20dp"
         android:layout_height="20dp"
-        android:layout_marginTop="130dp"
+        android:layout_marginTop="108dp"
         android:background="#00000000"
         android:scaleType="fitCenter"
         android:src="@drawable/albumdelete"
         android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.356"
+        app:layout_constraintHorizontal_bias="0.874"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -39,7 +39,6 @@
         android:layout_width="70dp"
         android:layout_height="40dp"
         android:fontFamily="@font/notosans_medium"
-        android:gravity="center"
         android:padding="0dp"
         android:text="title"
         android:textSize="15sp"
@@ -48,6 +47,6 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.185" />
+        app:layout_constraintVertical_bias="0.335" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

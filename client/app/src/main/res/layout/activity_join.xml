@@ -143,6 +143,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:text="Recoder"
+        android:textColor="@color/black"
         android:textSize="35sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -187,6 +188,7 @@
         android:layout_height="wrap_content"
         android:text="Check"
         android:textSize="12dp"
+        android:textColor="@color/black"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.938"
@@ -196,6 +198,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textColor="@color/black"
         android:text="Check"
         android:textSize="12dp"
         app:layout_constraintBottom_toBottomOf="parent"
