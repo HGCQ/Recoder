@@ -9,28 +9,28 @@
     <TextView
         android:layout_width="418dp"
         android:layout_height="75dp"
-        android:layout_marginTop="604dp"
-        android:gravity="center_horizontal"
+        android:layout_marginTop="568dp"
         android:fontFamily="@font/notosans_medium"
+        android:gravity="center_horizontal"
         android:hint="30일이 지나면 항목이 영구적으로 삭제됩니다."
         android:textSize="13dp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.571"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/albumTrashList"
-        android:layout_width="412dp"
-        android:layout_height="520dp"
+        android:layout_width="410dp"
+        android:layout_height="490dp"
         android:gravity="center"
         android:padding="17dp"
         app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.36"
+        app:layout_constraintVertical_bias="0.323"
         app:spanCount="4" />
 
     <TextView
@@ -49,7 +49,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-   <!-- <FrameLayout
+   <FrameLayout
         android:id="@+id/main_container"
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -58,13 +58,13 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0" />-->
+        app:layout_constraintVertical_bias="0.0" />
 
     <ImageButton
         android:id="@+id/recover"
         android:layout_width="35dp"
         android:layout_height="38dp"
-        android:layout_marginTop="2dp"
+        android:layout_marginTop="12dp"
         android:background="#00000000"
         android:onClick="onClick_setting_costume_save"
         android:scaleType="fitCenter"
@@ -79,7 +79,7 @@
     <TextView
         android:layout_width="50dp"
         android:layout_height="20dp"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="50dp"
         android:fontFamily="@font/notosans_medium"
         android:gravity="center"
         android:textColor="@color/black"
@@ -100,7 +100,7 @@
         app:layout_constraintHorizontal_bias="0.333"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.087" />
+        app:layout_constraintVertical_bias="0.104" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation_view"
