@@ -73,13 +73,26 @@ public class PhotoRepository {
      * @return 사진 리스트
      */
     public List<Photo> findAll(Album album) {
-        return em.createQuery("select p from Photo p where p.album = :album", Photo.class)
+        return em.createQuery("select p from Photo p where p.album = :album and p.isDeleted = false order by p.created", Photo.class)
+                .setParameter("album", album)
+                .getResultList();
+    }
+
+    /**
+     * 앨범 사진 이름 리스트 조회
+     *
+     * @param album 앨범
+     * @return 사진 이름 리스트
+     */
+    public List<String> findNameAll(Album album) {
+        return em.createQuery("select p.name from Photo p where p.album = :album and p.isDeleted = false order by p.album.name", String.class)
                 .setParameter("album", album)
                 .getResultList();
     }
 
     /**
      * 휴지통에 있는 사진 리스트 조회
+     *
      * @param album 앨범
      * @return 사진 리스트
      */

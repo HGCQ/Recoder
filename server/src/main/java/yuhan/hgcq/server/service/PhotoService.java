@@ -12,6 +12,7 @@ import yuhan.hgcq.server.domain.Team;
 import yuhan.hgcq.server.dto.photo.AutoSavePhotoForm;
 import yuhan.hgcq.server.dto.photo.UploadPhotoForm;
 import yuhan.hgcq.server.repository.AlbumRepository;
+import yuhan.hgcq.server.repository.LikedRepository;
 import yuhan.hgcq.server.repository.PhotoRepository;
 import yuhan.hgcq.server.repository.TeamRepository;
 
@@ -41,6 +42,7 @@ public class PhotoService {
     private final PhotoRepository pr;
     private final AlbumRepository ar;
     private final TeamRepository tr;
+    private final LikedRepository lr;
 
     private final static int DELETE_DAY = 30;
     private final static String DIRECTORY_PATH = "D:" + File.separator
@@ -73,12 +75,14 @@ public class PhotoService {
         List<MultipartFile> files = form.getFiles();
         List<String> creates = form.getCreates();
 
+
         ensureNotNull(files, "Files");
         ensureNotNull(creates, "Creates");
 
         int size = files.size();
         Long albumId = form.getAlbumId();
         Album fa = ar.findOne(albumId);
+        List<String> nameList = pr.findNameAll(fa);
 
         try {
             String newPath = DIRECTORY_PATH + albumId + File.separator;
@@ -91,6 +95,11 @@ public class PhotoService {
             for (int i = 0; i < size; i++) {
                 MultipartFile file = files.get(i);
                 String name = file.getOriginalFilename();
+
+                if (nameList.contains(name)) {
+                    continue;
+                }
+
                 Path path = Paths.get(newPath + name);
                 file.transferTo(path);
                 String imagePath = "/images/" + albumId + "/" + name;
@@ -118,6 +127,7 @@ public class PhotoService {
         photo.delete();
 
         pr.save(photo);
+        lr.delete(photo);
         log.info("Delete Photo : {}", photo);
     }
 
@@ -232,6 +242,7 @@ public class PhotoService {
             LocalDateTime photoTime = LocalDateTime.parse(creates.get(i));
 
             for (Album album : albumList) {
+                List<String> nameList = pr.findNameAll(album);
                 LocalDate startDate = album.getStartDate();
                 LocalDate endDate = album.getEndDate();
 
@@ -248,6 +259,9 @@ public class PhotoService {
 
                         MultipartFile file = files.get(i);
                         String name = file.getOriginalFilename();
+                        if (nameList.contains(name)) {
+                            continue;
+                        }
                         Path path = Paths.get(newPath + name);
                         file.transferTo(path);
                         String imagePath = "/images/" + albumId + "/" + name;
@@ -286,6 +300,7 @@ public class PhotoService {
     /* 매개변수가 null 값인지 확인 */
     private void ensureNotNull(Object obj, String name) {
         if (obj == null) {
+            log.error("{} is Null", name);
             throw new IllegalArgumentException(name + " is null");
         }
     }

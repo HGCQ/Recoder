@@ -9,6 +9,5 @@ import java.io.Serializable;
 @AllArgsConstructor
 @ToString
 public class LikedDTO implements Serializable {
-    private Long memberId;
     private Long photoId;
 }
