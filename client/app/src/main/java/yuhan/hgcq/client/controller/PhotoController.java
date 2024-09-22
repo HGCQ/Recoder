@@ -4,9 +4,11 @@ import android.content.Context;
 import android.net.Uri;
 
 import java.io.File;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -128,6 +130,17 @@ public class PhotoController {
         }
 
         Call<ResponseBody> call = photoService.autoSavePhoto(fileParts, teamIdPart, createParts);
+        call.enqueue(callback);
+    }
+
+    /**
+     * 갤러리 리스트
+     *
+     * @param albumId  앨범 id
+     * @param callback 비동기 콜백
+     */
+    public void galleryList(Long albumId, Callback<Map<LocalDate, List<PhotoDTO>>> callback) {
+        Call<Map<LocalDate, List<PhotoDTO>>> call = photoService.galleryList(albumId);
         call.enqueue(callback);
     }
 
