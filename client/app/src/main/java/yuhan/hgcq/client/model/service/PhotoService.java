@@ -1,6 +1,8 @@
 package yuhan.hgcq.client.model.service;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -41,6 +43,9 @@ public interface PhotoService {
             @Part("teamId") RequestBody teamId,
             @Part("creates") List<RequestBody> creates
     );
+
+    @GET("/photo/gallery/albumId")
+    Call<Map<LocalDate, List<PhotoDTO>>> galleryList(@Query("albumId") Long albumId);
 
     @GET("/photo/list/albumId")
     Call<List<PhotoDTO>> photoList(@Query("albumId") Long albumId);
