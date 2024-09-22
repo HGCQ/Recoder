@@ -1,9 +1,15 @@
 package yuhan.hgcq.client.controller;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.net.Uri;
+import android.provider.MediaStore;
+
+import org.apache.commons.io.IOUtils;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -24,8 +30,10 @@ import yuhan.hgcq.client.model.service.PhotoService;
 public class PhotoController {
 
     private PhotoService photoService;
+    private Context context;
 
     public PhotoController(Context context) {
+        this.context = context;
         NetworkClient client = NetworkClient.getInstance(context.getApplicationContext());
         photoService = client.getPhotoService();
     }
@@ -46,10 +54,15 @@ public class PhotoController {
 
         List<MultipartBody.Part> fileParts = new ArrayList<>();
         for (Uri uri : photoUris) {
-            File file = new File(String.valueOf(uri));
-            RequestBody reqFile = RequestBody.create(MediaType.parse("image/*"), file);
-            MultipartBody.Part image = MultipartBody.Part.createFormData("image", file.getName(), reqFile);
-            fileParts.add(image);
+            try {
+                InputStream inputStream = context.getContentResolver().openInputStream(uri);
+                byte[] imageBytes = IOUtils.toByteArray(inputStream); // Apache commons-io 사용
+                RequestBody reqFile = RequestBody.create(MediaType.parse("image/*"), imageBytes);
+                MultipartBody.Part image = MultipartBody.Part.createFormData("files", getFileNameFromUri(uri), reqFile);
+                fileParts.add(image);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
         List<RequestBody> createParts = new ArrayList<>();
@@ -164,5 +177,16 @@ public class PhotoController {
     public void photoTrashList(Long albumId, Callback<List<PhotoDTO>> callback) {
         Call<List<PhotoDTO>> call = photoService.photoTrashList(albumId);
         call.enqueue(callback);
+    }
+
+    private String getFileNameFromUri(Uri uri) {
+        String[] projection = { MediaStore.Images.Media.DISPLAY_NAME };
+        Cursor cursor = context.getContentResolver().query(uri, projection, null, null, null);
+        if (cursor != null && cursor.moveToFirst()) {
+            String fileName = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DISPLAY_NAME));
+            cursor.close();
+            return fileName;
+        }
+        return "unknown_file_name";
     }
 }

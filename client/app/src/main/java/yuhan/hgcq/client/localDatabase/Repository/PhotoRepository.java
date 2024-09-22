@@ -34,12 +34,12 @@ public class PhotoRepository {
     }
 
     @Transaction
-    public void create(Long albumId, List<String> paths, List<String> times, Callback<Boolean> callback) {
+    public void create(Long albumId, List<String> paths, List<LocalDateTime> times, Callback<Boolean> callback) {
         executor.execute(() -> {
             try {
                 int size = paths.size();
                 for (int i = 0; i < size; i++) {
-                    Photo photo = Photo.create(paths.get(i), albumId, LocalDateTime.parse(times.get(i)));
+                    Photo photo = Photo.create(paths.get(i), albumId, times.get(i));
                     dao.save(photo);
                 }
                 callback.onSuccess(Boolean.TRUE);
@@ -153,6 +153,22 @@ public class PhotoRepository {
                 List<Photo> photoList = dao.findByAlbumId(albumId);
                 List<PhotoDTO> dtoList = new ArrayList<>();
                 for (Photo p : photoList) {
+                    PhotoDTO dto = mapping(p);
+                    dtoList.add(dto);
+                }
+                callback.onSuccess(dtoList);
+            } catch (Exception e) {
+                callback.onError(e);
+            }
+        });
+    }
+
+    public void searchByLike(Callback<List<PhotoDTO>> callback) {
+        executor.execute(() -> {
+            try {
+                List<Photo> likeList = dao.findIsLiked();
+                List<PhotoDTO> dtoList = new ArrayList<>();
+                for (Photo p : likeList) {
                     PhotoDTO dto = mapping(p);
                     dtoList.add(dto);
                 }
