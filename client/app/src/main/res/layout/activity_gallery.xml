@@ -92,9 +92,10 @@
     <TextView
         android:layout_width="50dp"
         android:layout_height="20dp"
-        android:layout_marginTop="58dp"
+        android:layout_marginTop="56dp"
         android:fontFamily="@font/notosans_medium"
         android:gravity="center"
+        android:textColor="@color/black"
         android:padding="0dp"
         android:text="앨범 이동"
         android:textSize="10dp"
@@ -105,28 +106,29 @@
 
     <ImageButton
         android:id="@+id/photoPlus"
-        android:layout_width="50dp"
-        android:layout_height="45dp"
-        android:layout_marginTop="584dp"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_marginTop="30dp"
         android:background="#00000000"
         android:scaleType="fitCenter"
-        android:src="@drawable/plusicon"
+        android:src="@drawable/camera"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintHorizontal_bias="0.152"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:layout_width="50dp"
         android:layout_height="20dp"
-        android:layout_marginTop="620dp"
+        android:layout_marginTop="58dp"
         android:fontFamily="@font/notosans_medium"
         android:gravity="center"
         android:padding="0dp"
+        android:textColor="@color/black"
         android:text="사진 추가"
         android:textSize="10dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintHorizontal_bias="0.138"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -146,12 +148,13 @@
     <TextView
         android:layout_width="50dp"
         android:layout_height="20dp"
-        android:layout_marginTop="58dp"
+        android:layout_marginTop="56dp"
         android:fontFamily="@font/notosans_medium"
         android:gravity="center"
         android:padding="0dp"
         android:text="사진 휴지통"
         android:textSize="10dp"
+        android:textColor="@color/black"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -161,12 +164,12 @@
         android:id="@+id/chat"
         android:layout_width="33dp"
         android:layout_height="22dp"
-        android:layout_marginTop="56dp"
+        android:layout_marginTop="50dp"
         android:background="#00000000"
         android:scaleType="fitCenter"
         android:src="@drawable/chat"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.044"
+        app:layout_constraintHorizontal_bias="0.03"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

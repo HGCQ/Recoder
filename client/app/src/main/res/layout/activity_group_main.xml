@@ -10,16 +10,16 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/GroupList"
         android:layout_width="390dp"
-        android:layout_height="475dp"
-        android:layout_marginEnd="4dp"
+        android:layout_height="425dp"
+        android:layout_marginEnd="12dp"
         android:gravity="center"
         android:padding="17dp"
         app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.382"
-        app:spanCount="3" />
+        app:layout_constraintVertical_bias="0.37"
+        app:spanCount="2" />
 
     <TextView
         android:id="@+id/empty"
@@ -79,24 +79,25 @@
         android:id="@+id/groupAdd"
         android:layout_width="50dp"
         android:layout_height="45dp"
-        android:layout_marginTop="588dp"
+        android:layout_marginTop="548dp"
         android:background="#00000000"
         android:scaleType="fitCenter"
         android:src="@drawable/plusicon"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintHorizontal_bias="0.501"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:layout_width="50dp"
         android:layout_height="20dp"
-        android:layout_marginTop="624dp"
+        android:layout_marginTop="580dp"
         android:fontFamily="@font/notosans_medium"
         android:gravity="center"
         android:padding="0dp"
         android:text="그룹 추가"
         android:textSize="10dp"
+        android:textColor="@color/black"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.502"
         app:layout_constraintStart_toStartOf="parent"
