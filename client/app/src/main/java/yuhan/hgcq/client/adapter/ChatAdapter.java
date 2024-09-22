@@ -36,11 +36,15 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
         public TextView name;
         public TextView message;
 
-        public ChatViewHolder(@NonNull View view, OnItemClickListener listener) {
+        public ChatViewHolder(@NonNull View view, OnItemClickListener listener, int viewType) {
             super(view);
 
-            name = view.findViewById(R.id.name);
             message = view.findViewById(R.id.chatting);
+            if (viewType == 1) {
+
+            } else {
+                name = view.findViewById(R.id.name);
+            }
 
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -73,11 +77,11 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
         View chatView;
         /* 자기 채팅 */
         if (viewType == 1) {
-            chatView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_chat, parent, false);
+            chatView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_my_chat, parent, false);
         } else {
             chatView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_chat, parent, false);
         }
-        return new ChatAdapter.ChatViewHolder(chatView, listener);
+        return new ChatAdapter.ChatViewHolder(chatView, listener, viewType);
     }
 
     @Override
@@ -87,8 +91,6 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
 
         if(holder.getItemViewType() == 0) {
             holder.name.setText(chatDTO.getWriterName());
-        } else {
-            holder.name.setVisibility(View.INVISIBLE);
         }
     }
 
