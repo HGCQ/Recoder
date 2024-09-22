@@ -14,4 +14,5 @@ public class PhotoDTO implements Serializable {
     private String name;
     private String path;
     private String created;
+    private Boolean isLiked;
 }

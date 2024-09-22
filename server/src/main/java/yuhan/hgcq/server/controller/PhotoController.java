@@ -15,15 +15,13 @@ import yuhan.hgcq.server.dto.photo.MovePhotoForm;
 import yuhan.hgcq.server.dto.photo.PhotoDTO;
 import yuhan.hgcq.server.dto.photo.UploadPhotoForm;
 import yuhan.hgcq.server.service.AlbumService;
+import yuhan.hgcq.server.service.LikedService;
 import yuhan.hgcq.server.service.MemberService;
 import yuhan.hgcq.server.service.PhotoService;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -33,6 +31,7 @@ public class PhotoController {
     private final MemberService ms;
     private final AlbumService as;
     private final PhotoService ps;
+    private final LikedService ls;
 
     /**
      * 사진 업로드
@@ -282,18 +281,26 @@ public class PhotoController {
                             if (fa != null) {
                                 try {
                                     List<Photo> photoList = ps.searchAll(fa);
-
-                                    Map<LocalDate, List<PhotoDTO>> gallery = new HashMap<>();
+                                    List<Photo> likeList = ls.searchAll(findMember);
+                                    Map<String, List<PhotoDTO>> gallery = new HashMap<>();
 
                                     for (Photo photo : photoList) {
                                         LocalDate create = photo.getCreated().toLocalDate();
                                         PhotoDTO dto = mapping(photo);
+                                        dto.setIsLiked(likeList.contains(photo));
 
-                                        List<PhotoDTO> photoDTOList = gallery.getOrDefault(create, new ArrayList<>());
+                                        List<PhotoDTO> photoDTOList = gallery.getOrDefault(create.toString(), new ArrayList<>());
 
                                         photoDTOList.add(dto);
 
-                                        gallery.put(create, photoDTOList);
+                                        photoDTOList.sort(new Comparator<PhotoDTO>() {
+                                            @Override
+                                            public int compare(PhotoDTO p1, PhotoDTO p2) {
+                                                return p2.getCreated().compareTo(p1.getCreated());
+                                            }
+                                        });
+
+                                        gallery.put(create.toString(), photoDTOList);
                                     }
 
                                     return ResponseEntity.status(HttpStatus.OK).body(gallery);
@@ -339,12 +346,21 @@ public class PhotoController {
                             if (fa != null) {
                                 try {
                                     List<Photo> photoList = ps.searchAll(fa);
+                                    List<Photo> likeList = ls.searchAll(findMember);
                                     List<PhotoDTO> photoDTOList = new ArrayList<>();
 
                                     for (Photo photo : photoList) {
                                         PhotoDTO dto = mapping(photo);
+                                        dto.setIsLiked(likeList.contains(photo));
                                         photoDTOList.add(dto);
                                     }
+
+                                    photoDTOList.sort(new Comparator<PhotoDTO>() {
+                                        @Override
+                                        public int compare(PhotoDTO p1, PhotoDTO p2) {
+                                            return p2.getCreated().compareTo(p1.getCreated());
+                                        }
+                                    });
 
                                     return ResponseEntity.status(HttpStatus.OK).body(photoDTOList);
                                 } catch (IllegalArgumentException e) {
