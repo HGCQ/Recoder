@@ -38,27 +38,31 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Response;
 import yuhan.hgcq.client.R;
+import yuhan.hgcq.client.adapter.ServerGalleryAdapter;
 import yuhan.hgcq.client.controller.PhotoController;
 import yuhan.hgcq.client.localDatabase.Repository.PhotoRepository;
 import yuhan.hgcq.client.localDatabase.callback.Callback;
 import yuhan.hgcq.client.model.dto.album.AlbumDTO;
 import yuhan.hgcq.client.model.dto.member.MemberDTO;
+import yuhan.hgcq.client.model.dto.photo.PhotoDTO;
 import yuhan.hgcq.client.model.dto.team.TeamDTO;
 
 public class Gallery extends AppCompatActivity {
 
     /* View */
-    TextView empty;
+    TextView empty, date;
     ImageButton chat, move, photoPlus, photoTrash;
     RecyclerView photoListView;
     BottomNavigationView navi;
 
     /* Adapter */
+    ServerGalleryAdapter ga;
 
     /* 받아올 값 */
     private boolean isPrivate;
@@ -125,6 +129,7 @@ public class Gallery extends AppCompatActivity {
 
         /* View와 Layout 연결 */
         empty = findViewById(R.id.empty);
+        date = findViewById(R.id.date);
 
         chat = findViewById(R.id.chat);
         move = findViewById(R.id.move);
@@ -164,6 +169,7 @@ public class Gallery extends AppCompatActivity {
             } else {
                 getSupportActionBar().setTitle("공유 앨범 : " + albumDTO.getName());
             }
+            date.setText(albumDTO.getStartDate() + " ~ " + albumDTO.getEndDate());
         }
 
         /* 개인 초기 설정 */
@@ -173,7 +179,26 @@ public class Gallery extends AppCompatActivity {
 
         /* 공유 초기 설정 */
         else {
+            if (albumDTO != null) {
+                pc.galleryList(albumDTO.getAlbumId(), new retrofit2.Callback<Map<String, List<PhotoDTO>>>() {
+                    @Override
+                    public void onResponse(Call<Map<String, List<PhotoDTO>>> call, Response<Map<String, List<PhotoDTO>>> response) {
+                        if (response.isSuccessful()) {
+                            Map<String, List<PhotoDTO>> galleryList = response.body();
+                            ga = new ServerGalleryAdapter(galleryList, Gallery.this, isPrivate, loginMember, teamDTO, albumDTO);
+                            photoListView.setAdapter(ga);
+                            Log.i("Found Shared Gallery", "Success");
+                        } else {
+                            Log.i("Found Shared Gallery", "Fail");
+                        }
+                    }
 
+                    @Override
+                    public void onFailure(Call<Map<String, List<PhotoDTO>>> call, Throwable t) {
+                        Log.i("Found Shared Gallery Error", t.getMessage());
+                    }
+                });
+            }
         }
 
         /* 사진 추가 눌림 */
