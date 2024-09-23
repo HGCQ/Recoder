@@ -5,10 +5,14 @@ import android.util.Log;
 
 import androidx.room.Transaction;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -146,6 +150,37 @@ public class PhotoRepository {
         });
     }
 
+    public void gallery(Callback<Map<String, List<PhotoDTO>>> callback) {
+        executor.execute(() -> {
+            try {
+                List<Photo> photoList = dao.findAll();
+                Map<String, List<PhotoDTO>> gallery = new HashMap<>();
+
+                for (Photo photo : photoList) {
+                    LocalDate create = photo.getCreated().toLocalDate();
+                    PhotoDTO dto = mapping(photo);
+
+                    List<PhotoDTO> photoDTOList = gallery.getOrDefault(create.toString(), new ArrayList<>());
+
+                    photoDTOList.add(dto);
+
+                    photoDTOList.sort(new Comparator<PhotoDTO>() {
+                        @Override
+                        public int compare(PhotoDTO p1, PhotoDTO p2) {
+                            return p2.getCreated().compareTo(p1.getCreated());
+                        }
+                    });
+
+                    gallery.put(create.toString(), photoDTOList);
+                }
+
+                callback.onSuccess(gallery);
+            } catch (Exception e) {
+                callback.onError(e);
+            }
+        });
+    }
+
     //앨범 안에 있는 사진 리스트
     public void searchByAlbum(Long albumId, Callback<List<PhotoDTO>> callback) {
         executor.execute(() -> {
@@ -253,6 +288,7 @@ public class PhotoRepository {
         dto.setAlbumId(photo.getAlbumId());
         dto.setCreated(photo.getCreated().toString());
         dto.setPath(photo.getPath());
+        dto.setLiked(photo.getIs_liked());
         return dto;
     }
 }
