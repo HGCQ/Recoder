@@ -170,6 +170,7 @@ public class Gallery extends AppCompatActivity {
         if (albumDTO != null) {
             if (isPrivate) {
                 getSupportActionBar().setTitle("개인 앨범 : " + albumDTO.getName());
+                chat.setVisibility(View.INVISIBLE);
             } else {
                 getSupportActionBar().setTitle("공유 앨범 : " + albumDTO.getName());
             }
@@ -179,12 +180,14 @@ public class Gallery extends AppCompatActivity {
         if (albumDTO != null) {
             /* 개인 초기 설정 */
             if (isPrivate) {
-                pr.gallery(new Callback<Map<String, List<PhotoDTO>>>() {
+                pr.gallery(albumDTO.getAlbumId(), new Callback<Map<String, List<PhotoDTO>>>() {
                     @Override
                     public void onSuccess(Map<String, List<PhotoDTO>> result) {
                         if (result != null) {
                             pga = new PrivateGalleryAdapter(result, Gallery.this, isPrivate, loginMember, albumDTO);
-                            photoListView.setAdapter(pga);
+                            handler.post(() -> {
+                                photoListView.setAdapter(pga);
+                            });
                             Log.i("Found Private Gallery", "Success");
                         } else {
                             Log.i("Found Private Gallery", "Fail");
@@ -205,7 +208,9 @@ public class Gallery extends AppCompatActivity {
                         if (response.isSuccessful()) {
                             Map<String, List<PhotoDTO>> galleryList = response.body();
                             sga = new ServerGalleryAdapter(galleryList, Gallery.this, isPrivate, loginMember, teamDTO, albumDTO);
-                            photoListView.setAdapter(sga);
+                            handler.post(() -> {
+                                photoListView.setAdapter(sga);
+                            });
                             Log.i("Found Shared Gallery", "Success");
                         } else {
                             Log.i("Found Shared Gallery", "Fail");
@@ -353,7 +358,13 @@ public class Gallery extends AppCompatActivity {
                             public void onSuccess(Boolean result) {
                                 if (result) {
                                     handler.post(() -> {
+                                        Intent galleryPage = new Intent(Gallery.this, Gallery.class);
+                                        galleryPage.putExtra("loginMember", loginMember);
+                                        galleryPage.putExtra("isPrivate", isPrivate);
+                                        galleryPage.putExtra("teamDTO", teamDTO);
+                                        galleryPage.putExtra("albumDTO", albumDTO);
                                         Toast.makeText(Gallery.this, "사진이 저장되었습니다.", Toast.LENGTH_SHORT).show();
+                                        startActivity(galleryPage);
                                     });
                                     Log.i("Photo Upload In Private Album", "Success");
                                 } else {
@@ -375,7 +386,13 @@ public class Gallery extends AppCompatActivity {
                                 public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                                     if (response.isSuccessful()) {
                                         handler.post(() -> {
+                                            Intent galleryPage = new Intent(Gallery.this, Gallery.class);
+                                            galleryPage.putExtra("loginMember", loginMember);
+                                            galleryPage.putExtra("isPrivate", isPrivate);
+                                            galleryPage.putExtra("teamDTO", teamDTO);
+                                            galleryPage.putExtra("albumDTO", albumDTO);
                                             Toast.makeText(Gallery.this, "사진이 저장되었습니다.", Toast.LENGTH_SHORT).show();
+                                            startActivity(galleryPage);
                                         });
                                         Log.i("Photo Upload In Shared Album", "Success");
                                     } else {
@@ -418,7 +435,13 @@ public class Gallery extends AppCompatActivity {
                             public void onSuccess(Boolean result) {
                                 if (result) {
                                     handler.post(() -> {
+                                        Intent galleryPage = new Intent(Gallery.this, Gallery.class);
+                                        galleryPage.putExtra("loginMember", loginMember);
+                                        galleryPage.putExtra("isPrivate", isPrivate);
+                                        galleryPage.putExtra("teamDTO", teamDTO);
+                                        galleryPage.putExtra("albumDTO", albumDTO);
                                         Toast.makeText(Gallery.this, "사진이 저장되었습니다.", Toast.LENGTH_SHORT).show();
+                                        startActivity(galleryPage);
                                     });
                                     Log.i("Photo Upload In Private Album", "Success");
                                 } else {
@@ -440,7 +463,13 @@ public class Gallery extends AppCompatActivity {
                                 public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                                     if (response.isSuccessful()) {
                                         handler.post(() -> {
+                                            Intent galleryPage = new Intent(Gallery.this, Gallery.class);
+                                            galleryPage.putExtra("loginMember", loginMember);
+                                            galleryPage.putExtra("isPrivate", isPrivate);
+                                            galleryPage.putExtra("teamDTO", teamDTO);
+                                            galleryPage.putExtra("albumDTO", albumDTO);
                                             Toast.makeText(Gallery.this, "사진이 저장되었습니다.", Toast.LENGTH_SHORT).show();
+                                            startActivity(galleryPage);
                                         });
                                         Log.i("Photo Upload In Shared Album", "Success");
                                     } else {

@@ -5,6 +5,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -66,6 +68,9 @@ public class FriendList extends AppCompatActivity {
     /* 팔로워, 팔로우 버튼 구별 */
     boolean isFollower = false;
 
+    /* Toast */
+    Handler handler = new Handler(Looper.getMainLooper());
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         getSupportActionBar().setTitle("친구 목록");
@@ -118,16 +123,18 @@ public class FriendList extends AppCompatActivity {
                 if (response.isSuccessful()) {
                     List<MemberDTO> followingList = response.body();
                     if (followingList.isEmpty()) {
-                        empty.post(() -> {
+                        handler.post(() -> {
                             empty.setVisibility(View.VISIBLE);
                         });
                     } else {
-                        empty.post(() -> {
+                        handler.post(() -> {
                             empty.setVisibility(View.INVISIBLE);
                         });
                     }
                     fga = new FollowingAdapter(FriendList.this, followingList);
-                    friendListView.setAdapter(fga);
+                    handler.post(() -> {
+                        friendListView.setAdapter(fga);
+                    });
                     Log.i("Found FollowingList", "Success");
                 } else {
                     Log.i("Found FollowingList", "Fail");
@@ -153,21 +160,23 @@ public class FriendList extends AppCompatActivity {
                             List<MemberDTO> followerList = body.getFollowerList();
                             List<MemberDTO> followingList = body.getFollowingList();
 
-                            for(MemberDTO dto : followingList) {
+                            for (MemberDTO dto : followingList) {
                                 Log.i("followingList", dto.toString());
                             }
 
                             if (followerList.isEmpty()) {
-                                empty.post(() -> {
-                                   empty.setVisibility(View.VISIBLE);
+                                handler.post(() -> {
+                                    empty.setVisibility(View.VISIBLE);
                                 });
                             } else {
-                                empty.post(() -> {
+                                handler.post(() -> {
                                     empty.setVisibility(View.INVISIBLE);
                                 });
                             }
                             fra = new FollowerAdapter(FriendList.this, followerList, followingList);
-                            friendListView.setAdapter(fra);
+                            handler.post(() -> {
+                                friendListView.setAdapter(fra);
+                            });
                             isFollower = true;
                             Log.i("Found FollowerList", "Success");
                         } else {
@@ -193,16 +202,18 @@ public class FriendList extends AppCompatActivity {
                         if (response.isSuccessful()) {
                             List<MemberDTO> followingList = response.body();
                             if (followingList.isEmpty()) {
-                                empty.post(() -> {
+                                handler.post(() -> {
                                     empty.setVisibility(View.VISIBLE);
                                 });
                             } else {
-                                empty.post(() -> {
+                                handler.post(() -> {
                                     empty.setVisibility(View.INVISIBLE);
                                 });
                             }
                             fga = new FollowingAdapter(FriendList.this, followingList);
-                            friendListView.setAdapter(fga);
+                            handler.post(() -> {
+                                friendListView.setAdapter(fga);
+                            });
                             isFollower = false;
                             Log.i("Found FollowingList", "Success");
                         } else {
@@ -232,17 +243,18 @@ public class FriendList extends AppCompatActivity {
                             List<MemberDTO> followingList = body.getFollowingList();
 
                             if (followerList.isEmpty()) {
-                                empty.post(() -> {
+                                handler.post(() -> {
                                     empty.setVisibility(View.VISIBLE);
                                 });
                             } else {
-                                empty.post(() -> {
+                                handler.post(() -> {
                                     empty.setVisibility(View.INVISIBLE);
                                 });
                             }
-
                             fra = new FollowerAdapter(FriendList.this, followerList, followingList);
-                            friendListView.setAdapter(fra);
+                            handler.post(() -> {
+                                friendListView.setAdapter(fra);
+                            });
                             Log.i("Found FollowerList By Name", "Success");
                         } else {
                             Log.i("Found FollowerList By Name", "Fail");
@@ -261,15 +273,17 @@ public class FriendList extends AppCompatActivity {
                         if (response.isSuccessful()) {
                             List<MemberDTO> followingList = response.body();
                             if (followingList.isEmpty()) {
-                                empty.post(() -> {
+                                handler.post(() -> {
                                     empty.setVisibility(View.VISIBLE);
                                 });
                             } else {
-                                empty.post(() -> {
+                                handler.post(() -> {
                                     empty.setVisibility(View.INVISIBLE);
                                 });
                             }
-                            fga.updateList(followingList);
+                            handler.post(() -> {
+                                fga.updateList(followingList);
+                            });
                             Log.i("Found FollowingList", "Success");
                         } else {
                             Log.i("Found FollowingList", "Fail");
