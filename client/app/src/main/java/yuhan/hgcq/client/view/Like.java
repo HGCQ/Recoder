@@ -30,6 +30,7 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.Response;
 import yuhan.hgcq.client.R;
+import yuhan.hgcq.client.adapter.PrivateLikeAdapter;
 import yuhan.hgcq.client.adapter.ServerLikeAdapter;
 import yuhan.hgcq.client.controller.LikedController;
 import yuhan.hgcq.client.localDatabase.Repository.PhotoRepository;
@@ -45,7 +46,8 @@ public class Like extends AppCompatActivity {
     BottomNavigationView navi;
 
     /* Adapter */
-    ServerLikeAdapter la;
+    ServerLikeAdapter sla;
+    PrivateLikeAdapter pla;
 
     /* 개인, 공유 확인 */
     boolean isPrivate;
@@ -119,9 +121,9 @@ public class Like extends AppCompatActivity {
                             empty.setVisibility(View.INVISIBLE);
                         });
                     }
-                    la = new ServerLikeAdapter(result, Like.this);
-                    likeListView.setAdapter(la);
-                    la.setOnItemClickListener(new ServerLikeAdapter.OnItemClickListener() {
+                    pla = new PrivateLikeAdapter(result, Like.this);
+                    likeListView.setAdapter(pla);
+                    pla.setOnItemClickListener(new PrivateLikeAdapter.OnItemClickListener() {
                         @Override
                         public void onItemClick(View view, int position) {
                             photoPage.putExtra("isPrivate", isPrivate);
@@ -159,9 +161,9 @@ public class Like extends AppCompatActivity {
                                 empty.setVisibility(View.INVISIBLE);
                             });
                         }
-                        la = new ServerLikeAdapter(likeList, Like.this);
-                        likeListView.setAdapter(la);
-                        la.setOnItemClickListener(new ServerLikeAdapter.OnItemClickListener() {
+                        sla = new ServerLikeAdapter(likeList, Like.this);
+                        likeListView.setAdapter(sla);
+                        sla.setOnItemClickListener(new ServerLikeAdapter.OnItemClickListener() {
                             @Override
                             public void onItemClick(View view, int position) {
                                 photoPage.putExtra("isLike", true);
