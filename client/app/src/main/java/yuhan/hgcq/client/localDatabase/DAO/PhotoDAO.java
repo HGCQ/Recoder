@@ -27,12 +27,12 @@ public interface PhotoDAO {
     @Query("SELECT * FROM photo WHERE albumId = :albumId")
     List<Photo> findByAlbumId(Long albumId);
 
-    @Query("SELECT * FROM photo")
+    @Query("SELECT * FROM photo where is_deleted = 0")
     List<Photo> findAll();
 
     @Query("select * from photo where is_deleted = 1")
     List<Photo> findByIsDeleted();
 
-    @Query("select*from photo where is_liked = 1")
+    @Query("select*from photo where is_liked = 1 and is_deleted = 0")
     List<Photo>findIsLiked();
 }

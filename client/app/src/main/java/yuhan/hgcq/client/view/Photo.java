@@ -34,6 +34,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import yuhan.hgcq.client.R;
+import yuhan.hgcq.client.adapter.PrivatePhotoAdapter;
 import yuhan.hgcq.client.adapter.ServerPhotoAdapter;
 import yuhan.hgcq.client.controller.LikedController;
 import yuhan.hgcq.client.controller.PhotoController;
@@ -53,6 +54,7 @@ public class Photo extends AppCompatActivity {
 
     /* Adapter */
     ServerPhotoAdapter spa;
+    PrivatePhotoAdapter ppa;
 
     /* 개인, 공유 확인 */
     boolean isPrivate;
@@ -162,6 +164,9 @@ public class Photo extends AppCompatActivity {
                     @Override
                     public void onSuccess(List<PhotoDTO> result) {
                         if (result != null) {
+                            ppa = new PrivatePhotoAdapter(result, Photo.this);
+                            photoView.setAdapter(ppa);
+                            photoView.setCurrentItem(position, false);
                             Log.i("Found Private LikeList", "Success");
                         } else {
                             Log.i("Found Private LikeList", "Fail");
@@ -199,6 +204,34 @@ public class Photo extends AppCompatActivity {
             if (albumDTO != null) {
                 if (isPrivate) {
                     getSupportActionBar().setTitle("개인 사진");
+                    pr.searchByAlbum(albumDTO.getAlbumId(), new yuhan.hgcq.client.localDatabase.callback.Callback<List<PhotoDTO>>() {
+                        @Override
+                        public void onSuccess(List<PhotoDTO> result) {
+                            if (result != null) {
+                                int index = 0;
+                                int size = result.size();
+                                for (int i = 0; i < size; i++) {
+                                    Long photo = result.get(i).getPhotoId();
+                                    Long dto = photoDTO.getPhotoId();
+                                    if (photo.equals(dto)) {
+                                        index = i;
+                                        break;
+                                    }
+                                }
+                                ppa = new PrivatePhotoAdapter(result, Photo.this);
+                                photoView.setAdapter(ppa);
+                                photoView.setCurrentItem(index, false);
+                                Log.i("Found Private PhotoList", "Success");
+                            } else {
+                                Log.i("Found Private PhotoList", "Success");
+                            }
+                        }
+
+                        @Override
+                        public void onError(Exception e) {
+                            Log.e("Found Private PhotoList Error", e.getMessage());
+                        }
+                    });
                 } else {
                     getSupportActionBar().setTitle("공유 사진");
                     pc.photoList(albumDTO.getAlbumId(), new Callback<List<PhotoDTO>>() {
@@ -243,7 +276,7 @@ public class Photo extends AppCompatActivity {
                 PhotoDTO dto;
 
                 if (isPrivate) {
-                    List<PhotoDTO> photoList = spa.getPhotoList();
+                    List<PhotoDTO> photoList = ppa.getPhotoList();
                     dto = photoList.get(position);
                 } else {
                     List<PhotoDTO> photoList = spa.getPhotoList();
@@ -263,10 +296,62 @@ public class Photo extends AppCompatActivity {
             int index = photoView.getCurrentItem();
 
             if (isPrivate) {
+                List<PhotoDTO> photoList = ppa.getPhotoList();
+                PhotoDTO dto = photoList.get(index);
+                if (dto.getLiked()) {
+                    pr.Liked(dto.getPhotoId(), new yuhan.hgcq.client.localDatabase.callback.Callback<Boolean>() {
+                        @Override
+                        public void onSuccess(Boolean result) {
+                            if (result != null) {
+                                if (result) {
+                                    like.post(() -> {
+                                        like.setImageResource(R.drawable.unlove);
+                                    });
+                                    handler.post(() -> {
+                                        Toast.makeText(Photo.this, "좋아요를 취소했습니다.", Toast.LENGTH_SHORT).show();
+                                    });
+                                    dto.setLiked(false);
+                                    Log.i("Delete Like Private Photo", "Success");
+                                } else {
+                                    Log.i("Delete Like Private Photo", "Fail");
+                                }
+                            }
+                        }
 
+                        @Override
+                        public void onError(Exception e) {
+                            Log.i("Delete Like Private Photo Error", e.getMessage());
+                        }
+                    });
+                } else {
+                    pr.Liked(dto.getPhotoId(), new yuhan.hgcq.client.localDatabase.callback.Callback<Boolean>() {
+                        @Override
+                        public void onSuccess(Boolean result) {
+                            if (result != null) {
+                                if (result) {
+                                    like.post(() -> {
+                                        like.setImageResource(R.drawable.love);
+                                    });
+                                    handler.post(() -> {
+                                        Toast.makeText(Photo.this, "좋아요 했습니다.", Toast.LENGTH_SHORT).show();
+                                    });
+                                    dto.setLiked(true);
+                                    Log.i("Add Like Private Photo", "Success");
+                                } else {
+                                    Log.i("Add Like Private Photo", "Fail");
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onError(Exception e) {
+                            Log.i("Add Like Private Photo Error", e.getMessage());
+                        }
+                    });
+                }
             } else {
-                List<PhotoDTO> likeList = spa.getPhotoList();
-                PhotoDTO dto = likeList.get(index);
+                List<PhotoDTO> photoList = spa.getPhotoList();
+                PhotoDTO dto = photoList.get(index);
                 if (dto.getLiked()) {
                     lc.deleteLiked(new LikedDTO(dto.getPhotoId()), new Callback<ResponseBody>() {
                         @Override
