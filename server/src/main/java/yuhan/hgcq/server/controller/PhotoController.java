@@ -10,10 +10,7 @@ import yuhan.hgcq.server.domain.Album;
 import yuhan.hgcq.server.domain.Member;
 import yuhan.hgcq.server.domain.Photo;
 import yuhan.hgcq.server.dto.member.MemberDTO;
-import yuhan.hgcq.server.dto.photo.AutoSavePhotoForm;
-import yuhan.hgcq.server.dto.photo.MovePhotoForm;
-import yuhan.hgcq.server.dto.photo.PhotoDTO;
-import yuhan.hgcq.server.dto.photo.UploadPhotoForm;
+import yuhan.hgcq.server.dto.photo.*;
 import yuhan.hgcq.server.service.AlbumService;
 import yuhan.hgcq.server.service.LikedService;
 import yuhan.hgcq.server.service.MemberService;
@@ -124,12 +121,12 @@ public class PhotoController {
     /**
      * 사진 삭제 취소
      *
-     * @param photoDTO 사진 DTO
+     * @param form 사진 id 리스트
      * @param request  요청
      * @return 성공 시 200 상태 코드, 실패 시 404 상태 코드, 세션 없을 시 401 상태 코드
      */
     @PostMapping("/delete/cancel")
-    public ResponseEntity<?> cancelDeletePhoto(@RequestBody PhotoDTO photoDTO, HttpServletRequest request) {
+    public ResponseEntity<?> cancelDeletePhoto(@RequestBody DeleteCancelPhotoForm form, HttpServletRequest request) {
         HttpSession session = request.getSession(false);
 
         if (session != null) {
@@ -141,16 +138,20 @@ public class PhotoController {
 
                     if (findMember != null) {
                         try {
-                            Photo fp = ps.search(photoDTO.getPhotoId());
+                            List<Long> photoIds = form.getPhotoIds();
 
-                            if (fp != null) {
-                                try {
-                                    ps.deleteCancel(fp);
-                                    return ResponseEntity.status(HttpStatus.OK).body("Delete Cancel Photo Success");
-                                } catch (IllegalArgumentException e) {
-                                    return ResponseEntity.status(HttpStatus.OK).body("Delete Cancel Photo Fail");
+                            for (Long photoId : photoIds) {
+                                Photo fp = ps.search(photoId);
+
+                                if (fp != null) {
+                                    try {
+                                        ps.deleteCancel(fp);
+                                    } catch (IllegalArgumentException e) {
+                                        return ResponseEntity.status(HttpStatus.OK).body("Delete Cancel Photo Fail");
+                                    }
                                 }
                             }
+                            return ResponseEntity.status(HttpStatus.OK).body("Delete Cancel Photo Success");
                         } catch (IllegalArgumentException e) {
                             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found Photo Fail");
                         }
