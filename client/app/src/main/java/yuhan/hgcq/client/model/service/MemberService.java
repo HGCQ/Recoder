@@ -1,7 +1,5 @@
 package yuhan.hgcq.client.model.service;
 
-import java.util.List;
-
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -10,6 +8,7 @@ import retrofit2.http.POST;
 import retrofit2.http.Query;
 import yuhan.hgcq.client.model.dto.member.LoginForm;
 import yuhan.hgcq.client.model.dto.member.MemberDTO;
+import yuhan.hgcq.client.model.dto.member.Members;
 import yuhan.hgcq.client.model.dto.member.SignupForm;
 import yuhan.hgcq.client.model.dto.member.MemberUpdateForm;
 
@@ -34,7 +33,7 @@ public interface MemberService {
     Call<Boolean> duplicateName(@Query("name") String name);
 
     @GET("/member/list")
-    Call<List<MemberDTO>> memberList();
+    Call<Members> memberList();
 
     @GET("/member/islogin")
     Call<MemberDTO> isloginMember();
