@@ -44,6 +44,7 @@ import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Response;
 import yuhan.hgcq.client.R;
+import yuhan.hgcq.client.adapter.PrivateGalleryAdapter;
 import yuhan.hgcq.client.adapter.ServerGalleryAdapter;
 import yuhan.hgcq.client.controller.PhotoController;
 import yuhan.hgcq.client.localDatabase.Repository.PhotoRepository;
@@ -62,7 +63,8 @@ public class Gallery extends AppCompatActivity {
     BottomNavigationView navi;
 
     /* Adapter */
-    ServerGalleryAdapter ga;
+    PrivateGalleryAdapter pga;
+    ServerGalleryAdapter sga;
 
     /* 받아올 값 */
     private boolean isPrivate;
@@ -144,6 +146,8 @@ public class Gallery extends AppCompatActivity {
         Intent gallery = new Intent(Intent.ACTION_GET_CONTENT);
         gallery.setType("image/*");
         gallery.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+        gallery.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
+        gallery.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
         /* 관련된 페이지 */
         Intent groupMainPage = new Intent(this, GroupMain.class);
@@ -172,21 +176,36 @@ public class Gallery extends AppCompatActivity {
             date.setText(albumDTO.getStartDate() + " ~ " + albumDTO.getEndDate());
         }
 
-        /* 개인 초기 설정 */
-        if (isPrivate) {
-            chat.setVisibility(View.INVISIBLE);
-        }
+        if (albumDTO != null) {
+            /* 개인 초기 설정 */
+            if (isPrivate) {
+                pr.gallery(new Callback<Map<String, List<PhotoDTO>>>() {
+                    @Override
+                    public void onSuccess(Map<String, List<PhotoDTO>> result) {
+                        if (result != null) {
+                            pga = new PrivateGalleryAdapter(result, Gallery.this, isPrivate, loginMember, albumDTO);
+                            photoListView.setAdapter(pga);
+                            Log.i("Found Private Gallery", "Success");
+                        } else {
+                            Log.i("Found Private Gallery", "Fail");
+                        }
+                    }
 
-        /* 공유 초기 설정 */
-        else {
-            if (albumDTO != null) {
+                    @Override
+                    public void onError(Exception e) {
+                        Log.e("Found Private Gallery Error", e.getMessage());
+                    }
+                });
+            }
+            /* 공유 초기 설정 */
+            else {
                 pc.galleryList(albumDTO.getAlbumId(), new retrofit2.Callback<Map<String, List<PhotoDTO>>>() {
                     @Override
                     public void onResponse(Call<Map<String, List<PhotoDTO>>> call, Response<Map<String, List<PhotoDTO>>> response) {
                         if (response.isSuccessful()) {
                             Map<String, List<PhotoDTO>> galleryList = response.body();
-                            ga = new ServerGalleryAdapter(galleryList, Gallery.this, isPrivate, loginMember, teamDTO, albumDTO);
-                            photoListView.setAdapter(ga);
+                            sga = new ServerGalleryAdapter(galleryList, Gallery.this, isPrivate, loginMember, teamDTO, albumDTO);
+                            photoListView.setAdapter(sga);
                             Log.i("Found Shared Gallery", "Success");
                         } else {
                             Log.i("Found Shared Gallery", "Fail");
@@ -313,6 +332,8 @@ public class Gallery extends AppCompatActivity {
 
                     for (int i = 0; i < count; i++) {
                         Uri imageUri = data.getClipData().getItemAt(i).getUri();
+                        getContentResolver().takePersistableUriPermission(imageUri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
                         AlbumMain.PhotoMetaData metadata = getImageMetadata(imageUri);
                         String path = imageUri.toString();
                         LocalDateTime created = metadata.getCreated();
@@ -372,25 +393,23 @@ public class Gallery extends AppCompatActivity {
                         }
                     }
                 } else if (data.getData() != null) {
-                    int count = data.getClipData().getItemCount();
+                    Uri imageUri = data.getData();
+                    getContentResolver().takePersistableUriPermission(imageUri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
-                    List<Uri> uriList = new ArrayList<>(count);
-                    List<String> paths = new ArrayList<>(count);
-                    List<LocalDateTime> creates = new ArrayList<>(count);
+                    List<Uri> uriList = new ArrayList<>();
+                    List<String> paths = new ArrayList<>();
+                    List<LocalDateTime> creates = new ArrayList<>();
 
-                    for (int i = 0; i < count; i++) {
-                        Uri imageUri = data.getClipData().getItemAt(i).getUri();
-                        AlbumMain.PhotoMetaData metadata = getImageMetadata(imageUri);
-                        String path = imageUri.toString();
-                        LocalDateTime created = metadata.getCreated();
+                    AlbumMain.PhotoMetaData metadata = getImageMetadata(imageUri);
+                    String path = imageUri.toString();
+                    LocalDateTime created = metadata.getCreated();
 
-                        Log.d("path", path);
-                        Log.d("created", created.toString());
+                    Log.d("path", path);
+                    Log.d("created", created.toString());
 
-                        uriList.add(imageUri);
-                        paths.add(path);
-                        creates.add(created);
-                    }
+                    uriList.add(imageUri);
+                    paths.add(path);
+                    creates.add(created);
 
                     /* 개인 */
                     if (isPrivate) {
