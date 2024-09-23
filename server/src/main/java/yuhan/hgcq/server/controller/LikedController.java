@@ -145,6 +145,7 @@ public class LikedController {
 
                             for (Photo photo : likedList) {
                                 PhotoDTO dto = mapping(photo);
+                                dto.setIsLiked(true);
                                 photoDTOList.add(dto);
                             }
 
