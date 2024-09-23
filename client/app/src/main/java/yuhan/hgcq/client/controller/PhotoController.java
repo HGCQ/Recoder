@@ -23,6 +23,7 @@ import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import yuhan.hgcq.client.config.NetworkClient;
+import yuhan.hgcq.client.model.dto.photo.DeleteCancelPhotoForm;
 import yuhan.hgcq.client.model.dto.photo.MovePhotoForm;
 import yuhan.hgcq.client.model.dto.photo.PhotoDTO;
 import yuhan.hgcq.client.model.service.PhotoService;
@@ -92,11 +93,11 @@ public class PhotoController {
     /**
      * 사진 삭제 취소
      *
-     * @param photoDTO 사진 DTO
+     * @param form 사진 id 리스트
      * @param callback 비동기 콜백
      */
-    public void cancelDeletePhoto(PhotoDTO photoDTO, Callback<ResponseBody> callback) {
-        Call<ResponseBody> call = photoService.cancelDeletePhoto(photoDTO);
+    public void cancelDeletePhoto(DeleteCancelPhotoForm form, Callback<ResponseBody> callback) {
+        Call<ResponseBody> call = photoService.cancelDeletePhoto(form);
         call.enqueue(callback);
     }
 

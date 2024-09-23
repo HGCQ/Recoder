@@ -24,7 +24,7 @@ public interface PhotoDAO {
     @Query("SELECT * FROM photo WHERE photoId = :photoId")
     List<Photo> findById(Long photoId);
 
-    @Query("SELECT * FROM photo WHERE albumId = :albumId")
+    @Query("SELECT * FROM photo WHERE albumId = :albumId and is_deleted = 0")
     List<Photo> findByAlbumId(Long albumId);
 
     @Query("SELECT * FROM photo where is_deleted = 0")

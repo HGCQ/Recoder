@@ -14,6 +14,7 @@ import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.Part;
 import retrofit2.http.Query;
+import yuhan.hgcq.client.model.dto.photo.DeleteCancelPhotoForm;
 import yuhan.hgcq.client.model.dto.photo.MovePhotoForm;
 import yuhan.hgcq.client.model.dto.photo.PhotoDTO;
 
@@ -31,7 +32,7 @@ public interface PhotoService {
     Call<ResponseBody> deletePhoto(@Body PhotoDTO photoDTO);
 
     @POST("/photo/delete/cancel")
-    Call<ResponseBody> cancelDeletePhoto(@Body PhotoDTO photoDTO);
+    Call<ResponseBody> cancelDeletePhoto(@Body DeleteCancelPhotoForm form);
 
     @POST("/photo/move")
     Call<ResponseBody> moveAlbumPhoto(@Body MovePhotoForm movePhotoForm);

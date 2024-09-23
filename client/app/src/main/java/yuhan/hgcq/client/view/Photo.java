@@ -165,8 +165,10 @@ public class Photo extends AppCompatActivity {
                     public void onSuccess(List<PhotoDTO> result) {
                         if (result != null) {
                             ppa = new PrivatePhotoAdapter(result, Photo.this);
-                            photoView.setAdapter(ppa);
-                            photoView.setCurrentItem(position, false);
+                            handler.post(() -> {
+                                photoView.setAdapter(ppa);
+                                photoView.setCurrentItem(position, false);
+                            });
                             Log.i("Found Private LikeList", "Success");
                         } else {
                             Log.i("Found Private LikeList", "Fail");
@@ -186,8 +188,10 @@ public class Photo extends AppCompatActivity {
                         if (response.isSuccessful()) {
                             List<PhotoDTO> likeList = response.body();
                             spa = new ServerPhotoAdapter(likeList, Photo.this);
-                            photoView.setAdapter(spa);
-                            photoView.setCurrentItem(position, false);
+                            handler.post(() -> {
+                                photoView.setAdapter(spa);
+                                photoView.setCurrentItem(position, false);
+                            });
                             Log.i("Found Shared LikeList", "Success");
                         } else {
                             Log.i("Found Shared LikeList", "Fail");
@@ -219,8 +223,11 @@ public class Photo extends AppCompatActivity {
                                     }
                                 }
                                 ppa = new PrivatePhotoAdapter(result, Photo.this);
-                                photoView.setAdapter(ppa);
-                                photoView.setCurrentItem(index, false);
+                                int finalIndex = index;
+                                handler.post(() -> {
+                                    photoView.setAdapter(ppa);
+                                    photoView.setCurrentItem(finalIndex, false);
+                                });
                                 Log.i("Found Private PhotoList", "Success");
                             } else {
                                 Log.i("Found Private PhotoList", "Success");
@@ -250,8 +257,11 @@ public class Photo extends AppCompatActivity {
                                     }
                                 }
                                 spa = new ServerPhotoAdapter(photoList, Photo.this);
-                                photoView.setAdapter(spa);
-                                photoView.setCurrentItem(index, false);
+                                int finalIndex = index;
+                                handler.post(() -> {
+                                    photoView.setAdapter(spa);
+                                    photoView.setCurrentItem(finalIndex, false);
+                                });
                                 Log.i("Found Shared PhotoList", "Success");
                             } else {
                                 Log.i("Found Shared PhotoList", "Fail");
@@ -273,21 +283,32 @@ public class Photo extends AppCompatActivity {
             public void onPageSelected(int position) {
                 super.onPageSelected(position);
 
-                PhotoDTO dto;
+                PhotoDTO dto = null;
 
                 if (isPrivate) {
                     List<PhotoDTO> photoList = ppa.getPhotoList();
-                    dto = photoList.get(position);
+                    if (!photoList.isEmpty()) {
+                        dto = photoList.get(position);
+                    } else {
+                        like.setImageResource(R.drawable.unlove);
+                    }
                 } else {
                     List<PhotoDTO> photoList = spa.getPhotoList();
-                    dto = photoList.get(position);
+                    if (!photoList.isEmpty()) {
+                        dto = photoList.get(position);
+                    } else {
+                        like.setImageResource(R.drawable.unlove);
+                    }
                 }
 
-                if (dto.getLiked()) {
-                    like.setImageResource(R.drawable.love);
-                } else {
-                    like.setImageResource(R.drawable.unlove);
+                if (dto != null) {
+                    if (dto.getLiked()) {
+                        like.setImageResource(R.drawable.love);
+                    } else {
+                        like.setImageResource(R.drawable.unlove);
+                    }
                 }
+
             }
         });
 
@@ -304,10 +325,8 @@ public class Photo extends AppCompatActivity {
                         public void onSuccess(Boolean result) {
                             if (result != null) {
                                 if (result) {
-                                    like.post(() -> {
-                                        like.setImageResource(R.drawable.unlove);
-                                    });
                                     handler.post(() -> {
+                                        like.setImageResource(R.drawable.unlove);
                                         Toast.makeText(Photo.this, "좋아요를 취소했습니다.", Toast.LENGTH_SHORT).show();
                                     });
                                     dto.setLiked(false);
@@ -329,10 +348,8 @@ public class Photo extends AppCompatActivity {
                         public void onSuccess(Boolean result) {
                             if (result != null) {
                                 if (result) {
-                                    like.post(() -> {
-                                        like.setImageResource(R.drawable.love);
-                                    });
                                     handler.post(() -> {
+                                        like.setImageResource(R.drawable.love);
                                         Toast.makeText(Photo.this, "좋아요 했습니다.", Toast.LENGTH_SHORT).show();
                                     });
                                     dto.setLiked(true);
@@ -357,10 +374,8 @@ public class Photo extends AppCompatActivity {
                         @Override
                         public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                             if (response.isSuccessful()) {
-                                like.post(() -> {
-                                    like.setImageResource(R.drawable.unlove);
-                                });
                                 handler.post(() -> {
+                                    like.setImageResource(R.drawable.unlove);
                                     Toast.makeText(Photo.this, "좋아요를 취소했습니다.", Toast.LENGTH_SHORT).show();
                                 });
                                 dto.setLiked(false);
@@ -380,10 +395,8 @@ public class Photo extends AppCompatActivity {
                         @Override
                         public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                             if (response.isSuccessful()) {
-                                like.post(() -> {
-                                    like.setImageResource(R.drawable.love);
-                                });
                                 handler.post(() -> {
+                                    like.setImageResource(R.drawable.love);
                                     Toast.makeText(Photo.this, "좋아요 했습니다.", Toast.LENGTH_SHORT).show();
                                 });
                                 dto.setLiked(true);
@@ -404,7 +417,7 @@ public class Photo extends AppCompatActivity {
 
         /* 앨범 이동 눌림 */
         move.setOnClickListener(v -> {
-            
+
         });
 
         /* 사진 삭제 눌림 */
@@ -415,7 +428,48 @@ public class Photo extends AppCompatActivity {
                     int index = photoView.getCurrentItem();
 
                     if (isPrivate) {
+                        List<PhotoDTO> photoList = ppa.getPhotoList();
+                        PhotoDTO dto = photoList.get(index);
 
+                        pr.delete(dto.getPhotoId(), new yuhan.hgcq.client.localDatabase.callback.Callback<Boolean>() {
+                            @Override
+                            public void onSuccess(Boolean result) {
+                                if (result != null) {
+                                    photoList.remove(index);
+                                    handler.post(() -> {
+                                        photoView.getAdapter().notifyItemRemoved(index);
+                                        photoView.getAdapter().notifyItemRangeChanged(index, photoList.size());
+                                    });
+
+                                    int newItemPosition = index;
+                                    if (index == photoList.size()) {
+                                        if (index != 0) {
+                                            newItemPosition = index - 1;
+                                        }
+                                    }
+                                    if (!photoList.isEmpty()) {
+                                        int finalNewItemPosition = newItemPosition;
+                                        handler.post(() -> {
+                                            photoView.setCurrentItem(finalNewItemPosition, true);
+                                        });
+                                    }
+                                    Log.i("Delete Private Photo", "Success");
+                                } else {
+                                    handler.post(() -> {
+                                        Toast.makeText(Photo.this, "사진 삭제가 실패했습니다.", Toast.LENGTH_SHORT).show();
+                                    });
+                                    Log.i("Delete Private Photo", "Fail");
+                                }
+                            }
+
+                            @Override
+                            public void onError(Exception e) {
+                                handler.post(() -> {
+                                    Toast.makeText(Photo.this, "사진 삭제가 실패했습니다.", Toast.LENGTH_SHORT).show();
+                                });
+                                Log.e("Delete Private Photo Error", e.getMessage());
+                            }
+                        });
                     } else {
                         List<PhotoDTO> photoList = spa.getPhotoList();
                         PhotoDTO dto = photoList.get(index);
@@ -424,15 +478,20 @@ public class Photo extends AppCompatActivity {
                             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                                 if (response.isSuccessful()) {
                                     photoList.remove(index);
-                                    photoView.getAdapter().notifyItemRemoved(index);
-                                    photoView.getAdapter().notifyItemRangeChanged(index, photoList.size());
+                                    handler.post(() -> {
+                                        photoView.getAdapter().notifyItemRemoved(index);
+                                        photoView.getAdapter().notifyItemRangeChanged(index, photoList.size());
+                                    });
 
                                     int newItemPosition = index;
                                     if (index == photoList.size()) {
                                         newItemPosition = index - 1;
                                     }
                                     if (!photoList.isEmpty()) {
-                                        photoView.setCurrentItem(newItemPosition, true);
+                                        int finalNewItemPosition = newItemPosition;
+                                        handler.post(() -> {
+                                            photoView.setCurrentItem(finalNewItemPosition, true);
+                                        });
                                     }
                                     handler.post(() -> {
                                         Toast.makeText(Photo.this, "사진을 삭제했습니다.", Toast.LENGTH_SHORT).show();
@@ -463,7 +522,6 @@ public class Photo extends AppCompatActivity {
                 }
             });
         });
-
 
         /* 내비게이션 바 */
         navi.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {

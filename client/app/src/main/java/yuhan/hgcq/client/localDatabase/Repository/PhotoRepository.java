@@ -75,16 +75,18 @@ public class PhotoRepository {
     //삭제 취소
     //널값 비교 해야함
     @Transaction
-    public void deleteCancel(Long id, Callback<Boolean> callback) {
+    public void deleteCancel(List<Long> photoIdList, Callback<Boolean> callback) {
         executor.execute(() -> {
             try {
-                Photo photo = dao.findById(id).get(0);
-                if (photo == null) {
-                    callback.onSuccess(false);
-                    return;
+                for (Long id : photoIdList) {
+                    Photo photo = dao.findById(id).get(0);
+                    if (photo == null) {
+                        callback.onSuccess(false);
+                        return;
+                    }
+                    photo.deleteCancel();
+                    dao.update(photo);
                 }
-                photo.deleteCancel();
-                dao.update(photo);
                 callback.onSuccess(Boolean.TRUE);
             } catch (Exception e) {
                 callback.onError(e);
@@ -150,10 +152,10 @@ public class PhotoRepository {
         });
     }
 
-    public void gallery(Callback<Map<String, List<PhotoDTO>>> callback) {
+    public void gallery(Long albumId, Callback<Map<String, List<PhotoDTO>>> callback) {
         executor.execute(() -> {
             try {
-                List<Photo> photoList = dao.findAll();
+                List<Photo> photoList = dao.findByAlbumId(albumId);
                 Map<String, List<PhotoDTO>> gallery = new HashMap<>();
 
                 for (Photo photo : photoList) {
