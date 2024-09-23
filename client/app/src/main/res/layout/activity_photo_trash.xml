@@ -23,7 +23,7 @@
         android:id="@+id/photoTrashList"
         android:layout_width="410dp"
         android:layout_height="490dp"
-        android:layout_marginEnd="2dp"
+        android:layout_marginEnd="0dp"
         android:gravity="center"
         android:padding="17dp"
         app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
