@@ -12,10 +12,8 @@ import org.springframework.session.Session;
 import org.springframework.session.SessionRepository;
 import org.springframework.web.bind.annotation.*;
 import yuhan.hgcq.server.domain.Member;
-import yuhan.hgcq.server.dto.member.LoginForm;
-import yuhan.hgcq.server.dto.member.MemberDTO;
-import yuhan.hgcq.server.dto.member.MemberUpdateForm;
-import yuhan.hgcq.server.dto.member.SignupForm;
+import yuhan.hgcq.server.dto.member.*;
+import yuhan.hgcq.server.service.FollowService;
 import yuhan.hgcq.server.service.MemberService;
 
 import java.util.ArrayList;
@@ -29,6 +27,7 @@ public class MemberController {
     private static final Logger log = LoggerFactory.getLogger(MemberController.class);
 
     private final MemberService ms;
+    private final FollowService fs;
     private final SessionRepository<? extends Session> sessionRepository;
 
     /**
@@ -185,14 +184,26 @@ public class MemberController {
 
                     if (findMember != null) {
                         List<Member> memberList = ms.searchAll();
-                        List<MemberDTO> dtoList = new ArrayList<>();
+                        List<Member> followingList = fs.searchFollowing(findMember);
+
+                        List<MemberDTO> memberDtoList = new ArrayList<>();
+                        List<MemberDTO> followingDtoList = new ArrayList<>();
 
                         for (Member member : memberList) {
                             MemberDTO dto = mapping(member);
-                            dtoList.add(dto);
+                            memberDtoList.add(dto);
                         }
 
-                        return ResponseEntity.status(HttpStatus.OK).body(dtoList);
+                        for (Member following : followingList) {
+                            MemberDTO dto = mapping(following);
+                            followingDtoList.add(dto);
+                        }
+
+                        Members members = new Members();
+                        members.setMemberList(memberDtoList);
+                        members.setFollowingList(followingDtoList);
+
+                        return ResponseEntity.status(HttpStatus.OK).body(members);
                     }
                 } catch (IllegalArgumentException e) {
                     return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found Member Fail");

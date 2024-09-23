@@ -56,7 +56,7 @@ public class AlbumRepository {
      * @return 앨범 리스트
      */
     public List<Album> findAll(Team team) {
-        return em.createQuery("select a from Album a where a.team = :team order by a.startDate desc", Album.class)
+        return em.createQuery("select a from Album a where a.team = :team and a.isDeleted = false order by a.startDate desc", Album.class)
                 .setParameter("team", team)
                 .getResultList();
     }
@@ -69,7 +69,7 @@ public class AlbumRepository {
      * @return 앨범 리스트
      */
     public List<Album> findByName(Team team, String name) {
-        return em.createQuery("select a from Album a where a.team = :team and a.name like :name order by a.startDate desc", Album.class)
+        return em.createQuery("select a from Album a where a.team = :team and a.isDeleted = false and a.name like :name order by a.startDate desc", Album.class)
                 .setParameter("team", team)
                 .setParameter("name", "%" + name + "%")
                 .getResultList();
