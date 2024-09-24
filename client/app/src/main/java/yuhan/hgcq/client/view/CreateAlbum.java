@@ -146,7 +146,6 @@ public class CreateAlbum extends AppCompatActivity {
                 MaterialDatePicker.Builder<Pair<Long, Long>> builder = MaterialDatePicker.Builder.dateRangePicker();
                 builder.setTitleText("기간 선택");
                 CalendarConstraints.Builder constraintsBuilder = new CalendarConstraints.Builder();
-                constraintsBuilder.setValidator(DateValidatorPointForward.now());
 
                 builder.setCalendarConstraints(constraintsBuilder.build());
 

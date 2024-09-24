@@ -158,6 +158,8 @@ public class AlbumMain extends AppCompatActivity {
         Intent gallery = new Intent(Intent.ACTION_GET_CONTENT);
         gallery.setType("image/*");
         gallery.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+        gallery.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
+        gallery.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
         Intent getIntent = getIntent();
         /* 개인, 공유 확인 */
@@ -184,7 +186,7 @@ public class AlbumMain extends AppCompatActivity {
                         } else {
                             empty.setVisibility(View.INVISIBLE);
                         }
-                        aa = new AlbumAdapter(result);
+                        aa = new AlbumAdapter(result, AlbumMain.this, isPrivate);
                         albumListView.setAdapter(aa);
                         aa.setOnItemClickListener(new AlbumAdapter.OnItemClickListener() {
                             @Override
@@ -217,13 +219,19 @@ public class AlbumMain extends AppCompatActivity {
                     public void onResponse(Call<List<AlbumDTO>> call, Response<List<AlbumDTO>> response) {
                         if (response.isSuccessful()) {
                             List<AlbumDTO> albumList = response.body();
-                            if (albumList.isEmpty()) {
-                                empty.setVisibility(View.VISIBLE);
-                            } else {
-                                empty.setVisibility(View.INVISIBLE);
-                            }
-                            aa = new AlbumAdapter(albumList);
-                            albumListView.setAdapter(aa);
+                            handler.post(()->{
+                                if (albumList.isEmpty()) {
+                                    empty.setVisibility(View.VISIBLE);
+                                } else {
+                                    empty.setVisibility(View.INVISIBLE);
+                                }
+                            });
+
+                            aa = new AlbumAdapter(albumList, AlbumMain.this, isPrivate);
+                            handler.post(()->{
+                                albumListView.setAdapter(aa);
+
+                            });
                             aa.setOnItemClickListener(new AlbumAdapter.OnItemClickListener() {
                                 @Override
                                 public void onItemClick(View view, int position) {
@@ -450,6 +458,8 @@ public class AlbumMain extends AppCompatActivity {
 
                     for (int i = 0; i < count; i++) {
                         Uri imageUri = data.getClipData().getItemAt(i).getUri();
+                        getContentResolver().takePersistableUriPermission(imageUri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
                         PhotoMetaData metadata = getImageMetadata(imageUri);
                         String path = imageUri.toString();
                         LocalDateTime created = metadata.getCreated();
@@ -518,6 +528,8 @@ public class AlbumMain extends AppCompatActivity {
 
                     for (int i = 0; i < count; i++) {
                         Uri imageUri = data.getClipData().getItemAt(i).getUri();
+                        getContentResolver().takePersistableUriPermission(imageUri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
                         PhotoMetaData metadata = getImageMetadata(imageUri);
                         String path = imageUri.toString();
                         LocalDateTime created = metadata.getCreated();
