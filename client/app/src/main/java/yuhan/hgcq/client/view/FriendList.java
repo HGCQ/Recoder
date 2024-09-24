@@ -315,6 +315,7 @@ public class FriendList extends AppCompatActivity {
                 if (itemId == R.id.fragment_home) {
                     if (isPrivate) {
                         albumMainPage.putExtra("isPrivate", true);
+                        albumMainPage.putExtra("loginMember", loginMember);
                         startActivity(albumMainPage);
                     } else {
                         groupMainPage.putExtra("loginMember", loginMember);
@@ -335,11 +336,9 @@ public class FriendList extends AppCompatActivity {
                 } else if (itemId == R.id.fragment_like) {
                     if (isPrivate) {
                         likePage.putExtra("isPrivate", true);
-                        startActivity(likePage);
-                    } else {
-                        likePage.putExtra("loginMember", loginMember);
-                        startActivity(likePage);
                     }
+                    likePage.putExtra("loginMember", loginMember);
+                    startActivity(likePage);
                     return true;
                 } else if (itemId == R.id.fragment_setting) {
                     if (loginMember == null) {

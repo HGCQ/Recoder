@@ -53,6 +53,7 @@ public class Chat extends AppCompatActivity {
     ChatAdapter ca;
 
     /* 받아올 값 */
+    boolean isPrivate = false;
     MemberDTO loginMember;
     TeamDTO teamDTO;
     AlbumDTO albumDTO;
@@ -106,9 +107,11 @@ public class Chat extends AppCompatActivity {
         navi = findViewById(R.id.bottom_navigation_view);
 
         /* 관련된 페이지 */
+        Intent albumMainPage = new Intent(this, AlbumMain.class);
         Intent groupMainPage = new Intent(this, GroupMain.class);
         Intent friendListPage = new Intent(this, FriendList.class);
         Intent likePage = new Intent(this, Like.class);
+        Intent myPage = new Intent(this, MyPage.class);
 
         Intent getIntent = getIntent();
         /* 받아 올 값 */
@@ -179,24 +182,43 @@ public class Chat extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
                 int itemId = menuItem.getItemId();
                 if (itemId == R.id.fragment_home) {
-                    groupMainPage.putExtra("loginMember", loginMember);
-                    startActivity(groupMainPage);
-
+                    if (isPrivate) {
+                        albumMainPage.putExtra("isPrivate", true);
+                        albumMainPage.putExtra("loginMember", loginMember);
+                        startActivity(albumMainPage);
+                    } else {
+                        groupMainPage.putExtra("loginMember", loginMember);
+                        startActivity(groupMainPage);
+                    }
                     return true;
                 } else if (itemId == R.id.fragment_friend) {
                     if (loginMember == null) {
                         Toast.makeText(Chat.this, "로그인 후 이용 가능합니다.", Toast.LENGTH_SHORT).show();
                     } else {
+                        if (isPrivate) {
+                            friendListPage.putExtra("isPrivate", true);
+                        }
                         friendListPage.putExtra("loginMember", loginMember);
                         startActivity(friendListPage);
                     }
                     return true;
                 } else if (itemId == R.id.fragment_like) {
+                    if (isPrivate) {
+                        likePage.putExtra("isPrivate", true);
+                    }
                     likePage.putExtra("loginMember", loginMember);
                     startActivity(likePage);
-
                     return true;
                 } else if (itemId == R.id.fragment_setting) {
+                    if (loginMember == null) {
+                        Toast.makeText(Chat.this, "로그인 후 이용 가능합니다.", Toast.LENGTH_SHORT).show();
+                    } else {
+                        if (isPrivate) {
+                            myPage.putExtra("isPrivate", true);
+                        }
+                        myPage.putExtra("loginMember", loginMember);
+                        startActivity(myPage);
+                    }
                     return true;
                 }
                 return false;
