@@ -57,6 +57,11 @@ public class MemberController {
         call.enqueue(callback);
     }
 
+    public void memberListByName(String name, Callback<Members> callback) {
+        Call<Members> call = memberService.memberListByName(name);
+        call.enqueue(callback);
+    }
+
     public void isloginMember(Callback<MemberDTO> callback) {
         Call<MemberDTO> call = memberService.isloginMember();
         call.enqueue(callback);
