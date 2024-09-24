@@ -44,8 +44,7 @@ import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Response;
 import yuhan.hgcq.client.R;
-import yuhan.hgcq.client.adapter.PrivateGalleryAdapter;
-import yuhan.hgcq.client.adapter.ServerGalleryAdapter;
+import yuhan.hgcq.client.adapter.GalleryAdapter;
 import yuhan.hgcq.client.controller.PhotoController;
 import yuhan.hgcq.client.localDatabase.Repository.PhotoRepository;
 import yuhan.hgcq.client.localDatabase.callback.Callback;
@@ -59,12 +58,11 @@ public class Gallery extends AppCompatActivity {
     /* View */
     TextView empty, date;
     ImageButton chat, move, photoPlus, photoTrash;
-    RecyclerView photoListView;
+    RecyclerView photoListView, albumListView;
     BottomNavigationView navi;
 
     /* Adapter */
-    PrivateGalleryAdapter pga;
-    ServerGalleryAdapter sga;
+    GalleryAdapter ga;
 
     /* 받아올 값 */
     private boolean isPrivate;
@@ -139,6 +137,7 @@ public class Gallery extends AppCompatActivity {
         photoTrash = findViewById(R.id.photoTrash);
 
         photoListView = findViewById(R.id.photoList);
+        albumListView = findViewById(R.id.albumList);
 
         navi = findViewById(R.id.bottom_navigation_view);
 
@@ -184,9 +183,9 @@ public class Gallery extends AppCompatActivity {
                     @Override
                     public void onSuccess(Map<String, List<PhotoDTO>> result) {
                         if (result != null) {
-                            pga = new PrivateGalleryAdapter(result, Gallery.this, isPrivate, loginMember, albumDTO);
+                            ga = new GalleryAdapter(result, Gallery.this, isPrivate, loginMember, albumDTO);
                             handler.post(() -> {
-                                photoListView.setAdapter(pga);
+                                photoListView.setAdapter(ga);
                             });
                             Log.i("Found Private Gallery", "Success");
                         } else {
@@ -207,9 +206,9 @@ public class Gallery extends AppCompatActivity {
                     public void onResponse(Call<Map<String, List<PhotoDTO>>> call, Response<Map<String, List<PhotoDTO>>> response) {
                         if (response.isSuccessful()) {
                             Map<String, List<PhotoDTO>> galleryList = response.body();
-                            sga = new ServerGalleryAdapter(galleryList, Gallery.this, isPrivate, loginMember, teamDTO, albumDTO);
+                            ga = new GalleryAdapter(galleryList, Gallery.this, isPrivate, loginMember, teamDTO, albumDTO);
                             handler.post(() -> {
-                                photoListView.setAdapter(sga);
+                                photoListView.setAdapter(ga);
                             });
                             Log.i("Found Shared Gallery", "Success");
                         } else {

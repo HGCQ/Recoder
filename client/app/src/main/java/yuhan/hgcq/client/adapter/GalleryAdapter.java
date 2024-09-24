@@ -2,6 +2,7 @@ package yuhan.hgcq.client.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,7 +23,7 @@ import yuhan.hgcq.client.model.dto.photo.PhotoDTO;
 import yuhan.hgcq.client.model.dto.team.TeamDTO;
 import yuhan.hgcq.client.view.Photo;
 
-public class ServerGalleryAdapter extends RecyclerView.Adapter<ServerGalleryAdapter.ServerGalleryViewHolder> {
+public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryViewHolder> {
 
     private Map<String, List<PhotoDTO>> gallery;
     private List<String> dateList;
@@ -33,8 +34,8 @@ public class ServerGalleryAdapter extends RecyclerView.Adapter<ServerGalleryAdap
     private TeamDTO teamDTO;
     private AlbumDTO albumDTO;
 
-    public ServerGalleryAdapter(Map<String, List<PhotoDTO>> gallery, Context context, boolean isPrivate,
-                                MemberDTO loginMember, TeamDTO teamDTO, AlbumDTO albumDTO) {
+    public GalleryAdapter(Map<String, List<PhotoDTO>> gallery, Context context, boolean isPrivate,
+                          MemberDTO loginMember, TeamDTO teamDTO, AlbumDTO albumDTO) {
         this.gallery = gallery;
         dateList = new ArrayList<>(gallery.keySet());
         dateList.sort(Comparator.naturalOrder());
@@ -42,6 +43,17 @@ public class ServerGalleryAdapter extends RecyclerView.Adapter<ServerGalleryAdap
         this.isPrivate = isPrivate;
         this.loginMember = loginMember;
         this.teamDTO = teamDTO;
+        this.albumDTO = albumDTO;
+    }
+
+    public GalleryAdapter(Map<String, List<PhotoDTO>> gallery, Context context, boolean isPrivate,
+                          MemberDTO loginMember, AlbumDTO albumDTO) {
+        this.gallery = gallery;
+        dateList = new ArrayList<>(gallery.keySet());
+        dateList.sort(Comparator.naturalOrder());
+        this.context = context;
+        this.isPrivate = isPrivate;
+        this.loginMember = loginMember;
         this.albumDTO = albumDTO;
     }
 
@@ -53,11 +65,11 @@ public class ServerGalleryAdapter extends RecyclerView.Adapter<ServerGalleryAdap
         this.listener = listener;
     }
 
-    public static class ServerGalleryViewHolder extends RecyclerView.ViewHolder {
+    public static class GalleryViewHolder extends RecyclerView.ViewHolder {
         public TextView date;
         public RecyclerView photoListView;
 
-        public ServerGalleryViewHolder(@NonNull View view, OnItemClickListener listener) {
+        public GalleryViewHolder(@NonNull View view, OnItemClickListener listener) {
             super(view);
 
             date = view.findViewById(R.id.date);
@@ -79,19 +91,22 @@ public class ServerGalleryAdapter extends RecyclerView.Adapter<ServerGalleryAdap
 
     @NonNull
     @Override
-    public ServerGalleryViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public GalleryViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View galleryView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_photo_date, parent, false);
-        return new ServerGalleryViewHolder(galleryView, listener);
+        return new GalleryViewHolder(galleryView, listener);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ServerGalleryViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull GalleryViewHolder holder, int position) {
         String photoDate = dateList.get(position);
         holder.date.setText(photoDate);
 
         List<PhotoDTO> photoList = gallery.get(photoDate);
-        ServerGalleryPhotoAdapter sgpa = new ServerGalleryPhotoAdapter(photoList, context);
-        sgpa.setOnItemClickListener(new ServerGalleryPhotoAdapter.OnItemClickListener() {
+        if(isPrivate){
+            Log.i("Private PhotoList", photoList.size() + "");
+        }
+        GalleryPhotoAdapter gpa = new GalleryPhotoAdapter(photoList, context, isPrivate);
+        gpa.setOnItemClickListener(new GalleryPhotoAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
                 PhotoDTO photoDTO = photoList.get(position);
@@ -100,13 +115,15 @@ public class ServerGalleryAdapter extends RecyclerView.Adapter<ServerGalleryAdap
                     photoPage.putExtra("isPrivate", true);
                 }
                 photoPage.putExtra("loginMember", loginMember);
-                photoPage.putExtra("teamDTO", teamDTO);
                 photoPage.putExtra("albumDTO", albumDTO);
                 photoPage.putExtra("photoDTO", photoDTO);
+                if(!isPrivate) {
+                    photoPage.putExtra("teamDTO", teamDTO);
+                }
                 context.startActivity(photoPage);
             }
         });
-        holder.photoListView.setAdapter(sgpa);
+        holder.photoListView.setAdapter(gpa);
     }
 
     @Override

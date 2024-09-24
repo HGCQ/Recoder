@@ -23,6 +23,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -34,14 +35,16 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import yuhan.hgcq.client.R;
-import yuhan.hgcq.client.adapter.PrivatePhotoAdapter;
-import yuhan.hgcq.client.adapter.ServerPhotoAdapter;
+import yuhan.hgcq.client.adapter.AlbumAdapter;
+import yuhan.hgcq.client.adapter.PhotoAdapter;
 import yuhan.hgcq.client.controller.LikedController;
 import yuhan.hgcq.client.controller.PhotoController;
+import yuhan.hgcq.client.localDatabase.Repository.AlbumRepository;
 import yuhan.hgcq.client.localDatabase.Repository.PhotoRepository;
 import yuhan.hgcq.client.model.dto.album.AlbumDTO;
 import yuhan.hgcq.client.model.dto.member.MemberDTO;
 import yuhan.hgcq.client.model.dto.photo.LikedDTO;
+import yuhan.hgcq.client.model.dto.photo.MovePhotoForm;
 import yuhan.hgcq.client.model.dto.photo.PhotoDTO;
 import yuhan.hgcq.client.model.dto.team.TeamDTO;
 
@@ -51,10 +54,10 @@ public class Photo extends AppCompatActivity {
     ImageButton like, move, photoDelete;
     ViewPager2 photoView;
     BottomNavigationView navi;
+    RecyclerView albumListView;
 
     /* Adapter */
-    ServerPhotoAdapter spa;
-    PrivatePhotoAdapter ppa;
+    PhotoAdapter pa;
 
     /* 개인, 공유 확인 */
     boolean isPrivate;
@@ -67,12 +70,15 @@ public class Photo extends AppCompatActivity {
     PhotoDTO photoDTO;
     int position;
 
+    AlbumAdapter aa;
+
     /* 서버와 통신 */
     PhotoController pc;
     LikedController lc;
 
     /* 로컬 DB */
     PhotoRepository pr;
+    AlbumRepository ar;
 
     /* Toast */
     Handler handler = new Handler(Looper.getMainLooper());
@@ -127,6 +133,7 @@ public class Photo extends AppCompatActivity {
 
         /* 로컬 DB 연결할 Repository 생성 */
         pr = new PhotoRepository(this);
+        ar = new AlbumRepository(this);
 
         /* View와 Layout 연결 */
         like = findViewById(R.id.like);
@@ -134,6 +141,7 @@ public class Photo extends AppCompatActivity {
         photoDelete = findViewById(R.id.photoDelete);
 
         photoView = findViewById(R.id.viewPager);
+        albumListView = findViewById(R.id.albumList);
 
         navi = findViewById(R.id.bottom_navigation_view);
 
@@ -143,6 +151,7 @@ public class Photo extends AppCompatActivity {
         Intent friendListPage = new Intent(this, FriendList.class);
         Intent likePage = new Intent(this, Like.class);
         Intent myPage = new Intent(this, MyPage.class);
+        Intent galleryPage = new Intent(this, Gallery.class);
 
         Intent getIntent = getIntent();
         /* 개인, 공유 확인 */
@@ -164,9 +173,9 @@ public class Photo extends AppCompatActivity {
                     @Override
                     public void onSuccess(List<PhotoDTO> result) {
                         if (result != null) {
-                            ppa = new PrivatePhotoAdapter(result, Photo.this);
+                            pa = new PhotoAdapter(result, Photo.this, isPrivate);
                             handler.post(() -> {
-                                photoView.setAdapter(ppa);
+                                photoView.setAdapter(pa);
                                 photoView.setCurrentItem(position, false);
                             });
                             Log.i("Found Private LikeList", "Success");
@@ -187,9 +196,9 @@ public class Photo extends AppCompatActivity {
                     public void onResponse(Call<List<PhotoDTO>> call, Response<List<PhotoDTO>> response) {
                         if (response.isSuccessful()) {
                             List<PhotoDTO> likeList = response.body();
-                            spa = new ServerPhotoAdapter(likeList, Photo.this);
+                            pa = new PhotoAdapter(likeList, Photo.this, isPrivate);
                             handler.post(() -> {
-                                photoView.setAdapter(spa);
+                                photoView.setAdapter(pa);
                                 photoView.setCurrentItem(position, false);
                             });
                             Log.i("Found Shared LikeList", "Success");
@@ -222,10 +231,10 @@ public class Photo extends AppCompatActivity {
                                         break;
                                     }
                                 }
-                                ppa = new PrivatePhotoAdapter(result, Photo.this);
+                                pa = new PhotoAdapter(result, Photo.this, isPrivate);
                                 int finalIndex = index;
                                 handler.post(() -> {
-                                    photoView.setAdapter(ppa);
+                                    photoView.setAdapter(pa);
                                     photoView.setCurrentItem(finalIndex, false);
                                 });
                                 Log.i("Found Private PhotoList", "Success");
@@ -256,10 +265,10 @@ public class Photo extends AppCompatActivity {
                                         break;
                                     }
                                 }
-                                spa = new ServerPhotoAdapter(photoList, Photo.this);
+                                pa = new PhotoAdapter(photoList, Photo.this, isPrivate);
                                 int finalIndex = index;
                                 handler.post(() -> {
-                                    photoView.setAdapter(spa);
+                                    photoView.setAdapter(pa);
                                     photoView.setCurrentItem(finalIndex, false);
                                 });
                                 Log.i("Found Shared PhotoList", "Success");
@@ -286,14 +295,14 @@ public class Photo extends AppCompatActivity {
                 PhotoDTO dto = null;
 
                 if (isPrivate) {
-                    List<PhotoDTO> photoList = ppa.getPhotoList();
+                    List<PhotoDTO> photoList = pa.getPhotoList();
                     if (!photoList.isEmpty()) {
                         dto = photoList.get(position);
                     } else {
                         like.setImageResource(R.drawable.unlove);
                     }
                 } else {
-                    List<PhotoDTO> photoList = spa.getPhotoList();
+                    List<PhotoDTO> photoList = pa.getPhotoList();
                     if (!photoList.isEmpty()) {
                         dto = photoList.get(position);
                     } else {
@@ -317,7 +326,7 @@ public class Photo extends AppCompatActivity {
             int index = photoView.getCurrentItem();
 
             if (isPrivate) {
-                List<PhotoDTO> photoList = ppa.getPhotoList();
+                List<PhotoDTO> photoList = pa.getPhotoList();
                 PhotoDTO dto = photoList.get(index);
                 if (dto.getLiked()) {
                     pr.Liked(dto.getPhotoId(), new yuhan.hgcq.client.localDatabase.callback.Callback<Boolean>() {
@@ -367,7 +376,7 @@ public class Photo extends AppCompatActivity {
                     });
                 }
             } else {
-                List<PhotoDTO> photoList = spa.getPhotoList();
+                List<PhotoDTO> photoList = pa.getPhotoList();
                 PhotoDTO dto = photoList.get(index);
                 if (dto.getLiked()) {
                     lc.deleteLiked(new LikedDTO(dto.getPhotoId()), new Callback<ResponseBody>() {
@@ -417,6 +426,61 @@ public class Photo extends AppCompatActivity {
 
         /* 앨범 이동 눌림 */
         move.setOnClickListener(v -> {
+            if (isPrivate) {
+                ar.searchAll(new yuhan.hgcq.client.localDatabase.callback.Callback<List<AlbumDTO>>() {
+                    @Override
+                    public void onSuccess(List<AlbumDTO> result) {
+                        if (result != null) {
+                            aa = new AlbumAdapter(result);
+                            handler.post(() -> {
+                                albumListView.setAdapter(aa);
+                            });
+                            aa.setOnItemClickListener(new AlbumAdapter.OnItemClickListener() {
+                                @Override
+                                public void onItemClick(View view, int position) {
+                                    List<PhotoDTO> photoList = pa.getPhotoList();
+                                    AlbumDTO albumDTO = result.get(position);
+                                    Long albumId = albumDTO.getAlbumId();
+                                    MovePhotoForm form = new MovePhotoForm(albumId, photoList);
+                                    pr.move(form, new yuhan.hgcq.client.localDatabase.callback.Callback<Boolean>(){
+                                        @Override
+                                        public void onSuccess(Boolean result) {
+                                            if (result != null) {
+                                                if (result) {
+                                                    handler.post(() -> {
+                                                        like.setImageResource(R.drawable.love);
+                                                        Toast.makeText(Photo.this, "앨범 이동 했습니다.", Toast.LENGTH_SHORT).show();
+                                                    });
+                                                    Log.i("Add Like Private Photo", "Success");
+                                                } else {
+                                                    Log.i("Add Like Private Photo", "Fail");
+                                                }
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onError(Exception e) {
+                                            Log.i("Add Like Private Photo Error", e.getMessage());
+                                        }
+                                    });
+
+                                    galleryPage.putExtra("albumDTO", albumDTO);
+                                    galleryPage.putExtra("isPrivate", true);
+                                    startActivity(galleryPage);
+                                }
+                            });
+                            Log.i("Found Private AlbumList", "Success");
+                        } else {
+                            Log.i("Found Private AlbumList", "Fail");
+                        }
+                    }
+
+                    @Override
+                    public void onError(Exception e) {
+                        Log.e("Found Private AlbumList Error", e.getMessage());
+                    }
+                });
+            }
 
         });
 
@@ -428,7 +492,7 @@ public class Photo extends AppCompatActivity {
                     int index = photoView.getCurrentItem();
 
                     if (isPrivate) {
-                        List<PhotoDTO> photoList = ppa.getPhotoList();
+                        List<PhotoDTO> photoList = pa.getPhotoList();
                         PhotoDTO dto = photoList.get(index);
 
                         pr.delete(dto.getPhotoId(), new yuhan.hgcq.client.localDatabase.callback.Callback<Boolean>() {
@@ -471,7 +535,7 @@ public class Photo extends AppCompatActivity {
                             }
                         });
                     } else {
-                        List<PhotoDTO> photoList = spa.getPhotoList();
+                        List<PhotoDTO> photoList = pa.getPhotoList();
                         PhotoDTO dto = photoList.get(index);
                         pc.deletePhoto(dto, new Callback<ResponseBody>() {
                             @Override
