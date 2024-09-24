@@ -57,12 +57,14 @@ public class AlbumRepository {
 
     //삭제 취소
     @Transaction
-    public void deleteCancel(Long id, Callback<Boolean> callback) {
+    public void deleteCancel(List<Long> albumIds, Callback<Boolean> callback) {
         executor.execute(() -> {
             try {
-                Album fa = dao.findById(id);
-                fa.deleteCancel();
-                dao.update(fa);
+                for (Long albumId : albumIds) {
+                    Album fa = dao.findById(albumId);
+                    fa.deleteCancel();
+                    dao.update(fa);
+                }
                 callback.onSuccess(Boolean.TRUE);
             } catch (Exception e) {
                 callback.onError(e);
