@@ -103,52 +103,49 @@ public class MyPage extends AppCompatActivity {
             startActivityForResult(modify, MODIFY_REQUEST_CODE); // 수정된 코드
         });
 
-        navi.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-                int itemId = menuItem.getItemId();
-                if (itemId == R.id.fragment_home) {
-                    if (isPrivate) {
-                        groupMainPage.putExtra("isPrivate", true);
-                        groupMainPage.putExtra("loginMember", loginMember);
-                        startActivity(groupMainPage);
-                    } else {
-                        groupMainPage.putExtra("loginMember", loginMember);
-                        startActivity(groupMainPage);
-                    }
-                    return true;
-                } else if (itemId == R.id.fragment_friend) {
-                    if (loginMember == null) {
-                        Toast.makeText(MyPage.this, "로그인 후 이용 가능합니다.", Toast.LENGTH_SHORT).show();
-                    } else {
-                        if (isPrivate) {
-                            friendListPage.putExtra("isPrivate", true);
-                        }
-                        friendListPage.putExtra("loginMember", loginMember);
-                        startActivity(friendListPage);
-                    }
-                    return true;
-                } else if (itemId == R.id.fragment_like) {
-                    if (isPrivate) {
-                        likePage.putExtra("isPrivate", true);
-                    }
-                    likePage.putExtra("loginMember", loginMember);
-                    startActivity(likePage);
-                    return true;
-                } else if (itemId == R.id.fragment_setting) {
-                    if (loginMember == null) {
-                        Toast.makeText(MyPage.this, "로그인 후 이용 가능합니다.", Toast.LENGTH_SHORT).show();
-                    } else {
-                        if (isPrivate) {
-                            myPage.putExtra("isPrivate", true);
-                        }
-                        myPage.putExtra("loginMember", loginMember);
-                        startActivity(myPage);
-                    }
-                    return true;
+        navi.setOnNavigationItemSelectedListener(menuItem -> {
+            int itemId = menuItem.getItemId();
+            if (itemId == R.id.fragment_home) {
+                if (isPrivate) {
+                    groupMainPage.putExtra("isPrivate", true);
+                    groupMainPage.putExtra("loginMember", loginMember);
+                    startActivity(groupMainPage);
+                } else {
+                    groupMainPage.putExtra("loginMember", loginMember);
+                    startActivity(groupMainPage);
                 }
-                return false;
+                return true;
+            } else if (itemId == R.id.fragment_friend) {
+                if (loginMember == null) {
+                    Toast.makeText(MyPage.this, "로그인 후 이용 가능합니다.", Toast.LENGTH_SHORT).show();
+                } else {
+                    if (isPrivate) {
+                        friendListPage.putExtra("isPrivate", true);
+                    }
+                    friendListPage.putExtra("loginMember", loginMember);
+                    startActivity(friendListPage);
+                }
+                return true;
+            } else if (itemId == R.id.fragment_like) {
+                if (isPrivate) {
+                    likePage.putExtra("isPrivate", true);
+                }
+                likePage.putExtra("loginMember", loginMember);
+                startActivity(likePage);
+                return true;
+            } else if (itemId == R.id.fragment_setting) {
+                if (loginMember == null) {
+                    Toast.makeText(MyPage.this, "로그인 후 이용 가능합니다.", Toast.LENGTH_SHORT).show();
+                } else {
+                    if (isPrivate) {
+                        myPage.putExtra("isPrivate", true);
+                    }
+                    myPage.putExtra("loginMember", loginMember);
+                    startActivity(myPage);
+                }
+                return true;
             }
+            return false;
         });
     }
 
@@ -170,7 +167,6 @@ public class MyPage extends AppCompatActivity {
     public void onClick_setting_costume_cancel(String message,
                                                DialogInterface.OnClickListener positive,
                                                DialogInterface.OnClickListener negative) {
-
         new AlertDialog.Builder(this)
                 .setTitle("Recoder")
                 .setMessage(message)
@@ -197,5 +193,21 @@ public class MyPage extends AppCompatActivity {
             }
         }
         return super.dispatchTouchEvent(ev);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
     }
 }
