@@ -13,6 +13,7 @@ import yuhan.hgcq.server.domain.Team;
 import yuhan.hgcq.server.dto.album.AlbumCreateForm;
 import yuhan.hgcq.server.dto.album.AlbumDTO;
 import yuhan.hgcq.server.dto.album.AlbumUpdateForm;
+import yuhan.hgcq.server.dto.album.DeleteCancelAlbumForm;
 import yuhan.hgcq.server.dto.member.MemberDTO;
 import yuhan.hgcq.server.service.AlbumService;
 import yuhan.hgcq.server.service.MemberService;
@@ -126,12 +127,12 @@ public class AlbumController {
     /**
      * 앨범 삭제 취소
      *
-     * @param albumDTO 앨범 DTO
-     * @param request  요청
+     * @param form    앨범 id 리스트
+     * @param request 요청
      * @return 성공시 200 상태 코드, 실패 시 404 상태 코드, 권한 없을 시 401 상태 코드, 세션 없을 시 401 상태 코드
      */
     @PostMapping("/delete/cancel")
-    public ResponseEntity<?> deleteCancelAlbum(@RequestBody AlbumDTO albumDTO, HttpServletRequest request) {
+    public ResponseEntity<?> deleteCancelAlbum(@RequestBody DeleteCancelAlbumForm form, HttpServletRequest request) {
         HttpSession session = request.getSession(false);
 
         if (session != null) {
@@ -143,18 +144,21 @@ public class AlbumController {
 
                     if (findMember != null) {
                         try {
-                            Album fa = as.search(albumDTO.getAlbumId());
+                            List<Long> albumIds = form.getAlbumIds();
+                            for (Long albumId : albumIds) {
+                                Album fa = as.search(albumId);
 
-                            if (fa != null) {
-                                try {
-                                    as.cancelDelete(findMember, fa);
-                                    return ResponseEntity.status(HttpStatus.OK).body("Delete Cancel Album Success");
-                                } catch (AccessException e) {
-                                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Not Admin In Group");
-                                } catch (IllegalArgumentException e) {
-                                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Delete Cancel Album Fail");
+                                if (fa != null) {
+                                    try {
+                                        as.cancelDelete(findMember, fa);
+                                    } catch (AccessException e) {
+                                        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Not Admin In Group");
+                                    } catch (IllegalArgumentException e) {
+                                        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Delete Cancel Album Fail");
+                                    }
                                 }
                             }
+                            return ResponseEntity.status(HttpStatus.OK).body("Delete Cancel Album Success");
                         } catch (IllegalArgumentException e) {
                             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found Album Fail");
                         }
