@@ -184,6 +184,58 @@ public class MemberController {
 
                     if (findMember != null) {
                         List<Member> memberList = ms.searchAll();
+                        memberList.remove(findMember);
+                        List<Member> followingList = fs.searchFollowing(findMember);
+
+                        List<MemberDTO> memberDtoList = new ArrayList<>();
+                        List<MemberDTO> followingDtoList = new ArrayList<>();
+
+                        for (Member member : memberList) {
+                            MemberDTO dto = mapping(member);
+                            memberDtoList.add(dto);
+                        }
+
+                        for (Member following : followingList) {
+                            MemberDTO dto = mapping(following);
+                            followingDtoList.add(dto);
+                        }
+
+                        Members members = new Members();
+                        members.setMemberList(memberDtoList);
+                        members.setFollowingList(followingDtoList);
+
+                        return ResponseEntity.status(HttpStatus.OK).body(members);
+                    }
+                } catch (IllegalArgumentException e) {
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found Member Fail");
+                }
+            }
+        }
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Not Login");
+    }
+
+    /**
+     * 회원 리스트 이름으로 검색
+     *
+     * @param name    이름
+     * @param request 요청
+     * @return 성공 시 200 상태 코드와 회원 리스트, 실패 시 404 상태 코드, 세션 없을 시 401 상태 코드
+     */
+    @GetMapping("/list/name")
+    public ResponseEntity<?> memberListByName(@RequestParam("name") String name, HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+
+        if (session != null) {
+            MemberDTO loginMember = (MemberDTO) session.getAttribute("member");
+
+            if (loginMember != null) {
+                try {
+                    Member findMember = ms.search(loginMember.getMemberId());
+
+                    if (findMember != null) {
+                        List<Member> memberList = ms.searchAllByName(name);
+                        memberList.remove(findMember);
                         List<Member> followingList = fs.searchFollowing(findMember);
 
                         List<MemberDTO> memberDtoList = new ArrayList<>();

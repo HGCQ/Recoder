@@ -162,6 +162,10 @@ public class MemberService {
         return mr.findAll();
     }
 
+    public List<Member> searchAllByName(String name) {
+        return mr.findByName(name);
+    }
+
     /**
      * 이메일 중복 검사
      *
