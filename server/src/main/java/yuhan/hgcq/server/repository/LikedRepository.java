@@ -71,7 +71,7 @@ public class LikedRepository {
      * @return 사진 리스트
      */
     public List<Photo> findAll(Member member) {
-        return em.createQuery("select l.photo from Liked l where l.member = :member and l.isLiked = true", Photo.class)
+        return em.createQuery("select l.photo from Liked l where l.member = :member and l.isLiked = true order by l.photo.created", Photo.class)
                 .setParameter("member", member)
                 .getResultList();
     }
