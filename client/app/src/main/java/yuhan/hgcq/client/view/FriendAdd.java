@@ -7,11 +7,14 @@ import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -20,19 +23,41 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import yuhan.hgcq.client.R;
+import yuhan.hgcq.client.adapter.FollowerAdapter;
+import yuhan.hgcq.client.controller.MemberController;
+import yuhan.hgcq.client.model.dto.member.MemberDTO;
+import yuhan.hgcq.client.model.dto.member.Members;
 
 public class FriendAdd extends AppCompatActivity {
 
     /* View */
+    TextView empty;
+    EditText searchText;
+    ImageButton search;
+    RecyclerView memberListView;
+
+    /* Adapter */
+    FollowerAdapter fa;
 
     /* 서버와 통신 */
+    MemberController mc;
+
+    /* 개인 공유 확인 */
+    boolean isPrivate;
+
+    /* 받아올 값 */
+    MemberDTO loginMember;
 
     /* Toast */
     Handler handler = new Handler(Looper.getMainLooper());
-
-    /* Request Code */
 
     /* 뒤로 가기 */
     @Override
@@ -40,6 +65,10 @@ public class FriendAdd extends AppCompatActivity {
         switch (item.getItemId()) {
             case android.R.id.home:
                 Intent friendListPage = new Intent(this, FriendList.class);
+                if (isPrivate) {
+                    friendListPage.putExtra("isPrivate", isPrivate);
+                }
+                friendListPage.putExtra("loginMember", loginMember);
                 startActivity(friendListPage);
                 finish();
                 return true;
@@ -64,14 +93,80 @@ public class FriendAdd extends AppCompatActivity {
         });
 
         /* 서버와 연결할 Controller 생성 */
+        mc = new MemberController(this);
 
         /* View와 Layout 연결 */
+        empty = findViewById(R.id.empty);
 
-        /* 관련된 페이지 */
+        searchText = findViewById(R.id.searchText);
 
+        search = findViewById(R.id.search);
+
+        memberListView = findViewById(R.id.friendList);
+
+        Intent getIntent = getIntent();
         /* 받아 올 값 */
+        isPrivate = getIntent.getBooleanExtra("isPrivate", false);
+        loginMember = (MemberDTO) getIntent.getSerializableExtra("loginMember");
 
-        /* 공유 초기 설정 */
+        /* 초기 설정 */
+        mc.memberList(new Callback<Members>() {
+            @Override
+            public void onResponse(Call<Members> call, Response<Members> response) {
+                if (response.isSuccessful()) {
+                    Members body = response.body();
+                    List<MemberDTO> memberList = body.getMemberList();
+                    if (memberList.isEmpty()) {
+                        handler.post(() -> {
+                            empty.setVisibility(View.VISIBLE);
+                        });
+                    } else {
+                        handler.post(() -> {
+                            empty.setVisibility(View.INVISIBLE);
+                        });
+                    }
+                    fa = new FollowerAdapter(FriendAdd.this, memberList, body.getFollowingList());
+                    handler.post(() -> {
+                        memberListView.setAdapter(fa);
+                    });
+                    Log.i("Found MemberList", "Success");
+                } else {
+                    Log.i("Found MemberList", "Fail");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Members> call, Throwable t) {
+                Log.e("Found MemberList Error", t.getMessage());
+            }
+        });
+
+        /* 검색 눌림 */
+        search.setOnClickListener(v -> {
+            String name = searchText.getText().toString();
+
+            mc.memberListByName(name, new Callback<Members>() {
+                @Override
+                public void onResponse(Call<Members> call, Response<Members> response) {
+                    if (response.isSuccessful()) {
+                        Members body = response.body();
+                        List<MemberDTO> memberList = body.getMemberList();
+                        fa = new FollowerAdapter(FriendAdd.this, memberList, body.getFollowingList());
+                        handler.post(() -> {
+                           memberListView.setAdapter(fa);
+                        });
+                        Log.i("Found MemberList By Name", "Success");
+                    } else {
+                        Log.i("Found MemberList By Name", "Fail");
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<Members> call, Throwable t) {
+                    Log.e("Found MemberList By Name Error", t.getMessage());
+                }
+            });
+        });
     }
 
     /* Confirm 창 */

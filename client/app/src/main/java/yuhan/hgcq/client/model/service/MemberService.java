@@ -35,6 +35,9 @@ public interface MemberService {
     @GET("/member/list")
     Call<Members> memberList();
 
+    @GET("/member/list/name")
+    Call<Members> memberListByName(@Query("name") String name);
+
     @GET("/member/islogin")
     Call<MemberDTO> isloginMember();
 
