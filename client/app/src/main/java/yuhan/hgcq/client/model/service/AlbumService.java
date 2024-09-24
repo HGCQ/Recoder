@@ -11,6 +11,7 @@ import retrofit2.http.Query;
 import yuhan.hgcq.client.model.dto.album.AlbumCreateForm;
 import yuhan.hgcq.client.model.dto.album.AlbumDTO;
 import yuhan.hgcq.client.model.dto.album.AlbumUpdateForm;
+import yuhan.hgcq.client.model.dto.album.DeleteCancelAlbumForm;
 
 public interface AlbumService {
 
@@ -21,7 +22,7 @@ public interface AlbumService {
     Call<ResponseBody> deleteAlbum(@Body AlbumDTO albumDTO);
 
     @POST("/album/delete/cancel")
-    Call<ResponseBody> deleteCancelAlbum(@Body AlbumDTO albumDTO);
+    Call<ResponseBody> deleteCancelAlbum(@Body DeleteCancelAlbumForm form);
 
     @POST("/album/update")
     Call<ResponseBody> updateAlbum(@Body AlbumUpdateForm albumUpdateForm);

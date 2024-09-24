@@ -11,6 +11,7 @@ import yuhan.hgcq.client.config.NetworkClient;
 import yuhan.hgcq.client.model.dto.album.AlbumCreateForm;
 import yuhan.hgcq.client.model.dto.album.AlbumDTO;
 import yuhan.hgcq.client.model.dto.album.AlbumUpdateForm;
+import yuhan.hgcq.client.model.dto.album.DeleteCancelAlbumForm;
 import yuhan.hgcq.client.model.service.AlbumService;
 
 public class AlbumController {
@@ -47,11 +48,11 @@ public class AlbumController {
     /**
      * 앨범 삭제 취소
      *
-     * @param albumDTO 앨범 DTO
+     * @param form     앨범 id 리스트
      * @param callback 비동기 콜백
      */
-    public void deleteCancelAlbum(AlbumDTO albumDTO, Callback<ResponseBody> callback) {
-        Call<ResponseBody> call = albumService.deleteCancelAlbum(albumDTO);
+    public void deleteCancelAlbum(DeleteCancelAlbumForm form, Callback<ResponseBody> callback) {
+        Call<ResponseBody> call = albumService.deleteCancelAlbum(form);
         call.enqueue(callback);
     }
 
