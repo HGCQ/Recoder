@@ -30,8 +30,7 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.Response;
 import yuhan.hgcq.client.R;
-import yuhan.hgcq.client.adapter.PrivateLikeAdapter;
-import yuhan.hgcq.client.adapter.ServerLikeAdapter;
+import yuhan.hgcq.client.adapter.LikeAdapter;
 import yuhan.hgcq.client.controller.LikedController;
 import yuhan.hgcq.client.localDatabase.Repository.PhotoRepository;
 import yuhan.hgcq.client.localDatabase.callback.Callback;
@@ -46,8 +45,7 @@ public class Like extends AppCompatActivity {
     BottomNavigationView navi;
 
     /* Adapter */
-    ServerLikeAdapter sla;
-    PrivateLikeAdapter pla;
+    LikeAdapter la;
 
     /* 개인, 공유 확인 */
     boolean isPrivate;
@@ -113,17 +111,19 @@ public class Like extends AppCompatActivity {
                 @Override
                 public void onSuccess(List<PhotoDTO> result) {
                     if (result.isEmpty()) {
-                        empty.post(() -> {
+                        handler.post(() -> {
                             empty.setVisibility(View.VISIBLE);
                         });
                     } else {
-                        empty.post(() -> {
+                        handler.post(() -> {
                             empty.setVisibility(View.INVISIBLE);
                         });
                     }
-                    pla = new PrivateLikeAdapter(result, Like.this);
-                    likeListView.setAdapter(pla);
-                    pla.setOnItemClickListener(new PrivateLikeAdapter.OnItemClickListener() {
+                    la = new LikeAdapter(result, Like.this, isPrivate);
+                    handler.post(() -> {
+                        likeListView.setAdapter(la);
+                    });
+                    la.setOnItemClickListener(new LikeAdapter.OnItemClickListener() {
                         @Override
                         public void onItemClick(View view, int position) {
                             photoPage.putExtra("isPrivate", isPrivate);
@@ -153,17 +153,19 @@ public class Like extends AppCompatActivity {
                     if (response.isSuccessful()) {
                         List<PhotoDTO> likeList = response.body();
                         if (likeList.isEmpty()) {
-                            empty.post(() -> {
+                            handler.post(() -> {
                                empty.setVisibility(View.VISIBLE);
                             });
                         } else {
-                            empty.post(() -> {
+                            handler.post(() -> {
                                 empty.setVisibility(View.INVISIBLE);
                             });
                         }
-                        sla = new ServerLikeAdapter(likeList, Like.this);
-                        likeListView.setAdapter(sla);
-                        sla.setOnItemClickListener(new ServerLikeAdapter.OnItemClickListener() {
+                        la = new LikeAdapter(likeList, Like.this, isPrivate);
+                        handler.post(() -> {
+                            likeListView.setAdapter(la);
+                        });
+                        la.setOnItemClickListener(new LikeAdapter.OnItemClickListener() {
                             @Override
                             public void onItemClick(View view, int position) {
                                 photoPage.putExtra("isLike", true);

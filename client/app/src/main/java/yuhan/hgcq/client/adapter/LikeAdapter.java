@@ -1,6 +1,7 @@
 package yuhan.hgcq.client.adapter;
 
 import android.content.Context;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,12 +18,13 @@ import yuhan.hgcq.client.R;
 import yuhan.hgcq.client.config.NetworkClient;
 import yuhan.hgcq.client.model.dto.photo.PhotoDTO;
 
-public class ServerLikeAdapter extends RecyclerView.Adapter<ServerLikeAdapter.LikeViewHolder> {
+public class LikeAdapter extends RecyclerView.Adapter<LikeAdapter.LikeViewHolder> {
 
     private List<PhotoDTO> likeList;
     private OnItemClickListener listener;
     private Context context;
     private String serverIp;
+    private boolean isPrivate;
 
     public interface OnItemClickListener {
         void onItemClick(View view, int position);
@@ -32,10 +34,11 @@ public class ServerLikeAdapter extends RecyclerView.Adapter<ServerLikeAdapter.Li
         this.listener = listener;
     }
 
-    public ServerLikeAdapter(List<PhotoDTO> likeList, Context context) {
+    public LikeAdapter(List<PhotoDTO> likeList, Context context, boolean isPrivate) {
         this.likeList = likeList;
         this.context = context;
         this.serverIp = NetworkClient.getInstance(context).getServerIp();
+        this.isPrivate = isPrivate;
     }
 
     public static class LikeViewHolder extends RecyclerView.ViewHolder {
@@ -69,9 +72,16 @@ public class ServerLikeAdapter extends RecyclerView.Adapter<ServerLikeAdapter.Li
 
     @Override
     public void onBindViewHolder(@NonNull LikeViewHolder holder, int position) {
-        Glide.with(context)
-                .load(serverIp + likeList.get(position).getPath())
-                .into(holder.image);
+        if(isPrivate){
+            String path = likeList.get(position).getPath();
+            Glide.with(context)
+                    .load(Uri.parse(path))
+                    .into(holder.image);
+        }else {
+            Glide.with(context)
+                    .load(serverIp + likeList.get(position).getPath())
+                    .into(holder.image);
+        }
     }
 
     @Override

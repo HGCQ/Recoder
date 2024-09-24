@@ -34,7 +34,7 @@ import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Response;
 import yuhan.hgcq.client.R;
-import yuhan.hgcq.client.adapter.PhotoAdapter;
+import yuhan.hgcq.client.adapter.PhotoTrashAdapter;
 import yuhan.hgcq.client.controller.PhotoController;
 import yuhan.hgcq.client.localDatabase.Repository.PhotoRepository;
 import yuhan.hgcq.client.localDatabase.callback.Callback;
@@ -53,7 +53,7 @@ public class PhotoTrash extends AppCompatActivity {
     BottomNavigationView navi;
 
     /* Adapter */
-    PhotoAdapter pa;
+    PhotoTrashAdapter pa;
 
     /* 개인, 공유 확인 */
     boolean isPrivate;
@@ -146,7 +146,7 @@ public class PhotoTrash extends AppCompatActivity {
                     @Override
                     public void onSuccess(List<PhotoDTO> result) {
                         if (result != null) {
-                            pa = new PhotoAdapter(result, PhotoTrash.this, isPrivate);
+                            pa = new PhotoTrashAdapter(result, PhotoTrash.this, isPrivate);
                             handler.post(() -> {
                                 photoTrashListView.setAdapter(pa);
                             });
@@ -169,7 +169,7 @@ public class PhotoTrash extends AppCompatActivity {
                     public void onResponse(Call<List<PhotoDTO>> call, Response<List<PhotoDTO>> response) {
                         if (response.isSuccessful()) {
                             List<PhotoDTO> photoTrashList = response.body();
-                            pa = new PhotoAdapter(photoTrashList, PhotoTrash.this, isPrivate);
+                            pa = new PhotoTrashAdapter(photoTrashList, PhotoTrash.this, isPrivate);
                             handler.post(() -> {
                                 photoTrashListView.setAdapter(pa);
                             });
