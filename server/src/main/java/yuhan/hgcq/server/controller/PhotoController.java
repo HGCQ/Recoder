@@ -294,13 +294,6 @@ public class PhotoController {
 
                                         photoDTOList.add(dto);
 
-                                        photoDTOList.sort(new Comparator<PhotoDTO>() {
-                                            @Override
-                                            public int compare(PhotoDTO p1, PhotoDTO p2) {
-                                                return p2.getCreated().compareTo(p1.getCreated());
-                                            }
-                                        });
-
                                         gallery.put(create.toString(), photoDTOList);
                                     }
 
@@ -355,13 +348,6 @@ public class PhotoController {
                                         dto.setIsLiked(likeList.contains(photo));
                                         photoDTOList.add(dto);
                                     }
-
-                                    photoDTOList.sort(new Comparator<PhotoDTO>() {
-                                        @Override
-                                        public int compare(PhotoDTO p1, PhotoDTO p2) {
-                                            return p2.getCreated().compareTo(p1.getCreated());
-                                        }
-                                    });
 
                                     return ResponseEntity.status(HttpStatus.OK).body(photoDTOList);
                                 } catch (IllegalArgumentException e) {
