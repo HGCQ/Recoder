@@ -30,14 +30,16 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.List;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Response;
 import yuhan.hgcq.client.R;
-import yuhan.hgcq.client.adapter.AlbumAdapter;
+import yuhan.hgcq.client.adapter.AlbumTrashAdapter;
 import yuhan.hgcq.client.controller.AlbumController;
 import yuhan.hgcq.client.localDatabase.Repository.AlbumRepository;
 import yuhan.hgcq.client.localDatabase.callback.Callback;
 import yuhan.hgcq.client.model.dto.album.AlbumDTO;
+import yuhan.hgcq.client.model.dto.album.DeleteCancelAlbumForm;
 import yuhan.hgcq.client.model.dto.member.MemberDTO;
 import yuhan.hgcq.client.model.dto.team.TeamDTO;
 
@@ -50,7 +52,7 @@ public class AlbumTrash extends AppCompatActivity {
     BottomNavigationView navi;
 
     /* Adapter */
-    AlbumAdapter aa;
+    AlbumTrashAdapter ata;
 
     /* 개인, 공유 확인 */
     boolean isPrivate;
@@ -58,6 +60,7 @@ public class AlbumTrash extends AppCompatActivity {
     /* 받아올 값 */
     TeamDTO teamDTO;
     MemberDTO loginMember;
+    AlbumDTO albumDTO;
 
     /* 서버와 통신 */
     AlbumController ac;
@@ -65,6 +68,7 @@ public class AlbumTrash extends AppCompatActivity {
     /* 로컬 DB */
     AlbumRepository ar;
 
+    Context context;
     /* Toast */
     Handler handler = new Handler(Looper.getMainLooper());
 
@@ -118,14 +122,14 @@ public class AlbumTrash extends AppCompatActivity {
 
         navi = findViewById(R.id.bottom_navigation_view);
 
-        recover=findViewById(R.id.recover);
+        recover = findViewById(R.id.recover);
 
         /* 관련된 페이지 */
         Intent groupMainPage = new Intent(this, GroupMain.class);
         Intent albumMainPage = new Intent(this, AlbumMain.class);
         Intent friendListPage = new Intent(this, FriendList.class);
         Intent likePage = new Intent(this, Like.class);
-        Intent myPage=new Intent(this, MyPage.class);
+        Intent myPage = new Intent(this, MyPage.class);
 
         Intent getIntent = getIntent();
         /* 개인, 공유 확인 */
@@ -134,17 +138,72 @@ public class AlbumTrash extends AppCompatActivity {
         /* 받아 올 값 */
         teamDTO = (TeamDTO) getIntent.getSerializableExtra("teamDTO");
         loginMember = (MemberDTO) getIntent.getSerializableExtra("loginMember");
-
         /*리사이클 뷰에 저장되어 있는 삭제된 앨범을 클릭하여 선택한 후 recover 버튼을 클릭하면 앨범메인 페이지에 다시 보여주기*/
-    /*    recover.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                AlbumDTO dto=new AlbumDTO();
-                albumMainPage.putExtra("albumDTO",dto);
-                notifyAll();
 
-            }
-        });*/
+        recover.setOnClickListener(v -> {
+            List<Long> selectedItems = ata.getSelectedItems();
+            onClick_setting_costume_save("복구하시겠습니까?", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    if (isPrivate) {
+                        ar.deleteCancel(selectedItems, new Callback<Boolean>() {
+                            @Override
+                            public void onSuccess(Boolean result) {
+                                if (result != null) {
+                                    Intent albumTrashPage = new Intent(AlbumTrash.this, AlbumTrash.class);
+                                    albumTrashPage.putExtra("isPrivate", isPrivate);
+                                    albumTrashPage.putExtra("loginMember", loginMember);
+                                    albumTrashPage.putExtra("teamDTO", teamDTO);
+                                    handler.post(() -> {
+                                        Toast.makeText(AlbumTrash.this, "복구했습니다.", Toast.LENGTH_SHORT).show();
+                                    });
+                                    startActivity(albumTrashPage);
+                                    Log.i("Delete Cancel Private Album", "Success");
+                                } else {
+                                    Log.i("Delete Cancel Private Album", "Fail");
+                                }
+                            }
+
+                            @Override
+                            public void onError(Exception e) {
+                                Log.e("Delete Cancel Private Album Error", e.getMessage());
+                            }
+                        });
+                    } else {
+                        ac.deleteCancelAlbum(new DeleteCancelAlbumForm(selectedItems), new retrofit2.Callback<ResponseBody>() {
+                            @Override
+                            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                                if (response.isSuccessful()) {
+                                    Intent AlbumTrashPage = new Intent(AlbumTrash.this, AlbumTrash.class);
+                                    AlbumTrashPage.putExtra("isPrivate", isPrivate);
+                                    AlbumTrashPage.putExtra("loginMember", loginMember);
+                                    AlbumTrashPage.putExtra("teamDTO", teamDTO);
+                                    handler.post(() -> {
+                                        Toast.makeText(AlbumTrash.this, "복구했습니다.", Toast.LENGTH_SHORT).show();
+                                    });
+                                    startActivity(AlbumTrashPage);
+                                    Log.i("Delete Cancel Shared Album Error", "Success");
+                                } else {
+                                    Log.i("Delete Cancel Shared Album Error", "Fail");
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                                Log.e("Delete Cancel Shared Album Error", t.getMessage());
+                            }
+                        });
+                    }
+                }
+            }, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    Toast.makeText(AlbumTrash.this, "취소했습니다.", Toast.LENGTH_SHORT).show();
+                }
+            });
+        });
+
+
         /* 개인 초기 설정 */
         if (isPrivate) {
             ar.searchTrash(new Callback<List<AlbumDTO>>() {
@@ -152,17 +211,17 @@ public class AlbumTrash extends AppCompatActivity {
                 public void onSuccess(List<AlbumDTO> result) {
                     if (result != null) {
                         if (result.isEmpty()) {
-                            empty.setVisibility(View.VISIBLE);
+                            handler.post(() -> {
+                                empty.setVisibility(View.VISIBLE);
+                            });
                         } else {
-                            empty.setVisibility(View.INVISIBLE);
+                            handler.post(() -> {
+                                empty.setVisibility(View.INVISIBLE);
+                            });
                         }
-                        aa = new AlbumAdapter(result);
-                        albumTrashListView.setAdapter(aa);
-                        aa.setOnItemClickListener(new AlbumAdapter.OnItemClickListener() {
-                            @Override
-                            public void onItemClick(View view, int position) {
-
-                            }
+                        ata = new AlbumTrashAdapter(result, AlbumTrash.this, isPrivate);
+                        handler.post(() -> {
+                            albumTrashListView.setAdapter(ata);
                         });
                         Log.i("Found Private AlbumTrashList", "Success");
                     } else {
@@ -181,23 +240,23 @@ public class AlbumTrash extends AppCompatActivity {
         else {
             if (teamDTO != null) {
                 Long teamId = teamDTO.getTeamId();
-                ac.albumList(teamId, new retrofit2.Callback<List<AlbumDTO>>() {
+                ac.albumTrashList(teamId, new retrofit2.Callback<List<AlbumDTO>>() {
                     @Override
                     public void onResponse(Call<List<AlbumDTO>> call, Response<List<AlbumDTO>> response) {
                         if (response.isSuccessful()) {
-                            List<AlbumDTO> albumList = response.body();
-                            if (albumList.isEmpty()) {
-                                empty.setVisibility(View.VISIBLE);
+                            List<AlbumDTO> albumTrashList = response.body();
+                            if (albumTrashList.isEmpty()) {
+                                handler.post(() -> {
+                                    empty.setVisibility(View.VISIBLE);
+                                });
                             } else {
-                                empty.setVisibility(View.INVISIBLE);
+                                handler.post(() -> {
+                                    empty.setVisibility(View.INVISIBLE);
+                                });
                             }
-                            aa = new AlbumAdapter(albumList);
-                            albumTrashListView.setAdapter(aa);
-                                aa.setOnItemClickListener(new AlbumAdapter.OnItemClickListener() {
-                                @Override
-                                public void onItemClick(View view, int position) {
-
-                                }
+                            ata = new AlbumTrashAdapter(albumTrashList, AlbumTrash.this, isPrivate);
+                            handler.post(() -> {
+                                albumTrashListView.setAdapter(ata);
                             });
                             Log.i("Found Shared AlbumTrashList", "Success");
                         } else {
@@ -214,6 +273,7 @@ public class AlbumTrash extends AppCompatActivity {
                 Log.e("Intent Error", "teamDTO is Null");
             }
         }
+
 
 
         /* 내비게이션 바 */
