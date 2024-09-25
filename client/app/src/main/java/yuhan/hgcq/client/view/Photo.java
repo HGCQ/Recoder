@@ -431,7 +431,7 @@ public class Photo extends AppCompatActivity {
                     @Override
                     public void onSuccess(List<AlbumDTO> result) {
                         if (result != null) {
-                            aa = new AlbumAdapter(result);
+                            aa = new AlbumAdapter(result, Photo.this, isPrivate);
                             handler.post(() -> {
                                 albumListView.setAdapter(aa);
                             });
