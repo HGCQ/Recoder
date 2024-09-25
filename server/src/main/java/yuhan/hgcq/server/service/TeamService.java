@@ -9,8 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import yuhan.hgcq.server.domain.Member;
 import yuhan.hgcq.server.domain.Team;
 import yuhan.hgcq.server.domain.TeamMember;
-import yuhan.hgcq.server.repository.TeamMemberRepository;
-import yuhan.hgcq.server.repository.TeamRepository;
+import yuhan.hgcq.server.repository.*;
 
 import java.util.List;
 
@@ -29,6 +28,10 @@ public class TeamService {
 
     private final TeamRepository tr;
     private final TeamMemberRepository tmr;
+    private final AlbumRepository ar;
+    private final LikedRepository lr;
+    private final ChatRepository cr;
+    private final PhotoRepository pr;
 
     /**
      * 그룹 생성(테스트 완료)
@@ -85,6 +88,10 @@ public class TeamService {
         boolean isOwner = isOwner(member, team);
 
         if (isOwner) {
+            lr.deleteByTeam(team);
+            pr.deleteByTeam(team);
+            cr.deleteByTeam(team);
+            ar.deleteByTeam(team);
             tmr.deleteAll(team);
             tr.delete(team.getId());
             log.info("Team deleted: {}", team);

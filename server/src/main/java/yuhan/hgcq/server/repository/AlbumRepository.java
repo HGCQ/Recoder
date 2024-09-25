@@ -39,6 +39,12 @@ public class AlbumRepository {
         em.remove(find);
     }
 
+    public void deleteByTeam(Team team) {
+        em.createQuery("delete from Album a where a.team = :team")
+                .setParameter("team", team)
+                .executeUpdate();
+    }
+
     /**
      * 앨범 조회
      *
