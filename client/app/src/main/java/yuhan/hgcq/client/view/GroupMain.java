@@ -122,12 +122,18 @@ public class GroupMain extends AppCompatActivity {
                 if (response.isSuccessful()) {
                     List<TeamDTO> findGroupList = response.body();
                     if (findGroupList.isEmpty()) {
-                        empty.setVisibility(View.VISIBLE);
+                        handler.post(()->{
+                            empty.setVisibility(View.VISIBLE);
+                        });
                     } else {
-                        empty.setVisibility(View.INVISIBLE);
+                        handler.post(()->{
+                            empty.setVisibility(View.INVISIBLE);
+                        });
                     }
                     ta = new TeamAdapter(GroupMain.this, loginMember, findGroupList);
-                    groupList.setAdapter(ta);
+                    handler.post(()->{
+                        groupList.setAdapter(ta);
+                    });
                     ta.setOnItemClickListener(new TeamAdapter.OnItemClickListener() {
 
                         @Override
@@ -173,17 +179,24 @@ public class GroupMain extends AppCompatActivity {
 
                             List<TeamDTO> findGroupList = response.body();
                             if (findGroupList.isEmpty()) {
-                                empty.setVisibility(View.VISIBLE);
+                                handler.post(()->{
+                                    empty.setVisibility(View.VISIBLE);
+                                });
                             } else {
-                                empty.setVisibility(View.INVISIBLE);
+                                handler.post(()->{
+                                    empty.setVisibility(View.INVISIBLE);
+                                });
                             }
                             ta = new TeamAdapter(GroupMain.this, loginMember, findGroupList);
-                            groupList.setAdapter(ta);
+                            handler.post(()->{
+                                groupList.setAdapter(ta);
+                            });
                             ta.setOnItemClickListener(new TeamAdapter.OnItemClickListener() {
                                 @Override
                                 public void onItemClick(View view, int position) {
                                     TeamDTO teamDTO = findGroupList.get(position);
                                     albumMainPage.putExtra("teamDTO", teamDTO);
+                                    albumMainPage.putExtra("loginMember",loginMember);
                                     startActivity(albumMainPage);
                                     Log.i("Found GroupList", "Success");
                                 }
@@ -216,7 +229,9 @@ public class GroupMain extends AppCompatActivity {
                     return true;
                 } else if (itemId == R.id.fragment_friend) {
                     if (loginMember == null) {
-                        Toast.makeText(GroupMain.this, "로그인 후 이용 가능합니다.", Toast.LENGTH_SHORT).show();
+                        handler.post(()->{
+                            Toast.makeText(GroupMain.this, "로그인 후 이용 가능합니다.", Toast.LENGTH_SHORT).show();
+                        });
                     } else {
                         friendListPage.putExtra("loginMember", loginMember);
                         startActivity(friendListPage);

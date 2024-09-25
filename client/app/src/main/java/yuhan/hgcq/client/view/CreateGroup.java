@@ -64,6 +64,7 @@ public class CreateGroup extends AppCompatActivity {
         switch (item.getItemId()) {
             case android.R.id.home:
                 Intent groupMainPage = new Intent(this, GroupMain.class);
+                groupMainPage.putExtra("loginMember",loginMember);
                 startActivity(groupMainPage);
                 finish();
                 return true;
@@ -113,7 +114,9 @@ public class CreateGroup extends AppCompatActivity {
                 if (response.isSuccessful()) {
                     List<MemberDTO> followingList = response.body();
                     fa = new FollowAdapter(followingList);
-                    followingListView.setAdapter(fa);
+                    handler.post(()->{
+                        followingListView.setAdapter(fa);
+                    });
                     Log.i("Found FollowList", "Success");
                 } else {
                     Log.i("Found FollowList", "Fail");
@@ -136,8 +139,10 @@ public class CreateGroup extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int which) {
                         List<Long> selectedFollowList = fa.getSelectedItems();
                         TeamCreateForm form = new TeamCreateForm();
-                        form.setName(groupName);
-                        form.setMembers(selectedFollowList);
+                        handler.post(()->{
+                            form.setName(groupName);
+                            form.setMembers(selectedFollowList);
+                        });
                         Log.d("form", form.toString());
                         tc.createTeam(form, new Callback<ResponseBody>() {
                             @Override
@@ -160,7 +165,9 @@ public class CreateGroup extends AppCompatActivity {
                 }, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        Toast.makeText(CreateGroup.this, "취소했습니다.", Toast.LENGTH_SHORT).show();
+                        handler.post(()->{
+                            Toast.makeText(CreateGroup.this, "취소했습니다.", Toast.LENGTH_SHORT).show();
+                        });
                     }
                 });
             }

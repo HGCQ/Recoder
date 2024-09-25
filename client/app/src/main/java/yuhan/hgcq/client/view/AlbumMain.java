@@ -55,33 +55,27 @@ import yuhan.hgcq.client.model.dto.team.TeamDTO;
 
 public class AlbumMain extends AppCompatActivity {
 
-    /* View */
-    ImageButton search, auto, albumPlus, albumTrash;
+    /* View */ ImageButton search, auto, albumPlus, albumTrash;
     EditText searchText;
     TextView empty;
     RecyclerView albumListView;
     BottomNavigationView navi;
 
-    /* Adapter */
-    AlbumAdapter aa;
+    /* Adapter */ AlbumAdapter aa;
 
     /* 개인, 공유 확인 */
     private boolean isPrivate;
 
-    /* 받아올 값 */
-    TeamDTO teamDTO;
+    /* 받아올 값 */ TeamDTO teamDTO;
     MemberDTO loginMember;
 
-    /* 서버와 통신 */
-    AlbumController ac;
+    /* 서버와 통신 */ AlbumController ac;
     PhotoController pc;
 
-    /* 로컬 DB */
-    AlbumRepository ar;
+    /* 로컬 DB */ AlbumRepository ar;
     PhotoRepository pr;
 
-    /* Toast */
-    Handler handler = new Handler(Looper.getMainLooper());
+    /* Toast */ Handler handler = new Handler(Looper.getMainLooper());
 
     /* Request Code */
     private static final int GALLERY = 1000;
@@ -94,11 +88,14 @@ public class AlbumMain extends AppCompatActivity {
             case android.R.id.home:
                 if (isPrivate) {
                     Intent selectPage = new Intent(this, Select.class);
+                    selectPage.putExtra("loginMember", loginMember);
                     startActivity(selectPage);
                 } else {
                     Intent groupMainPage = new Intent(this, GroupMain.class);
+                    groupMainPage.putExtra("loginMember", loginMember);
                     startActivity(groupMainPage);
                 }
+
                 finish();
                 return true;
             default:
@@ -152,7 +149,7 @@ public class AlbumMain extends AppCompatActivity {
         Intent createAlbumPage = new Intent(this, CreateAlbum.class);
         Intent albumTrashPage = new Intent(this, AlbumTrash.class);
         Intent galleryPage = new Intent(this, Gallery.class);
-        Intent myPage=new Intent(this, MyPage.class);
+        Intent myPage = new Intent(this, MyPage.class);
 
         /* 갤러리 */
         Intent gallery = new Intent(Intent.ACTION_GET_CONTENT);
@@ -182,12 +179,19 @@ public class AlbumMain extends AppCompatActivity {
                 public void onSuccess(List<AlbumDTO> result) {
                     if (result != null) {
                         if (result.isEmpty()) {
-                            empty.setVisibility(View.VISIBLE);
+                            handler.post(() -> {
+                                empty.setVisibility(View.VISIBLE);
+
+                            });
                         } else {
-                            empty.setVisibility(View.INVISIBLE);
+                            handler.post(() -> {
+                                empty.setVisibility(View.INVISIBLE);
+                            });
                         }
                         aa = new AlbumAdapter(result, AlbumMain.this, isPrivate);
-                        albumListView.setAdapter(aa);
+                        handler.post(() -> {
+                            albumListView.setAdapter(aa);
+                        });
                         aa.setOnItemClickListener(new AlbumAdapter.OnItemClickListener() {
                             @Override
                             public void onItemClick(View view, int position) {
@@ -219,7 +223,7 @@ public class AlbumMain extends AppCompatActivity {
                     public void onResponse(Call<List<AlbumDTO>> call, Response<List<AlbumDTO>> response) {
                         if (response.isSuccessful()) {
                             List<AlbumDTO> albumList = response.body();
-                            handler.post(()->{
+                            handler.post(() -> {
                                 if (albumList.isEmpty()) {
                                     empty.setVisibility(View.VISIBLE);
                                 } else {
@@ -228,9 +232,8 @@ public class AlbumMain extends AppCompatActivity {
                             });
 
                             aa = new AlbumAdapter(albumList, AlbumMain.this, isPrivate);
-                            handler.post(()->{
+                            handler.post(() -> {
                                 albumListView.setAdapter(aa);
-
                             });
                             aa.setOnItemClickListener(new AlbumAdapter.OnItemClickListener() {
                                 @Override
@@ -270,12 +273,17 @@ public class AlbumMain extends AppCompatActivity {
                         @Override
                         public void onSuccess(List<AlbumDTO> result) {
                             if (result != null) {
-                                aa.updateList(result);
-
+                                handler.post(()->{
+                                    aa.updateList(result);
+                                });
                                 if (result.isEmpty()) {
-                                    empty.setVisibility(View.VISIBLE);
+                                    handler.post(() -> {
+                                        empty.setVisibility(View.VISIBLE);
+                                    });
                                 } else {
-                                    empty.setVisibility(View.INVISIBLE);
+                                    handler.post(()->{
+                                        empty.setVisibility(View.INVISIBLE);
+                                    });
                                 }
 
                                 Log.i("Found Private Album By Name", "Success");
@@ -305,12 +313,17 @@ public class AlbumMain extends AppCompatActivity {
 
                                     if (albumList != null) {
                                         if (albumList.isEmpty()) {
-                                            empty.setVisibility(View.VISIBLE);
+                                            handler.post(()->{
+                                                empty.setVisibility(View.VISIBLE);
+                                            });
                                         } else {
-                                            empty.setVisibility(View.INVISIBLE);
+                                            handler.post(()->{
+                                                empty.setVisibility(View.INVISIBLE);
+                                            });
                                         }
-
-                                        aa.updateList(albumList);
+                                        handler.post(()->{
+                                            aa.updateList(albumList);
+                                        });
                                     }
 
                                     Log.i("Found Album By Name", "Success");
@@ -409,7 +422,9 @@ public class AlbumMain extends AppCompatActivity {
                     return true;
                 } else if (itemId == R.id.fragment_friend) {
                     if (loginMember == null) {
-                        Toast.makeText(AlbumMain.this, "로그인 후 이용 가능합니다.", Toast.LENGTH_SHORT).show();
+                        handler.post(()->{
+                            Toast.makeText(AlbumMain.this, "로그인 후 이용 가능합니다.", Toast.LENGTH_SHORT).show();
+                        });
                     } else {
                         if (isPrivate) {
                             friendListPage.putExtra("isPrivate", true);
@@ -430,7 +445,9 @@ public class AlbumMain extends AppCompatActivity {
                 } else if (itemId == R.id.fragment_setting) {
                     //마이 페이지로 이동시키기
                     if (loginMember == null) {
-                        Toast.makeText(AlbumMain.this, "로그인 후 이용 가능합니다.", Toast.LENGTH_SHORT).show();
+                        handler.post(()->{
+                            Toast.makeText(AlbumMain.this, "로그인 후 이용 가능합니다.", Toast.LENGTH_SHORT).show();
+                        });
                     } else {
                         myPage.putExtra("loginMember", loginMember);
                         startActivity(myPage);
@@ -625,26 +642,17 @@ public class AlbumMain extends AppCompatActivity {
 
     /* 사진의 metadata 추출 */
     private PhotoMetaData getImageMetadata(Uri imageUri) {
-        String[] projection = {
-                MediaStore.Images.Media.DISPLAY_NAME, // 사진 이름
+        String[] projection = {MediaStore.Images.Media.DISPLAY_NAME, // 사진 이름
                 MediaStore.Images.Media.DATE_TAKEN, // 사진 날짜
         };
 
-        try (Cursor cursor = getContentResolver().query(
-                imageUri,
-                projection,
-                null,
-                null,
-                null)) {
+        try (Cursor cursor = getContentResolver().query(imageUri, projection, null, null, null)) {
 
             if (cursor != null && cursor.moveToFirst()) {
                 String photoName = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DISPLAY_NAME));
                 long created = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATE_TAKEN));
 
-                LocalDateTime createdToLocalDateTime = LocalDateTime.ofInstant(
-                        Instant.ofEpochMilli(created),
-                        ZoneId.systemDefault()
-                );
+                LocalDateTime createdToLocalDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(created), ZoneId.systemDefault());
 
                 return PhotoMetaData.create(photoName, createdToLocalDateTime);
             }

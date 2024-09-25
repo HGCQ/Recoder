@@ -84,8 +84,9 @@ public class AlbumTrash extends AppCompatActivity {
                     albumMainPage.putExtra("isPrivate", isPrivate);
                 } else {
                     albumMainPage.putExtra("teamDTO", teamDTO);
-                    albumMainPage.putExtra("loginMember", loginMember);
+
                 }
+                albumMainPage.putExtra("loginMember", loginMember);
                 startActivity(albumMainPage);
                 finish();
                 return true;
@@ -138,7 +139,6 @@ public class AlbumTrash extends AppCompatActivity {
         /* 받아 올 값 */
         teamDTO = (TeamDTO) getIntent.getSerializableExtra("teamDTO");
         loginMember = (MemberDTO) getIntent.getSerializableExtra("loginMember");
-        /*리사이클 뷰에 저장되어 있는 삭제된 앨범을 클릭하여 선택한 후 recover 버튼을 클릭하면 앨범메인 페이지에 다시 보여주기*/
 
         recover.setOnClickListener(v -> {
             List<Long> selectedItems = ata.getSelectedItems();
@@ -292,7 +292,9 @@ public class AlbumTrash extends AppCompatActivity {
                     return true;
                 } else if (itemId == R.id.fragment_friend) {
                     if (loginMember == null) {
-                        Toast.makeText(AlbumTrash.this, "로그인 후 이용 가능합니다.", Toast.LENGTH_SHORT).show();
+                        handler.post(()->{
+                            Toast.makeText(AlbumTrash.this, "로그인 후 이용 가능합니다.", Toast.LENGTH_SHORT).show();
+                        });
                     } else {
                         if (isPrivate) {
                             friendListPage.putExtra("isPrivate", true);
@@ -313,7 +315,10 @@ public class AlbumTrash extends AppCompatActivity {
                 } else if (itemId == R.id.fragment_setting) {
                     //마이 페이지로 이동시키기
                     if (loginMember == null) {
-                        Toast.makeText(AlbumTrash.this, "로그인 후 이용 가능합니다.", Toast.LENGTH_SHORT).show();
+                            handler.post(()->{
+                                Toast.makeText(AlbumTrash.this, "로그인 후 이용 가능합니다.", Toast.LENGTH_SHORT).show();
+
+                            });
                     } else {
                         myPage.putExtra("loginMember", loginMember);
                         startActivity(myPage);

@@ -111,14 +111,18 @@ public class GroupSetting extends AppCompatActivity {
 
         /* 초기 설정 */
         if (teamDTO != null) {
-            createGroupText.setText(teamDTO.getName());
+            handler.post(()->{
+                createGroupText.setText(teamDTO.getName());
+            });
             tc.memberListInTeam(teamDTO.getTeamId(), new Callback<List<MemberInTeamDTO>>() {
                 @Override
                 public void onResponse(Call<List<MemberInTeamDTO>> call, Response<List<MemberInTeamDTO>> response) {
                     if (response.isSuccessful()) {
                         List<MemberInTeamDTO> memberList = response.body();
                         mita = new MemberInTeamAdapter(memberList);
-                        memberListView.setAdapter(mita);
+                        handler.post(()->{
+                            memberListView.setAdapter(mita);
+                        });
                         Log.i("Found MemberList In Team", "Success");
                     } else {
                         Log.i("Found MemberList In Team", "Fail");
@@ -143,7 +147,9 @@ public class GroupSetting extends AppCompatActivity {
                             @Override
                             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                                 if (response.isSuccessful()) {
-                                    Toast.makeText(GroupSetting.this, teamDTO.getName() + " 그룹에서 나갔습니다.", Toast.LENGTH_SHORT).show();
+                                    handler.post(()->{
+                                        Toast.makeText(GroupSetting.this, teamDTO.getName() + " 그룹에서 나갔습니다.", Toast.LENGTH_SHORT).show();
+                                    });
                                     Log.i("Delete Team", "Success");
                                     groupMainPage.putExtra("loginMember", loginMember);
                                     startActivity(groupMainPage);
@@ -161,7 +167,9 @@ public class GroupSetting extends AppCompatActivity {
                 }, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        Toast.makeText(GroupSetting.this, "취소했습니다.", Toast.LENGTH_SHORT).show();
+                        handler.post(()->{
+                            Toast.makeText(GroupSetting.this, "취소했습니다.", Toast.LENGTH_SHORT).show();
+                        });
                     }
                 });
             }
