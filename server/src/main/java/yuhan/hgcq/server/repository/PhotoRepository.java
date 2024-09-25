@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import yuhan.hgcq.server.domain.Album;
 import yuhan.hgcq.server.domain.Photo;
+import yuhan.hgcq.server.domain.Team;
 
 import java.util.List;
 
@@ -109,6 +110,12 @@ public class PhotoRepository {
     public void deleteAll(Album album) {
         em.createQuery("delete from Photo p where p.album = :album")
                 .setParameter("album", album)
+                .executeUpdate();
+    }
+
+    public void deleteByTeam(Team team) {
+        em.createQuery("delete from Photo p where p.album.team = :team")
+                .setParameter("team", team)
                 .executeUpdate();
     }
 }

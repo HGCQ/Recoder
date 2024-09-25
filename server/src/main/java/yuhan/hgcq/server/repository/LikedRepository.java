@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 import yuhan.hgcq.server.domain.Liked;
 import yuhan.hgcq.server.domain.Member;
 import yuhan.hgcq.server.domain.Photo;
+import yuhan.hgcq.server.domain.Team;
 
 import java.util.List;
 
@@ -52,6 +53,12 @@ public class LikedRepository {
     public void delete(Photo photo) {
         em.createQuery("delete from Liked l where l.photo = :photo")
                 .setParameter("photo", photo)
+                .executeUpdate();
+    }
+
+    public void deleteByTeam(Team team) {
+        em.createQuery("delete from Liked l where l.photo.album.team = :team")
+                .setParameter("team", team)
                 .executeUpdate();
     }
 
