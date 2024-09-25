@@ -84,9 +84,11 @@ public class CreateAlbum extends AppCompatActivity {
                 if (isPrivate) {
                     albumMainPage.putExtra("isPrivate", true);
                 } else {
-                    albumMainPage.putExtra("loginMember", loginMember);
                     albumMainPage.putExtra("teamDTO", teamDTO);
                 }
+                albumMainPage.putExtra("loginMember", loginMember);
+
+
                 startActivity(albumMainPage);
                 finish();
                 return true;
@@ -163,13 +165,11 @@ public class CreateAlbum extends AppCompatActivity {
                         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
                         String start = sdf.format(new Date(startDate));
                         String end = sdf.format(new Date(endDate));
-                        startDate1.setText(start);
-                        endDate1.setText(end);
-
-
+                        handler.post(()->{
+                            startDate1.setText(start);
+                            endDate1.setText(end);
+                        });
                         Log.d("DATE_RANGE", "Start Date: " + start + " End Date: " + end);
-
-
                     }
                 });
             }
