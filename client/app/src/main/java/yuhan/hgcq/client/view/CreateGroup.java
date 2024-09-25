@@ -139,10 +139,8 @@ public class CreateGroup extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int which) {
                         List<Long> selectedFollowList = fa.getSelectedItems();
                         TeamCreateForm form = new TeamCreateForm();
-                        handler.post(()->{
-                            form.setName(groupName);
-                            form.setMembers(selectedFollowList);
-                        });
+                        form.setName(groupName);
+                        form.setMembers(selectedFollowList);
                         Log.d("form", form.toString());
                         tc.createTeam(form, new Callback<ResponseBody>() {
                             @Override

@@ -58,7 +58,7 @@ public class FollowAdapter extends RecyclerView.Adapter<FollowAdapter.FollowView
     @NonNull
     @Override
     public FollowViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View followView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_friend_add, parent, false);
+        View followView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_group_setting, parent, false);
         return new FollowViewHolder(followView, listener);
     }
 
@@ -75,7 +75,7 @@ public class FollowAdapter extends RecyclerView.Adapter<FollowAdapter.FollowView
 
         holder.itemView.setOnClickListener(v -> {
             if (selectedItems.contains(position)) {
-                selectedItems.remove(position);
+                selectedItems.remove(Integer.valueOf(position));
             } else {
                 selectedItems.add(position);
             }
