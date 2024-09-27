@@ -10,7 +10,7 @@
     <ImageButton
         android:id="@+id/date"
         android:layout_width="35dp"
-        android:layout_height="35dp"
+        android:layout_height="38dp"
         android:background="#00000000"
         android:scaleType="fitCenter"
         android:src="@drawable/calendar"
@@ -20,6 +20,21 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.291" />
+
+    <TextView
+        android:layout_width="50dp"
+        android:layout_height="20dp"
+        android:layout_marginTop="225dp"
+        android:fontFamily="@font/notosans_medium"
+        android:gravity="center"
+        android:padding="0dp"
+        android:text="기간 선택"
+        android:textColor="@color/black"
+        android:textSize="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.978"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <View
         android:layout_width="417dp"
@@ -67,7 +82,7 @@
         android:background="#00000000"
         android:scaleType="fitCenter"
         android:src="@drawable/profile"
-        android:text="기간"
+        android:text="기간 선택"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.051"
@@ -120,29 +135,19 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <View
-        android:layout_width="417dp"
-        android:layout_height="2dp"
-        android:background="#D3D3D3"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.333"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.358" />
-
-    <Button
+    <android.widget.Button
         android:id="@+id/save"
-        android:layout_width="80dp"
-        android:layout_height="wrap_content"
+        android:layout_width="380dp"
+        android:layout_height="45dp"
         android:layout_marginTop="625dp"
-        android:background="@drawable/edittext"
-        android:hint="생성"
+        android:background="@drawable/select"
+        android:text="생성"
+        android:textColor="@color/black"
         android:padding="0dp"
         android:fontFamily="@font/notosans_medium"
         android:onClick="onClick_setting_costume_save"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.983"
+        app:layout_constraintHorizontal_bias="0.473"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -27,7 +27,7 @@
                 android:layout_gravity="center"
                 android:text="Recoder"
                 android:textColor="@color/black"
-                android:fontFamily="@font/notosans_bold"
+                android:fontFamily="@font/continuous"
                 android:textSize="40sp"
                 android:textStyle="bold" />
 
@@ -146,7 +146,7 @@
 
             </RelativeLayout>
 
-            <Button
+            <android.widget.Button
                 android:layout_width="237dp"
                 android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
@@ -155,7 +155,7 @@
                 android:layout_marginTop="-20dp"
                 android:padding="0dp"
                 android:textColor="@color/colorRed"
-                android:background="@drawable/edittext"
+                android:background="#00000000"
                 android:fontFamily="@font/notosans_medium"
                 android:text="비밀번호를 잊어버리셨나요?" />
         </LinearLayout>

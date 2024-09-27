@@ -10,11 +10,12 @@
         android:layout_width="match_parent"
         android:layout_height="100dp"
         android:layout_marginTop="70dp"
-        android:fontFamily="@font/notosans_bold"
+        android:fontFamily="@font/continuous"
         android:gravity="center"
         android:textColor="@color/black"
         android:text="Recoder"
-        android:textSize="50dp" />
+        android:textSize="50dp"
+        android:textStyle="bold"/>
 
     <ImageView
         android:id="@+id/loading"
