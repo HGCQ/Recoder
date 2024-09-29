@@ -31,6 +31,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import yuhan.hgcq.client.R;
 import yuhan.hgcq.client.controller.MemberController;
+import yuhan.hgcq.client.model.dto.member.MemberDTO;
 import yuhan.hgcq.client.model.dto.member.MemberUpdateForm;
 import yuhan.hgcq.client.model.dto.member.SignupForm;
 
@@ -42,6 +43,9 @@ public class Modify extends AppCompatActivity {
 
     /* 서버와 통신 */
     MemberController mc;
+
+    /* 받아올 값 */
+    MemberDTO loginMember;
 
     /* Toast */
     Handler handler = new Handler(Looper.getMainLooper());
@@ -97,6 +101,9 @@ public class Modify extends AppCompatActivity {
         /* 관련된 페이지 */
         Intent myPage = new Intent(this, MyPage.class);
 
+        /* 받아 올 값 */
+        loginMember = (MemberDTO) getIntent().getSerializableExtra("loginMember");
+
         /* 이름 중복 확인 버튼 눌림 */
         nameCheck.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -134,7 +141,7 @@ public class Modify extends AppCompatActivity {
             }
         });
 
-        /* 회원 가입 버튼 눌림 */
+        /* 정보 수정 버튼 눌림 */
         join.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
