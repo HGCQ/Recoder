@@ -7,14 +7,14 @@
     android:layout_height="match_parent"
     tools:context=".view.AlbumMain">
 
- <FrameLayout
+<!-- <FrameLayout
         android:id="@+id/main_container"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@+id/bottom_navigation_view"
         app:layout_constraintEnd_toEndOf="@+id/bottom_navigation_view"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent"/>-->
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation_view"
@@ -51,38 +51,39 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.906"
+        app:layout_constraintVertical_bias="0.902"
         app:tint="#234567" />
 
     <EditText
         android:id="@+id/chatting"
         android:layout_width="345dp"
         android:layout_height="38dp"
-        android:layout_marginTop="570dp"
+        android:layout_marginBottom="93dp"
         android:background="@drawable/edittext"
         android:fontFamily="@font/notosans_medium"
         android:gravity="center"
         android:hint="채팅을 입력해주세요"
+        android:isScrollContainer="true"
+        android:maxLines="4"
         android:textSize="18dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.25"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintHorizontal_bias="0.242"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <ImageButton
-     android:id="@+id/arrow"
-     android:layout_width="30dp"
-     android:layout_height="40dp"
-     android:background="#00000000"
-     android:onClick="onClick_setting_costume_save"
-     android:scaleType="fitCenter"
-     android:src="@drawable/arrow"
-     app:layout_constraintBottom_toBottomOf="parent"
-     app:layout_constraintEnd_toEndOf="parent"
-     app:layout_constraintHorizontal_bias="0.99"
-     app:layout_constraintStart_toStartOf="parent"
-     app:layout_constraintTop_toTopOf="parent"
-     app:layout_constraintVertical_bias="0.86" />
+        android:id="@+id/arrow"
+        android:layout_width="30dp"
+        android:layout_height="40dp"
+        android:layout_marginBottom="94dp"
+        android:background="#00000000"
+        android:onClick="onClick_setting_costume_save"
+        android:scaleType="fitCenter"
+        android:src="@drawable/arrow"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.99"
+        app:layout_constraintStart_toStartOf="parent" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

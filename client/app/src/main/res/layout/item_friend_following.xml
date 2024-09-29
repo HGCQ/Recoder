@@ -17,13 +17,14 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
+    <android.widget.Button
         android:id="@+id/unfollowButton"
         android:layout_width="60dp"
         android:layout_height="35dp"
         android:layout_marginTop="4dp"
-        android:background="@drawable/edittext"
-        android:fontFamily="@font/notosans_bold"
+        android:background="@drawable/select"
+        android:fontFamily="@font/notosans_medium"
+        android:textColor="@color/colorRed"
         android:onClick="onClick_setting_costume_cancel"
         android:padding="0dp"
         android:textSize="10dp"
@@ -37,8 +38,9 @@
         android:id="@+id/name"
         android:layout_width="80dp"
         android:layout_height="30dp"
-        android:fontFamily="@font/notosans_regular"
+        android:fontFamily="@font/notosans_medium"
         android:padding="0dp"
+        android:textColor="@color/black"
         android:text="name"
         android:textSize="15dp"
         app:layout_constraintEnd_toEndOf="parent"
