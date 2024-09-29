@@ -6,7 +6,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="horizontal"
     android:padding="0dp">
-
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
     <ImageView
         android:id="@+id/profile"
         android:layout_width="60dp"
@@ -14,23 +16,6 @@
         android:src="@drawable/profile"
         android:text="팔로잉"
         android:onClick="onClick_setting_costume_save"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <android.widget.Button
-        android:id="@+id/unfollowButton"
-        android:layout_width="60dp"
-        android:layout_height="35dp"
-        android:layout_marginTop="4dp"
-        android:background="@drawable/select"
-        android:fontFamily="@font/notosans_medium"
-        android:textColor="@color/colorRed"
-        android:onClick="onClick_setting_costume_cancel"
-        android:padding="0dp"
-        android:textSize="10dp"
-        android:text="삭제"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.955"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -42,10 +27,20 @@
         android:padding="0dp"
         android:textColor="@color/black"
         android:text="name"
-        android:textSize="15dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.2"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:textSize="15dp" />
 
+    <android.widget.Button
+        android:id="@+id/unfollowButton"
+        android:layout_width="60dp"
+        android:layout_height="30dp"
+        android:layout_marginStart="180dp"
+        android:background="@drawable/select"
+        android:fontFamily="@font/notosans_medium"
+        android:onClick="onClick_setting_costume_cancel"
+        android:padding="0dp"
+        android:text="삭제"
+        android:textColor="@color/colorRed"
+        android:textSize="10dp" />
+
+</LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
