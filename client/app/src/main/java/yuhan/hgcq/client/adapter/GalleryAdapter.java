@@ -13,8 +13,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import yuhan.hgcq.client.R;
 import yuhan.hgcq.client.model.dto.album.AlbumDTO;
@@ -33,6 +35,10 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryV
     private MemberDTO loginMember;
     private TeamDTO teamDTO;
     private AlbumDTO albumDTO;
+
+    // 선택된 사진을 저장할 Set
+    private Set<PhotoDTO> selectedPhotos = new HashSet<>();
+    private boolean isSelectionMode = false; // 선택 모드 상태
 
     public GalleryAdapter(Map<String, List<PhotoDTO>> gallery, Context context, boolean isPrivate,
                           MemberDTO loginMember, TeamDTO teamDTO, AlbumDTO albumDTO) {
@@ -55,6 +61,17 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryV
         this.isPrivate = isPrivate;
         this.loginMember = loginMember;
         this.albumDTO = albumDTO;
+    }
+    // 선택 모드 활성화 메서드
+    public void enableSelectionMode() {
+        isSelectionMode = true;
+    }
+
+    // 선택 모드 비활성화 메서드
+    public void disableSelectionMode() {
+        isSelectionMode = false;
+        selectedPhotos.clear(); // 선택된 사진 초기화
+        notifyDataSetChanged(); // UI 갱신
     }
 
     public interface OnItemClickListener {
@@ -110,17 +127,14 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryV
             @Override
             public void onItemClick(View view, int position) {
                 PhotoDTO photoDTO = photoList.get(position);
-                Intent photoPage = new Intent(context, Photo.class);
-                if (isPrivate) {
-                    photoPage.putExtra("isPrivate", true);
+
+                // 선택 모드일 경우
+                if (isSelectionMode) {
+                    togglePhotoSelection(photoDTO);
+                } else {
+                    // 일반 모드일 경우 사진 페이지로 이동
+                    openPhotoPage(photoDTO);
                 }
-                photoPage.putExtra("loginMember", loginMember);
-                photoPage.putExtra("albumDTO", albumDTO);
-                photoPage.putExtra("photoDTO", photoDTO);
-                if(!isPrivate) {
-                    photoPage.putExtra("teamDTO", teamDTO);
-                }
-                context.startActivity(photoPage);
             }
         });
         holder.photoListView.setAdapter(gpa);
@@ -129,5 +143,34 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryV
     @Override
     public int getItemCount() {
         return dateList.size();
+    }
+
+    // 선택된 사진 리스트를 반환하는 메서드 추가
+    public List<PhotoDTO> getSelectedPhotos() {
+        return new ArrayList<>(selectedPhotos);
+    }
+
+    // 선택된 사진 추가/제거 메서드
+    private void togglePhotoSelection(PhotoDTO photoDTO) {
+        if (selectedPhotos.contains(photoDTO)) {
+            selectedPhotos.remove(photoDTO); // 이미 선택된 경우 제거
+        } else {
+            selectedPhotos.add(photoDTO); // 선택되지 않은 경우 추가
+        }
+    }
+
+    // 사진 페이지로 이동하는 메서드
+    private void openPhotoPage(PhotoDTO photoDTO) {
+        Intent photoPage = new Intent(context, Photo.class);
+        if (isPrivate) {
+            photoPage.putExtra("isPrivate", true);
+        }
+        photoPage.putExtra("loginMember", loginMember);
+        photoPage.putExtra("albumDTO", albumDTO);
+        photoPage.putExtra("photoDTO", photoDTO);
+        if (!isPrivate) {
+            photoPage.putExtra("teamDTO", teamDTO);
+        }
+        context.startActivity(photoPage);
     }
 }
