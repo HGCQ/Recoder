@@ -1,6 +1,7 @@
 package yuhan.hgcq.client.view;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Rect;
@@ -17,6 +18,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -25,6 +27,7 @@ import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -44,12 +47,15 @@ import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Response;
 import yuhan.hgcq.client.R;
+import yuhan.hgcq.client.adapter.AlbumAdapter;
 import yuhan.hgcq.client.adapter.GalleryAdapter;
+import yuhan.hgcq.client.controller.AlbumController;
 import yuhan.hgcq.client.controller.PhotoController;
 import yuhan.hgcq.client.localDatabase.Repository.PhotoRepository;
 import yuhan.hgcq.client.localDatabase.callback.Callback;
 import yuhan.hgcq.client.model.dto.album.AlbumDTO;
 import yuhan.hgcq.client.model.dto.member.MemberDTO;
+import yuhan.hgcq.client.model.dto.photo.MovePhotoForm;
 import yuhan.hgcq.client.model.dto.photo.PhotoDTO;
 import yuhan.hgcq.client.model.dto.team.TeamDTO;
 
@@ -60,9 +66,11 @@ public class Gallery extends AppCompatActivity {
     ImageButton chat, move, photoPlus, photoTrash;
     RecyclerView photoListView, albumListView;
     BottomNavigationView navi;
+    Button moveOk;
 
     /* Adapter */
     GalleryAdapter ga;
+    AlbumAdapter aa;
 
     /* 받아올 값 */
     private boolean isPrivate;
@@ -72,6 +80,7 @@ public class Gallery extends AppCompatActivity {
 
     /* 서버와 통신 */
     PhotoController pc;
+    AlbumController ac;
 
     /* 로컬 DB */
     PhotoRepository pr;
@@ -135,6 +144,7 @@ public class Gallery extends AppCompatActivity {
         move = findViewById(R.id.move);
         photoPlus = findViewById(R.id.photoPlus);
         photoTrash = findViewById(R.id.photoTrash);
+        moveOk = findViewById(R.id.moveOk);
 
         photoListView = findViewById(R.id.photoList);
         albumListView = findViewById(R.id.albumList);
@@ -256,7 +266,84 @@ public class Gallery extends AppCompatActivity {
 
         /* 앨범 이동 눌림 */
         move.setOnClickListener(v -> {
+            ga.enableSelectionMode();
+            List<PhotoDTO> selectedItems = ga.getSelectedPhotos();
+            moveOk.setVisibility(View.VISIBLE);
 
+            moveOk.setOnClickListener(v1 -> {
+                if (teamDTO != null) {
+                    Long teamId = teamDTO.getTeamId();
+                    ac.albumList(teamId, new retrofit2.Callback<List<AlbumDTO>>() {
+                        @Override
+                        public void onResponse(Call<List<AlbumDTO>> call, Response<List<AlbumDTO>> response) {
+                            if (response.isSuccessful()) {
+                                List<AlbumDTO> albumList = response.body();
+                                handler.post(() -> {
+                                    albumListView.setVisibility(View.VISIBLE);
+                                });
+
+                                aa = new AlbumAdapter(albumList, Gallery.this, isPrivate);
+                                handler.post(() -> {
+                                    albumListView.setAdapter(aa);
+                                });
+
+                                aa.setOnItemClickListener(new AlbumAdapter.OnItemClickListener() {
+                                    @Override
+                                    public void onItemClick(View view, int position) {
+                                        onClick_setting_costume_save("이동하시겠습니까?", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                AlbumDTO albumDTO = albumList.get(position);
+                                                MovePhotoForm form = new MovePhotoForm(albumDTO.getAlbumId(), selectedItems);
+                                                pc.moveAlbumPhoto(form, new retrofit2.Callback<ResponseBody>() {
+                                                    @Override
+                                                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                                                        if (response.isSuccessful()) {
+                                                            Intent galleryPage = new Intent(Gallery.this, Gallery.class);
+                                                            galleryPage.putExtra("isPrivate", isPrivate);
+                                                            galleryPage.putExtra("loginMember", loginMember);
+                                                            galleryPage.putExtra("teamDTO", teamDTO);
+                                                            galleryPage.putExtra("albumDTO", albumDTO);
+                                                            handler.post(() -> {
+                                                                Toast.makeText(Gallery.this, "앨범 이동 했습니다.", Toast.LENGTH_SHORT).show();
+                                                            });
+                                                            startActivity(galleryPage);
+                                                            Log.i("앨범 이동 성공", "Success");
+                                                        } else {
+                                                            Log.i("앨범 이동 실패", "Fail");
+                                                        }
+                                                    }
+
+                                                    @Override
+                                                    public void onFailure(Call<ResponseBody> call, Throwable t) {
+                                                        Log.e("앨범 이동 실패", t.getMessage());
+                                                    }
+                                                });
+                                            }
+                                        }, new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                Toast.makeText(Gallery.this, "취소했습니다.", Toast.LENGTH_SHORT).show();
+                                            }
+                                        });
+                                    }
+                                });
+                                Log.i("Found Shared AlbumList", "Success");
+                            } else {
+                                Log.i("Found Shared AlbumList", "Fail");
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<List<AlbumDTO>> call, Throwable t) {
+                            Log.e("Found Shared AlbumList Error", t.getMessage());
+                        }
+                    });
+                } else {
+                    Log.e("Intent Error", "teamDTO is Null");
+                }
+            });
+            ga.disableSelectionMode();
         });
 
         /* 채팅 눌림 */
@@ -549,6 +636,20 @@ public class Gallery extends AppCompatActivity {
         }
 
         return null;
+    }
+
+    /* Confirm 창 */
+    public void onClick_setting_costume_save(String message,
+                                             DialogInterface.OnClickListener positive,
+                                             DialogInterface.OnClickListener negative) {
+
+        new AlertDialog.Builder(this)
+                .setTitle("Recoder")
+                .setMessage(message)
+                .setIcon(R.drawable.album)
+                .setPositiveButton(android.R.string.yes, positive)
+                .setNegativeButton(android.R.string.no, negative)
+                .show();
     }
 
     @Override
