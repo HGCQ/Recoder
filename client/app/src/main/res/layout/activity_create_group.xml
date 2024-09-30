@@ -123,12 +123,14 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.367" />
-
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/createGroupList"
-        android:layout_width="405dp"
-        android:layout_height="325dp"
-        android:layout_marginEnd="4dp"
+        android:layout_width="match_parent"
+        android:layout_height="320dp"
+        android:layout_marginTop="270dp"
         android:gravity="center"
         android:padding="17dp"
         app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
@@ -137,5 +139,5 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.665"
         app:spanCount="1" />
-
+</LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

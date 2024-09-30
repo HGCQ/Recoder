@@ -6,20 +6,24 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".view.AlbumMain">
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/groupSetList"
-        android:layout_width="412dp"
+        android:layout_width="match_parent"
         android:layout_height="371dp"
+        android:layout_marginTop="240dp"
         android:gravity="center"
-        android:padding="17dp"
+        android:padding="0dp"
         app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.664"
         app:spanCount="1" />
-
+</LinearLayout>
     <View
         android:layout_width="410dp"
         android:layout_height="2dp"
@@ -107,22 +111,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <android.widget.Button
-        android:id="@+id/groupLeave"
-        android:layout_width="380dp"
-        android:layout_height="45dp"
-        android:layout_marginTop="625dp"
-        android:padding="0dp"
-        android:background="@drawable/select"
-        android:fontFamily="@font/notosans_bold"
-        android:onClick="onClick_setting_costume_save"
-        android:scaleType="fitCenter"
-        android:text="그룹방 나가기"
-        android:textColor="@color/colorRed"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
-
     <ImageView
         android:layout_width="55dp"
         android:layout_height="48dp"
@@ -133,43 +121,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:tint="#234567" />
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/followingList"
-        android:layout_width="350dp"
-        android:layout_height="410dp"
-        android:layout_marginEnd="28dp"
-        android:background="@drawable/text"
-        android:gravity="center"
-        android:padding="17dp"
-        android:visibility="invisible"
-        android:elevation="30dp"
-        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.408"
-        app:spanCount="2" />
-
-    <android.widget.Button
-        android:id="@+id/save"
-        android:layout_width="80dp"
-        android:layout_height="35dp"
-        android:layout_marginTop="504dp"
-        android:background="#00000000"
-        android:elevation="30dp"
-        android:fontFamily="@font/notosans_bold"
-        android:onClick="onClick_setting_costume_save"
-        android:padding="0dp"
-        android:scaleType="fitCenter"
-        android:stateListAnimator="@null"
-        android:text="초대하기"
-        android:textColor="@color/black"
-        android:visibility="invisible"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.909"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
         android:id="@+id/friendAdd"
@@ -193,5 +144,56 @@
         app:layout_constraintHorizontal_bias="0.463"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:ignore="MissingConstraints">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/followingList"
+            android:layout_width="350dp"
+            android:layout_height="410dp"
+            android:layout_marginTop="180dp"
+            android:layout_marginStart="30dp"
+            android:background="@drawable/text"
+            android:gravity="center"
+            android:padding="0dp"
+            android:visibility="invisible"
+            android:elevation="30dp"
+            app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+            app:spanCount="2" />
+
+        <android.widget.Button
+            android:id="@+id/save"
+            android:layout_width="80dp"
+            android:layout_height="35dp"
+            android:layout_marginTop="550dp"
+            android:layout_marginStart="-82dp"
+            android:background="#00000000"
+            android:elevation="30dp"
+            android:fontFamily="@font/notosans_bold"
+            android:onClick="onClick_setting_costume_save"
+            android:padding="0dp"
+            android:scaleType="fitCenter"
+            android:stateListAnimator="@null"
+            android:text="초대하기"
+            android:textColor="@color/black"
+            android:visibility="invisible" />
+
+        <android.widget.Button
+            android:id="@+id/groupLeave"
+            android:layout_width="380dp"
+            android:layout_height="45dp"
+            android:layout_marginTop="625dp"
+            android:layout_marginStart="-373dp"
+            android:padding="0dp"
+            android:background="@drawable/select"
+            android:fontFamily="@font/notosans_bold"
+            android:onClick="onClick_setting_costume_save"
+            android:scaleType="fitCenter"
+            android:text="그룹방 나가기"
+            android:textColor="@color/colorRed"/>
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
