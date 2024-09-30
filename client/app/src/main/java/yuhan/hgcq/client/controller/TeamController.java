@@ -140,8 +140,8 @@ public class TeamController {
      * @param teamId   그룹 id
      * @param callback 비동기 콜백
      */
-    public void adminListInTeam(Long teamId, Callback<List<MemberInTeamDTO>> callback) {
-        Call<List<MemberInTeamDTO>> call = teamService.adminListInTeam(teamId);
+    public void adminListInTeam(Long teamId, Callback<List<Long>> callback) {
+        Call<List<Long>> call = teamService.adminListInTeam(teamId);
         call.enqueue(callback);
     }
 }

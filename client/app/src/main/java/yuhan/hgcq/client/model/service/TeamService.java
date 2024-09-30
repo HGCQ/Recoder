@@ -48,6 +48,6 @@ public interface TeamService {
     Call<List<MemberInTeamDTO>> memberListInTeam(@Query("teamId") Long teamId);
 
     @GET("/team/adminlist/teamId")
-    Call<List<MemberInTeamDTO>> adminListInTeam(@Query("teamId") Long teamId);
+    Call<List<Long>> adminListInTeam(@Query("teamId") Long teamId);
 
 }
