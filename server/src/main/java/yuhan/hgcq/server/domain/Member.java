@@ -49,15 +49,17 @@ public class Member {
         this.password = password;
     }
 
-    public void changeImage(String path) {
+    public void changeImage(String image) {
         this.image = image;
     }
 
     @Override
     public String toString() {
         return "Member{" +
-                "name='" + name + '\'' +
+                "id=" + id +
+                ", name='" + name + '\'' +
                 ", email='" + email + '\'' +
+                ", image='" + image + '\'' +
                 '}';
     }
 }

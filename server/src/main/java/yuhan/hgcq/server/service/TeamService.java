@@ -41,6 +41,7 @@ public class TeamService {
 
     private final static String DIRECTORY_PATH = "D:" + File.separator
             + "app" + File.separator
+            + "images" + File.separator
             + "team" + File.separator;
 
     /**
@@ -128,6 +129,7 @@ public class TeamService {
         return findTeam;
     }
 
+    @Transactional
     public void upload(Member member, UploadTeamForm form) throws IOException, AccessException, IllegalArgumentException {
         ensureNotNull(member, "Member");
 
@@ -151,7 +153,7 @@ public class TeamService {
 
                 Path path = Paths.get(newPath + name);
                 file.transferTo(path);
-                String imagePath = "/images/" + teamId + "/" + name;
+                String imagePath = "/images/team/" + teamId + "/" + name;
 
                 ft.changeImage(imagePath);
                 tr.save(ft);

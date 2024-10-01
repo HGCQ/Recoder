@@ -117,6 +117,8 @@ public class MemberController {
                     if (findMember != null) {
                         try {
                             ms.update(findMember, form);
+                            MemberDTO memberDTO = mapping(findMember);
+                            session.setAttribute("member", memberDTO);
                             return ResponseEntity.status(HttpStatus.OK).body("Member Update Success");
                         } catch (IllegalArgumentException e) {
                             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Member Update Fail");
@@ -317,9 +319,10 @@ public class MemberController {
 
                     if (findMember != null) {
                         try {
-                            ms.upload(findMember, form);
-
-                            return ResponseEntity.status(HttpStatus.OK).body("Upload Photo Success");
+                            String path = ms.upload(findMember, form);
+                            MemberDTO memberDTO = mapping(findMember);
+                            session.setAttribute("member", memberDTO);
+                            return ResponseEntity.status(HttpStatus.OK).body(path);
                         } catch (IOException e) {
                             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Upload Photo Error");
                         } catch (IllegalArgumentException e) {
