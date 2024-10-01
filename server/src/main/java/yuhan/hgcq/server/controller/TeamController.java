@@ -611,23 +611,17 @@ public class TeamController {
                             Team ft = ts.search(teamId);
 
                             if (ft != null) {
-                                Member owner = ft.getOwner();
+                                try {
+                                    List<Member> adminList = tms.searchAdminList(ft);
+                                    List<Long> memberDTOList = new ArrayList<>();
 
-                                if (owner.equals(findMember)) {
-                                    try {
-                                        List<Member> adminList = tms.searchAdminList(ft);
-                                        List<Long> memberDTOList = new ArrayList<>();
-
-                                        for (Member member : adminList) {
-                                            memberDTOList.add(member.getId());
-                                        }
-
-                                        return ResponseEntity.status(HttpStatus.OK).body(memberDTOList);
-                                    } catch (IllegalArgumentException e) {
-                                        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found AdminList Fail");
+                                    for (Member member : adminList) {
+                                        memberDTOList.add(member.getId());
                                     }
-                                } else {
-                                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Not Owner");
+
+                                    return ResponseEntity.status(HttpStatus.OK).body(memberDTOList);
+                                } catch (IllegalArgumentException e) {
+                                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found AdminList Fail");
                                 }
                             }
                         } catch (IllegalArgumentException e) {
