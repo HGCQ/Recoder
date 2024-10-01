@@ -38,6 +38,7 @@ public class MemberService {
 
     private final static String DIRECTORY_PATH = "D:" + File.separator
             + "app" + File.separator
+            + "images" + File.separator
             + "member" + File.separator;
 
     /**
@@ -206,7 +207,8 @@ public class MemberService {
      * @throws IOException              IO 예외
      * @throws IllegalArgumentException null 값 체크
      */
-    public void upload(Member member, UploadMemberForm form) throws IOException, IllegalArgumentException {
+    @Transactional
+    public String upload(Member member, UploadMemberForm form) throws IOException, IllegalArgumentException {
         ensureNotNull(member, "Member");
 
         MultipartFile file = form.getFile();
@@ -223,12 +225,13 @@ public class MemberService {
 
             Path path = Paths.get(newPath + name);
             file.transferTo(path);
-            String imagePath = "/images/" + member.getId() + "/" + name;
+            String imagePath = "/images/member/" + member.getId() + "/" + name;
 
             member.changeImage(imagePath);
             mr.save(member);
 
             log.info("Upload Member : {}", member);
+            return imagePath;
         } catch (IOException e) {
             log.error("IO Error");
             throw new IOException();
