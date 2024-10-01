@@ -7,6 +7,7 @@ public class MemberDTO implements Serializable {
     private Long memberId;
     private String name;
     private String email;
+    private String image;
 
     public MemberDTO() {
     }
@@ -39,6 +40,14 @@ public class MemberDTO implements Serializable {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 
     @Override
