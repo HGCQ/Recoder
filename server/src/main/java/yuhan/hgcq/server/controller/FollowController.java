@@ -8,11 +8,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import yuhan.hgcq.server.domain.Follow;
 import yuhan.hgcq.server.domain.Member;
+import yuhan.hgcq.server.domain.Team;
 import yuhan.hgcq.server.dto.follow.FollowDTO;
 import yuhan.hgcq.server.dto.follow.Follower;
 import yuhan.hgcq.server.dto.member.MemberDTO;
 import yuhan.hgcq.server.service.FollowService;
 import yuhan.hgcq.server.service.MemberService;
+import yuhan.hgcq.server.service.TeamMemberService;
+import yuhan.hgcq.server.service.TeamService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +27,8 @@ public class FollowController {
 
     private final FollowService fs;
     private final MemberService ms;
+    private final TeamService ts;
+    private final TeamMemberService tms;
 
     /**
      * 팔로우 추가
@@ -192,6 +197,56 @@ public class FollowController {
                             return ResponseEntity.status(HttpStatus.OK).body(dtoList);
                         } catch (IllegalArgumentException e) {
                             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found followingList By Name Fail");
+                        }
+                    }
+                } catch (IllegalArgumentException e) {
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found Member Fail");
+                }
+            }
+        }
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Not Login");
+    }
+
+    /**
+     * 초대할 팔로잉 리스트
+     *
+     * @param request 요청
+     * @return 성공 시 200 상태 코드와 팔로잉 리스트, 실패 시 404 상태 코드, 세션 없을 시 401 상태 코드
+     */
+    @GetMapping("/followinglist/teamId")
+    public ResponseEntity<?> inviteFollowingList(@RequestParam("teamId") Long teamId, HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+
+        if (session != null) {
+            MemberDTO loginMember = (MemberDTO) session.getAttribute("member");
+
+            if (loginMember != null) {
+                try {
+                    Member findMember = ms.search(loginMember.getMemberId());
+
+                    if (findMember != null) {
+                        try {
+                            List<Member> followingList = fs.searchFollowing(findMember);
+                            try {
+                                Team ft = ts.search(teamId);
+                                List<Member> memberList = tms.searchMemberList(ft);
+                                List<MemberDTO> dtoList = new ArrayList<>();
+
+                                for (Member following : followingList) {
+                                    if (memberList.contains(following)) {
+                                        continue;
+                                    }
+                                    MemberDTO dto = mapping(following);
+                                    dtoList.add(dto);
+                                }
+
+                                return ResponseEntity.status(HttpStatus.OK).body(dtoList);
+                            } catch (IllegalArgumentException e) {
+                                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found Team Fail");
+                            }
+                        } catch (IllegalArgumentException e) {
+                            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found followingList Fail");
                         }
                     }
                 } catch (IllegalArgumentException e) {
