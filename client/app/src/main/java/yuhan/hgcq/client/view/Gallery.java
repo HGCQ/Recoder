@@ -280,10 +280,7 @@ public class Gallery extends AppCompatActivity {
                                 List<AlbumDTO> albumList = response.body();
                                 handler.post(() -> {
                                     albumListView.setVisibility(View.VISIBLE);
-                                });
-
-                                aa = new AlbumAdapter(albumList, Gallery.this, isPrivate);
-                                handler.post(() -> {
+                                    aa = new AlbumAdapter(albumList, Gallery.this, isPrivate);
                                     albumListView.setAdapter(aa);
                                 });
 
@@ -342,8 +339,9 @@ public class Gallery extends AppCompatActivity {
                 } else {
                     Log.e("Intent Error", "teamDTO is Null");
                 }
+                ga.disableSelectionMode();
             });
-            ga.disableSelectionMode();
+
         });
 
         /* 채팅 눌림 */
