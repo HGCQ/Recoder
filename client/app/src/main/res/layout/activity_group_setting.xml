@@ -45,7 +45,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
+    <EditText
         android:id="@+id/createGroupText"
         android:layout_width="233dp"
         android:layout_height="40dp"
@@ -112,25 +112,25 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
-        android:layout_width="55dp"
-        android:layout_height="48dp"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
         android:layout_marginTop="188dp"
         android:background="@drawable/text"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.033"
+        app:layout_constraintHorizontal_bias="0.02"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:tint="#234567" />
 
-    <ImageView
+    <ImageButton
         android:id="@+id/friendAdd"
         android:layout_width="25dp"
         android:layout_height="25dp"
-        android:layout_marginTop="200dp"
+        android:layout_marginTop="198dp"
         android:background="@drawable/profileadd"
         android:scaleType="fitCenter"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.07"
+        app:layout_constraintHorizontal_bias="0.046"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -141,7 +141,7 @@
         android:fontFamily="@font/notosans_bold"
         android:text="회원 초대"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.463"
+        app:layout_constraintHorizontal_bias="0.35"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -155,6 +155,7 @@
             android:layout_width="350dp"
             android:layout_height="410dp"
             android:layout_marginTop="180dp"
+            android:paddingTop="3dp"
             android:layout_marginStart="30dp"
             android:background="@drawable/text"
             android:gravity="center"
