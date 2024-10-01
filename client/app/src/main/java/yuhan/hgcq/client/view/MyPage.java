@@ -4,10 +4,14 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Rect;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
-import android.view.MenuItem;
+import android.provider.Settings;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -18,7 +22,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -26,34 +29,41 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.bumptech.glide.Glide;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import java.io.IOException;
+
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import yuhan.hgcq.client.R;
+import yuhan.hgcq.client.config.NetworkClient;
 import yuhan.hgcq.client.controller.MemberController;
 import yuhan.hgcq.client.model.dto.member.MemberDTO;
 
 public class MyPage extends AppCompatActivity {
 
-    /* View */
     ImageView profile;
     TextView name, email;
     ImageButton profileAdd, retouch;
     BottomNavigationView navi;
-    /* 서버와 통신 */
+
     MemberController mc;
-    /* 받아올 값 */
+
     boolean isPrivate;
     MemberDTO loginMember;
-    /* Toast */
+    String serverIp = NetworkClient.getInstance(MyPage.this).getServerIp();
+
     Handler handler = new Handler(Looper.getMainLooper());
 
-    /* Request Code */
-    private static final int MODIFY_REQUEST_CODE = 1; // 요청 코드 정의
+    private static final int GALLERY = 1000;
+    private static final int REQUEST_PERMISSION = 1111;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         getSupportActionBar().setTitle("나의 정보");
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         super.onCreate(savedInstanceState);
 
         EdgeToEdge.enable(this);
@@ -65,10 +75,8 @@ public class MyPage extends AppCompatActivity {
             return insets;
         });
 
-        /* 서버와 연결할 Controller 생성 */
         mc = new MemberController(this);
 
-        /* View와 Layout 연결 */
         navi = findViewById(R.id.bottom_navigation_view);
         profile = findViewById(R.id.profile);
         profileAdd = findViewById(R.id.profileadd);
@@ -76,31 +84,54 @@ public class MyPage extends AppCompatActivity {
         email = findViewById(R.id.email);
         retouch = findViewById(R.id.retouch);
 
-        /* 관련된 페이지 */
-        Intent login = new Intent(this, Login.class);
-        Intent join = new Intent(this, Join.class);
-        Intent modify = new Intent(this, Modify.class);
+        Intent gallery = new Intent(Intent.ACTION_GET_CONTENT);
+        gallery.setType("image/*");
+        gallery.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
+        gallery.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+        Intent modifyPage = new Intent(this, Modify.class);
         Intent myPage = new Intent(this, MyPage.class);
-        Intent albumMainPage = new Intent(this, AlbumMain.class);
         Intent groupMainPage = new Intent(this, GroupMain.class);
         Intent friendListPage = new Intent(this, FriendList.class);
         Intent likePage = new Intent(this, Like.class);
 
         Intent getIntent = getIntent();
 
-        /* 받아 올 값 */
-        isPrivate = getIntent().getBooleanExtra("isPrivate", false);
-        loginMember = (MemberDTO) getIntent().getSerializableExtra("loginMember");
+        isPrivate = getIntent.getBooleanExtra("isPrivate", false);
+        loginMember = (MemberDTO) getIntent.getSerializableExtra("loginMember");
 
-        /* 공유 초기 설정 */
         if (loginMember != null) {
             name.setText(loginMember.getName());
             email.setText(loginMember.getEmail());
+            String path = loginMember.getImage();
+            if (path != null) {
+                Log.i("path", path);
+                Glide.with(MyPage.this)
+                        .load(serverIp + path)
+                        .into(profile);
+            }
         }
 
+        profileAdd.setOnClickListener(v -> {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && !Environment.isExternalStorageManager()) {
+                Intent permission = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
+                permission.addCategory("android.intent.category.DEFAULT");
+                permission.setData(Uri.parse(String.format("package:%s", getApplicationContext().getPackageName())));
+                startActivityForResult(permission, REQUEST_PERMISSION);
+            }
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                if (Environment.isExternalStorageManager()) {
+                    startActivityForResult(Intent.createChooser(gallery, "사진 선택"), GALLERY);
+                } else {
+                    Toast.makeText(MyPage.this, "권한이 없습니다.", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
         retouch.setOnClickListener(v -> {
-            modify.putExtra("loginMember", loginMember);
-            startActivityForResult(modify, MODIFY_REQUEST_CODE); // 수정된 코드
+            modifyPage.putExtra("loginMember", loginMember);
+            startActivity(modifyPage);
         });
 
         navi.setOnNavigationItemSelectedListener(menuItem -> {
@@ -153,17 +184,46 @@ public class MyPage extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == MODIFY_REQUEST_CODE && resultCode == RESULT_OK) {
+        if (requestCode == GALLERY && resultCode == RESULT_OK) {
             if (data != null) {
-                loginMember = (MemberDTO) data.getSerializableExtra("updatedMember"); // 수정된 정보 받기
+                Uri uri = data.getData();
+                mc.upload(uri, new Callback<ResponseBody>() {
+                    @Override
+                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                        if (response.isSuccessful()) {
+                            ResponseBody body = response.body();
+                            try {
+                                String path = body.string();
+                                loginMember.setImage(path);
+                            } catch (IOException e) {
+                                handler.post(() -> {
+                                    Toast.makeText(MyPage.this, "프로필 등록을 실패했습니다.", Toast.LENGTH_SHORT).show();
+                                });
+                            }
+                            handler.post(() -> {
+                                Toast.makeText(MyPage.this, "프로필 등록됐습니다.", Toast.LENGTH_SHORT).show();
+                                Glide.with(MyPage.this)
+                                        .load(uri)
+                                        .into(profile);
+                            });
+                        } else {
+                            handler.post(() -> {
+                                Toast.makeText(MyPage.this, "프로필 등록을 실패했습니다.", Toast.LENGTH_SHORT).show();
+                            });
+                        }
+                    }
 
-                name.setText(loginMember.getName());
-                email.setText(loginMember.getEmail());
+                    @Override
+                    public void onFailure(Call<ResponseBody> call, Throwable t) {
+                        handler.post(() -> {
+                            Toast.makeText(MyPage.this, "서버와 통신을 실패했습니다.", Toast.LENGTH_SHORT).show();
+                        });
+                    }
+                });
             }
         }
     }
 
-    /* Confirm 창 */
     public void onClick_setting_costume_cancel(String message,
                                                DialogInterface.OnClickListener positive,
                                                DialogInterface.OnClickListener negative) {
@@ -193,21 +253,5 @@ public class MyPage extends AppCompatActivity {
             }
         }
         return super.dispatchTouchEvent(ev);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                finish();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
     }
 }
