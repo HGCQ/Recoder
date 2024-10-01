@@ -63,7 +63,7 @@ public class MyPage extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        getSupportActionBar().setTitle("나의 정보");
+        getSupportActionBar().setTitle("내 정보");
         super.onCreate(savedInstanceState);
 
         EdgeToEdge.enable(this);

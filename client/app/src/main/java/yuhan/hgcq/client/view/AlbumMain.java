@@ -167,7 +167,7 @@ public class AlbumMain extends AppCompatActivity {
         loginMember = (MemberDTO) getIntent.getSerializableExtra("loginMember");
 
         if (isPrivate) {
-            getSupportActionBar().setTitle("개인 앨범");
+            getSupportActionBar().setTitle("[개인] 앨범");
         } else if (teamDTO != null) {
             getSupportActionBar().setTitle(teamDTO.getName());
         }
