@@ -5,12 +5,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import yuhan.hgcq.server.domain.Member;
 import yuhan.hgcq.server.dto.member.LoginForm;
 import yuhan.hgcq.server.dto.member.MemberUpdateForm;
 import yuhan.hgcq.server.dto.member.SignupForm;
+import yuhan.hgcq.server.dto.photo.UploadMemberForm;
 import yuhan.hgcq.server.repository.MemberRepository;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 /**
@@ -29,6 +35,10 @@ public class MemberService {
     private static final Logger log = LoggerFactory.getLogger(MemberService.class);
 
     private final MemberRepository mr;
+
+    private final static String DIRECTORY_PATH = "D:" + File.separator
+            + "app" + File.separator
+            + "member" + File.separator;
 
     /**
      * 회원 가입
@@ -99,7 +109,7 @@ public class MemberService {
         String newName = form.getName();
         String newPassword = form.getPassword();
 
-        if (newName != null && !duplicateName(newName)) {
+        if (newName != null && duplicateName(newName)) {
             member.changeName(newName);
         }
 
@@ -186,6 +196,43 @@ public class MemberService {
     public boolean duplicateName(String name) {
         List<String> names = mr.findAllNames();
         return !names.contains(name);
+    }
+
+    /**
+     * 사진 업로드
+     *
+     * @param member 회원
+     * @param form   업로드 폼
+     * @throws IOException              IO 예외
+     * @throws IllegalArgumentException null 값 체크
+     */
+    public void upload(Member member, UploadMemberForm form) throws IOException, IllegalArgumentException {
+        ensureNotNull(member, "Member");
+
+        MultipartFile file = form.getFile();
+
+        try {
+            String newPath = DIRECTORY_PATH + member.getId() + File.separator;
+            File directory = new File(newPath);
+
+            if (!directory.exists()) {
+                directory.mkdirs();
+            }
+
+            String name = file.getOriginalFilename();
+
+            Path path = Paths.get(newPath + name);
+            file.transferTo(path);
+            String imagePath = "/images/" + member.getId() + "/" + name;
+
+            member.changeImage(imagePath);
+            mr.save(member);
+
+            log.info("Upload Member : {}", member);
+        } catch (IOException e) {
+            log.error("IO Error");
+            throw new IOException();
+        }
     }
 
     /* 매개변수가 null 값인지 확인 */

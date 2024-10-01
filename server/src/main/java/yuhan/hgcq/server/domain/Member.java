@@ -24,6 +24,8 @@ public class Member {
 
     private String password;
 
+    private String image;
+
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
     private List<Team> owners = new ArrayList<>();
 
@@ -45,6 +47,10 @@ public class Member {
 
     public void changePassword(String password) {
         this.password = password;
+    }
+
+    public void changeImage(String path) {
+        this.image = image;
     }
 
     @Override

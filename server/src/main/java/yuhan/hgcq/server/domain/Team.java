@@ -19,6 +19,8 @@ public class Team {
 
     private String name;
 
+    private String image;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id", nullable = false)
     private Member owner;
@@ -47,6 +49,10 @@ public class Team {
 
     public void changeName(String name) {
         this.name = name;
+    }
+
+    public void changeImage(String image) {
+        this.image = image;
     }
 
     @Override
