@@ -1,9 +1,19 @@
 package yuhan.hgcq.client.controller;
 
 import android.content.Context;
+import android.database.Cursor;
+import android.net.Uri;
+import android.provider.MediaStore;
 
+import org.apache.commons.io.IOUtils;
+
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -19,8 +29,10 @@ import yuhan.hgcq.client.model.service.TeamService;
 public class TeamController {
 
     private TeamService teamService;
+    private Context context;
 
     public TeamController(Context context) {
+        this.context = context;
         NetworkClient client = NetworkClient.getInstance(context.getApplicationContext());
         teamService = client.getTeamService();
     }
@@ -143,5 +155,34 @@ public class TeamController {
     public void adminListInTeam(Long teamId, Callback<List<Long>> callback) {
         Call<List<Long>> call = teamService.adminListInTeam(teamId);
         call.enqueue(callback);
+    }
+
+    public void upload(Long teamId, Uri uri, Callback<ResponseBody> callback) {
+        RequestBody teamIdPart = RequestBody.create(
+                MediaType.parse("text/plain"),
+                String.valueOf(teamId)
+        );
+
+        try {
+            InputStream inputStream = context.getContentResolver().openInputStream(uri);
+            byte[] imageBytes = IOUtils.toByteArray(inputStream); // Apache commons-io 사용
+            RequestBody reqFile = RequestBody.create(MediaType.parse("image/*"), imageBytes);
+            MultipartBody.Part image = MultipartBody.Part.createFormData("file", getFileNameFromUri(uri), reqFile);
+            Call<ResponseBody> call = teamService.upload(teamIdPart, image);
+            call.enqueue(callback);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private String getFileNameFromUri(Uri uri) {
+        String[] projection = { MediaStore.Images.Media.DISPLAY_NAME };
+        Cursor cursor = context.getContentResolver().query(uri, projection, null, null, null);
+        if (cursor != null && cursor.moveToFirst()) {
+            String fileName = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DISPLAY_NAME));
+            cursor.close();
+            return fileName;
+        }
+        return "unknown_file_name";
     }
 }
