@@ -42,6 +42,11 @@ public class FollowController {
         call.enqueue(callback);
     }
 
+    public void inviteFollowingList(Long teamId, Callback<List<MemberDTO>> callback) {
+        Call<List<MemberDTO>> call = followService.inviteFollowingList(teamId);
+        call.enqueue(callback);
+    }
+
     public void followerList(Callback<Follower> callback) {
         Call<Follower> call = followService.followerList();
         call.enqueue(callback);
