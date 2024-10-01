@@ -12,11 +12,14 @@ import yuhan.hgcq.server.domain.Member;
 import yuhan.hgcq.server.domain.Team;
 import yuhan.hgcq.server.domain.TeamMember;
 import yuhan.hgcq.server.dto.member.MemberDTO;
+import yuhan.hgcq.server.dto.photo.UploadMemberForm;
+import yuhan.hgcq.server.dto.photo.UploadTeamForm;
 import yuhan.hgcq.server.dto.team.*;
 import yuhan.hgcq.server.service.MemberService;
 import yuhan.hgcq.server.service.TeamMemberService;
 import yuhan.hgcq.server.service.TeamService;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -640,6 +643,38 @@ public class TeamController {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Not Login");
     }
 
+    @PostMapping("/upload")
+    public ResponseEntity<?> upload(@ModelAttribute UploadTeamForm form, HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+
+        if (session != null) {
+            MemberDTO loginMember = (MemberDTO) session.getAttribute("member");
+
+            if (loginMember != null) {
+                try {
+                    Member findMember = ms.search(loginMember.getMemberId());
+
+                    if (findMember != null) {
+                        try {
+                            ts.upload(findMember, form);
+                            return ResponseEntity.status(HttpStatus.OK).body("Upload Team Success");
+                        } catch (AccessException e) {
+                            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Not Admin");
+                        } catch (IOException e) {
+                            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Upload Team Error");
+                        } catch (IllegalArgumentException e) {
+                            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found Team Fail");
+                        }
+                    }
+                } catch (IllegalArgumentException e) {
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found Member Fail");
+                }
+            }
+        }
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Not Login");
+    }
+
     /**
      * Team -> TeamDTO
      *
@@ -651,6 +686,7 @@ public class TeamController {
         teamDTO.setTeamId(team.getId());
         teamDTO.setName(team.getName());
         teamDTO.setOwner(team.getOwner().getName());
+        teamDTO.setImage(team.getImage());
         return teamDTO;
     }
 

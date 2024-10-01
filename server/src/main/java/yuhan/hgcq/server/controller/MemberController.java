@@ -13,9 +13,11 @@ import org.springframework.session.SessionRepository;
 import org.springframework.web.bind.annotation.*;
 import yuhan.hgcq.server.domain.Member;
 import yuhan.hgcq.server.dto.member.*;
+import yuhan.hgcq.server.dto.photo.UploadMemberForm;
 import yuhan.hgcq.server.service.FollowService;
 import yuhan.hgcq.server.service.MemberService;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
@@ -302,6 +304,37 @@ public class MemberController {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Not Login");
     }
 
+    @PostMapping("/upload")
+    public ResponseEntity<?> upload(@ModelAttribute UploadMemberForm form, HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+
+        if (session != null) {
+            MemberDTO loginMember = (MemberDTO) session.getAttribute("member");
+
+            if (loginMember != null) {
+                try {
+                    Member findMember = ms.search(loginMember.getMemberId());
+
+                    if (findMember != null) {
+                        try {
+                            ms.upload(findMember, form);
+
+                            return ResponseEntity.status(HttpStatus.OK).body("Upload Photo Success");
+                        } catch (IOException e) {
+                            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Upload Photo Error");
+                        } catch (IllegalArgumentException e) {
+                            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found Member Fail");
+                        }
+                    }
+                } catch (IllegalArgumentException e) {
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found Member Fail");
+                }
+            }
+        }
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Not Login");
+    }
+
     /**
      * Member -> MemberDTO
      *
@@ -313,6 +346,7 @@ public class MemberController {
         dto.setMemberId(member.getId());
         dto.setName(member.getName());
         dto.setEmail(member.getEmail());
+        dto.setImage(member.getImage());
         return dto;
     }
 }

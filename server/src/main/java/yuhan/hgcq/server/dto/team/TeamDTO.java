@@ -12,4 +12,5 @@ public class TeamDTO implements Serializable {
     private Long teamId;
     private String owner;
     private String name;
+    private String image;
 }

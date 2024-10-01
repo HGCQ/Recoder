@@ -6,11 +6,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.expression.AccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import yuhan.hgcq.server.domain.Member;
 import yuhan.hgcq.server.domain.Team;
 import yuhan.hgcq.server.domain.TeamMember;
+import yuhan.hgcq.server.dto.photo.UploadTeamForm;
 import yuhan.hgcq.server.repository.*;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 /**
@@ -32,6 +38,10 @@ public class TeamService {
     private final LikedRepository lr;
     private final ChatRepository cr;
     private final PhotoRepository pr;
+
+    private final static String DIRECTORY_PATH = "D:" + File.separator
+            + "app" + File.separator
+            + "team" + File.separator;
 
     /**
      * 그룹 생성(테스트 완료)
@@ -116,6 +126,44 @@ public class TeamService {
         }
 
         return findTeam;
+    }
+
+    public void upload(Member member, UploadTeamForm form) throws IOException, AccessException, IllegalArgumentException {
+        ensureNotNull(member, "Member");
+
+        Long teamId = form.getTeamId();
+        MultipartFile file = form.getFile();
+        Team ft = tr.findOne(teamId);
+
+        ensureNotNull(ft, "Team");
+        List<Member> adminList = tmr.findAdminByTeam(ft);
+
+        if (adminList.contains(member)) {
+            try {
+                String newPath = DIRECTORY_PATH + teamId + File.separator;
+                File directory = new File(newPath);
+
+                if (!directory.exists()) {
+                    directory.mkdirs();
+                }
+
+                String name = file.getOriginalFilename();
+
+                Path path = Paths.get(newPath + name);
+                file.transferTo(path);
+                String imagePath = "/images/" + teamId + "/" + name;
+
+                ft.changeImage(imagePath);
+                tr.save(ft);
+
+                log.info("Upload Team : {}", member);
+            } catch (IOException e) {
+                log.error("IO Error");
+                throw new IOException();
+            }
+        } else {
+            throw new AccessException("Not admin");
+        }
     }
 
     /* 매개변수가 null 값인지 확인 */
