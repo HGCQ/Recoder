@@ -76,21 +76,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-  <TextView
-      android:layout_width="50dp"
-      android:layout_height="20dp"
-      android:layout_marginTop="87dp"
-      android:textColor="@color/black"
-      android:fontFamily="@font/notosans_medium"
-      android:gravity="center"
-      android:padding="0dp"
-      android:text="자동 분류"
-      android:textSize="10dp"
-      app:layout_constraintEnd_toEndOf="parent"
-      app:layout_constraintHorizontal_bias="0.865"
-      app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toTopOf="parent" />
-
   <EditText
         android:id="@+id/searchText"
         android:hint="앨범 이름을 입력하세요."
@@ -120,14 +105,15 @@
         app:layout_constraintTop_toTopOf="parent"
         app:tint="#234567" />
 
-  <ImageButton
+  <android.widget.Button
       android:id="@+id/auto"
-      android:layout_width="35dp"
+      android:layout_width="80dp"
       android:layout_height="29dp"
       android:layout_marginTop="66dp"
-      android:background="#00000000"
+      android:background="@drawable/edittext"
       android:scaleType="fitCenter"
-      android:src="@drawable/photoplus"
+      android:text="자동 정렬"
+      android:drawableLeft="@drawable/photoplus"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintHorizontal_bias="0.85"
       app:layout_constraintStart_toStartOf="parent"
@@ -152,12 +138,10 @@
       android:layout_marginTop="87dp"
       android:fontFamily="@font/notosans_medium"
       android:gravity="center"
-      android:textColor="@color/black"
       android:padding="0dp"
       android:text="앨범 휴지통"
+      android:textColor="@color/black"
       android:textSize="10dp"
-      app:layout_constraintEnd_toEndOf="parent"
-      app:layout_constraintHorizontal_bias="1.0"
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintTop_toTopOf="parent" />
 

@@ -143,6 +143,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:text="Recoder"
+        android:layout_marginTop="50dp"
         android:textColor="@color/black"
         android:fontFamily="@font/continuous"
         android:textSize="40sp"
