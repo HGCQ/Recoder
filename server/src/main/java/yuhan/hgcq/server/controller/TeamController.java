@@ -613,12 +613,10 @@ public class TeamController {
                                 if (owner.equals(findMember)) {
                                     try {
                                         List<Member> adminList = tms.searchAdminList(ft);
-                                        List<MemberInTeamDTO> memberDTOList = new ArrayList<>();
+                                        List<Long> memberDTOList = new ArrayList<>();
 
                                         for (Member member : adminList) {
-                                            MemberInTeamDTO memberDTO = mapping(member);
-                                            memberDTO.setIsAdmin(true);
-                                            memberDTOList.add(memberDTO);
+                                            memberDTOList.add(member.getId());
                                         }
 
                                         return ResponseEntity.status(HttpStatus.OK).body(memberDTOList);
