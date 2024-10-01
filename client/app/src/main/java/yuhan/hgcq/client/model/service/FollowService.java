@@ -26,6 +26,9 @@ public interface FollowService {
     @GET("/follow/followinglist/name")
     Call<List<MemberDTO>> searchFollowingByName(@Query("name") String name);
 
+    @GET("/follow/followinglist/teamId")
+    Call<List<MemberDTO>> inviteFollowingList(@Query("teamId") Long teamId);
+
     @GET("/follow/followerlist")
     Call<Follower> followerList();
 
