@@ -13,6 +13,7 @@ import android.os.Looper;
 import android.provider.MediaStore;
 import android.provider.Settings;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -81,10 +82,25 @@ public class AlbumMain extends AppCompatActivity {
     private static final int GALLERY = 1000;
     private static final int REQUEST_PERMISSION = 1111;
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        if (isPrivate) {
+            getMenuInflater().inflate(R.menu.menu_action_bar_icon_share, menu);
+
+        } else {
+            getMenuInflater().inflate(R.menu.menu_action_bar_icon_privated, menu);
+        }
+        return super.onCreateOptionsMenu(menu);
+    }
+
     /* 뒤로 가기 */
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+
         switch (item.getItemId()) {
+
+
+
             case android.R.id.home:
                 if (isPrivate) {
                     Intent selectPage = new Intent(this, Select.class);
@@ -106,7 +122,10 @@ public class AlbumMain extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         getSupportActionBar().setTitle("Recoder");
+
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+
         super.onCreate(savedInstanceState);
 
 
