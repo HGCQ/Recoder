@@ -27,6 +27,7 @@ import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatButton;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -59,7 +60,9 @@ import yuhan.hgcq.client.model.dto.team.TeamDTO;
 
 public class AlbumMain extends AppCompatActivity {
 
-    /* View */ ImageButton search, /*auto,*/ albumPlus, albumTrash;
+    ImageButton search, auto, albumPlus;
+    AppCompatButton albumTrash;
+
     EditText searchText;
     TextView empty;
     RecyclerView albumListView;
@@ -365,7 +368,7 @@ public class AlbumMain extends AppCompatActivity {
         });
 
         /* 사진 자동 분류 버튼 눌림 */
-     /*   auto.setOnClickListener(new View.OnClickListener() {
+        auto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 /* 권한 확인 */
@@ -385,7 +388,7 @@ public class AlbumMain extends AppCompatActivity {
                 }
             }
         });
-*/
+
         /* 앨범 생성 버튼 눌림 */
         albumPlus.setOnClickListener(new View.OnClickListener() {
             @Override

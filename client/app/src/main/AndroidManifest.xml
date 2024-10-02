@@ -25,77 +25,62 @@
             android:exported="false" />
         <activity
             android:name=".view.AlbumTrash"
-            android:exported="true" />
+            android:exported="false" />
         <activity
             android:name=".view.Chat"
             android:windowSoftInputMode="adjustUnspecified|adjustPan"
-            android:exported="true" />
+            android:exported="false" />
         <activity
             android:name=".view.FriendAdd"
-            android:exported="true" />
+            android:exported="false" />
         <activity
             android:name=".view.Select"
-            android:exported="true" />
+            android:exported="false" />
         <activity
             android:name=".view.GroupSetting"
-            android:exported="true" />
+            android:exported="false" />
         <activity
             android:name=".view.Gallery"
-            android:exported="true" />
+            android:exported="false" />
         <activity
             android:name=".view.Like"
-            android:exported="true" />
+            android:exported="false" />
         <activity
             android:name=".view.PhotoTrash"
-            android:exported="true" />
+            android:exported="false" />
         <activity
             android:name=".view.CreateGroup"
-            android:exported="true" />
+            android:exported="false" />
         <activity
             android:name=".view.CreateAlbum"
-            android:exported="true" />
+            android:exported="false" />
         <activity
             android:name=".view.MyPage"
-            android:exported="true" />
+            android:exported="false" />
         <activity
             android:name=".view.FriendList"
-            android:exported="true" />
+            android:exported="false" />
         <activity
             android:name=".view.Login"
-            android:exported="true"
+            android:exported="false"
             android:windowSoftInputMode="adjustPan">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".view.Photo"
-            android:exported="true" />
+            android:exported="false" />
         <activity
             android:name=".view.Join"
-            android:exported="true" />
+            android:exported="false" />
         <activity
             android:name=".view.AlbumMain"
-            android:exported="true"
+            android:exported="false"
             android:windowSoftInputMode="adjustPan">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
             />
         </activity>
         <activity
             android:name=".view.GroupMain"
-            android:exported="true"
+            android:exported="false"
             android:windowSoftInputMode="adjustPan">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
             />
         </activity>
         <activity

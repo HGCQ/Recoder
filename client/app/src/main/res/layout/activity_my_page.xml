@@ -128,35 +128,21 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.237"/>
 
-    <ImageButton
+    <android.widget.Button
         android:id="@+id/retouch"
-        android:layout_width="31dp"
-        android:layout_height="34dp"
+        android:layout_width="80dp"
+        android:layout_height="35dp"
         android:layout_marginTop="20dp"
-        android:background="#00000000"
+        android:background="@drawable/button3"
         android:scaleType="fitCenter"
-        android:src="@drawable/retouch"
+        android:padding="8dp"
+        android:text="정보수정"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.957"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.64" />
-
-    <TextView
-        android:layout_width="50dp"
-        android:layout_height="20dp"
-        android:layout_marginBottom="225dp"
-        android:fontFamily="@font/notosans_medium"
-        android:gravity="center"
-        android:padding="0dp"
-        android:text="정보 수정"
-        android:textColor="@color/black"
-        android:textSize="10dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.98"
-        app:layout_constraintStart_toStartOf="parent" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation_view"
