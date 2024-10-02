@@ -2,6 +2,7 @@ package yuhan.hgcq.client.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -130,10 +131,32 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryV
 
                 // 선택 모드일 경우
                 if (isSelectionMode) {
-                    togglePhotoSelection(photoDTO);
+                    if (selectedPhotos.contains(photoDTO)) {
+                        selectedPhotos.remove(photoDTO); // 이미 선택된 경우 제거
+                    } else {
+                        selectedPhotos.add(photoDTO); // 선택되지 않은 경우 추가
+                    }
+
+                    // 배경색 설정
+                    if (selectedPhotos.contains(photoDTO)) {
+                        view.setBackgroundColor(Color.LTGRAY); // 선택된 경우 회색으로
+                    } else {
+                        view.setBackgroundColor(Color.WHITE); // 선택 해제된 경우 흰색으로
+                    }
+
                 } else {
                     // 일반 모드일 경우 사진 페이지로 이동
-                    openPhotoPage(photoDTO);
+                    Intent photoPage = new Intent(context, Photo.class);
+                    if (isPrivate) {
+                        photoPage.putExtra("isPrivate", true);
+                    }
+                    photoPage.putExtra("loginMember", loginMember);
+                    photoPage.putExtra("albumDTO", albumDTO);
+                    photoPage.putExtra("photoDTO", photoDTO);
+                    if (!isPrivate) {
+                        photoPage.putExtra("teamDTO", teamDTO);
+                    }
+                    context.startActivity(photoPage);
                 }
             }
         });
@@ -150,27 +173,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryV
         return new ArrayList<>(selectedPhotos);
     }
 
-    // 선택된 사진 추가/제거 메서드
-    private void togglePhotoSelection(PhotoDTO photoDTO) {
-        if (selectedPhotos.contains(photoDTO)) {
-            selectedPhotos.remove(photoDTO); // 이미 선택된 경우 제거
-        } else {
-            selectedPhotos.add(photoDTO); // 선택되지 않은 경우 추가
-        }
-    }
 
     // 사진 페이지로 이동하는 메서드
-    private void openPhotoPage(PhotoDTO photoDTO) {
-        Intent photoPage = new Intent(context, Photo.class);
-        if (isPrivate) {
-            photoPage.putExtra("isPrivate", true);
-        }
-        photoPage.putExtra("loginMember", loginMember);
-        photoPage.putExtra("albumDTO", albumDTO);
-        photoPage.putExtra("photoDTO", photoDTO);
-        if (!isPrivate) {
-            photoPage.putExtra("teamDTO", teamDTO);
-        }
-        context.startActivity(photoPage);
-    }
+
 }
