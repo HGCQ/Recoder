@@ -8,45 +8,6 @@
     android:id="@+id/main"
     tools:context=".view.CreateAlbum">
 
-    <ImageButton
-        android:id="@+id/date"
-        android:layout_width="35dp"
-        android:layout_height="38dp"
-        android:background="#00000000"
-        android:scaleType="fitCenter"
-        android:src="@drawable/calendar"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.957"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.291" />
-
-    <TextView
-        android:layout_width="50dp"
-        android:layout_height="20dp"
-        android:layout_marginTop="225dp"
-        android:fontFamily="@font/notosans_medium"
-        android:gravity="center"
-        android:padding="0dp"
-        android:text="기간 선택"
-        android:textColor="@color/black"
-        android:textSize="10dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.978"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <View
-        android:layout_width="417dp"
-        android:layout_height="2dp"
-        android:background="#D3D3D3"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.187" />
-
     <TextView
         android:layout_width="100dp"
         android:layout_height="30dp"
@@ -55,6 +16,7 @@
         android:scaleType="fitCenter"
         android:src="@drawable/profile"
         android:text="앨범 이름"
+        android:fontFamily="@font/ibm_regular"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.051"
@@ -68,71 +30,11 @@
         android:layout_height="45dp"
         android:layout_marginTop="76dp"
         android:background="@drawable/text"
-        android:fontFamily="@font/notosans_medium"
+        android:fontFamily="@font/ibm_regular"
         android:gravity="center"
         android:hint="앨범 이름을 입력해주세요."
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.483"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:layout_width="100dp"
-        android:layout_height="30dp"
-        android:layout_marginTop="156dp"
-        android:background="#00000000"
-        android:scaleType="fitCenter"
-        android:src="@drawable/profile"
-        android:text="기간 선택"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.051"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:tint="#234567" />
-
-    <TextView
-        android:id="@+id/startDate"
-        android:layout_width="141dp"
-        android:layout_height="45dp"
-        android:layout_marginTop="200dp"
-        android:background="@drawable/text"
-        android:fontFamily="@font/notosans_medium"
-        android:gravity="center"
-        android:hint="시작 날짜"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.055"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:layout_width="50dp"
-        android:layout_height="30dp"
-        android:layout_marginTop="208dp"
-        android:background="#00000000"
-        android:gravity="center"
-        android:scaleType="fitCenter"
-        android:src="@drawable/profile"
-        android:text="~"
-        android:textSize="25sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.432"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:tint="#234567" />
-
-    <TextView
-        android:id="@+id/endDate"
-        android:layout_width="141dp"
-        android:layout_height="45dp"
-        android:layout_marginTop="200dp"
-        android:background="@drawable/text"
-        android:fontFamily="@font/notosans_medium"
-        android:gravity="center"
-        android:hint="끝 날짜"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.762"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -142,7 +44,7 @@
         android:layout_height="45dp"
         android:layout_marginTop="624dp"
         android:background="@drawable/select"
-        android:fontFamily="@font/notosans_bold"
+        android:fontFamily="@font/ibm_semibold"
         android:onClick="onClick_setting_costume_save"
         android:padding="0dp"
         android:text="생성하기"

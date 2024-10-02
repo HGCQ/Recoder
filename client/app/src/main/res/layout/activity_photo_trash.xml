@@ -61,18 +61,21 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0" />-->
 
-    <androidx.appcompat.widget.AppCompatButton
+    <android.widget.Button
         android:id="@+id/recover"
         android:layout_width="100dp"
         android:layout_height="27dp"
         android:padding="2dp"
-        android:layout_marginTop="12dp"
-        android:background="@drawable/button2"
+        android:layout_marginTop="30dp"
+        android:background="@drawable/edittext"
         android:textStyle="bold"
+        android:gravity="center_vertical"
+        android:fontFamily="@font/ibm_regular"
         android:drawableLeft="@drawable/sizerecover"
         android:onClick="onClick_setting_costume_save"
         android:scaleType="fitCenter"
-        android:text="복구"
+        android:text=" 복구"
+        android:textSize="13sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.962"

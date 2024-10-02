@@ -22,7 +22,7 @@
             android:layout_marginStart="300dp"
             android:layout_marginTop="27dp"
             android:background="@drawable/text"
-            android:fontFamily="@font/notosans_medium"
+            android:fontFamily="@font/ibm_regular"
             android:gravity="right"
             android:padding="3dp"
             android:text="chat"
