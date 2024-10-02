@@ -139,7 +139,7 @@ public class PhotoTrash extends AppCompatActivity {
         albumDTO = (AlbumDTO) getIntent.getSerializableExtra("albumDTO");
 
         if (albumDTO != null) {
-            getSupportActionBar().setTitle("휴지통 : " + albumDTO.getName());
+            getSupportActionBar().setTitle("[휴지통] " + albumDTO.getName());
             /* 개인 초기 설정 */
             if (isPrivate) {
                 pr.searchTrash(new Callback<List<PhotoDTO>>() {

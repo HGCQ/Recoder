@@ -32,6 +32,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.time.Instant;
@@ -45,6 +46,7 @@ import retrofit2.Call;
 import retrofit2.Response;
 import yuhan.hgcq.client.R;
 import yuhan.hgcq.client.adapter.AlbumAdapter;
+import yuhan.hgcq.client.config.NetworkClient;
 import yuhan.hgcq.client.controller.AlbumController;
 import yuhan.hgcq.client.controller.PhotoController;
 import yuhan.hgcq.client.localDatabase.Repository.AlbumRepository;
@@ -52,6 +54,7 @@ import yuhan.hgcq.client.localDatabase.Repository.PhotoRepository;
 import yuhan.hgcq.client.localDatabase.callback.Callback;
 import yuhan.hgcq.client.model.dto.album.AlbumDTO;
 import yuhan.hgcq.client.model.dto.member.MemberDTO;
+import yuhan.hgcq.client.model.dto.photo.PhotoDTO;
 import yuhan.hgcq.client.model.dto.team.TeamDTO;
 
 public class AlbumMain extends AppCompatActivity {
@@ -168,7 +171,7 @@ public class AlbumMain extends AppCompatActivity {
         loginMember = (MemberDTO) getIntent.getSerializableExtra("loginMember");
 
         if (isPrivate) {
-            getSupportActionBar().setTitle("개인 앨범");
+            getSupportActionBar().setTitle("[개인] 앨범");
         } else if (teamDTO != null) {
             getSupportActionBar().setTitle(teamDTO.getName());
         }
@@ -365,7 +368,7 @@ public class AlbumMain extends AppCompatActivity {
      /*   auto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                *//* 권한 확인 *//*
+                /* 권한 확인 */
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && !Environment.isExternalStorageManager()) {
                     Intent permission = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
                     permission.addCategory("android.intent.category.DEFAULT");

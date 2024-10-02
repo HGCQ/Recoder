@@ -178,10 +178,10 @@ public class Gallery extends AppCompatActivity {
 
         if (albumDTO != null) {
             if (isPrivate) {
-                getSupportActionBar().setTitle("개인 앨범 : " + albumDTO.getName());
+                getSupportActionBar().setTitle("[개인] " + albumDTO.getName());
                 chat.setVisibility(View.INVISIBLE);
             } else {
-                getSupportActionBar().setTitle("공유 앨범 : " + albumDTO.getName());
+                getSupportActionBar().setTitle("[공유] " + albumDTO.getName());
             }
             date.setText(albumDTO.getStartDate() + " ~ " + albumDTO.getEndDate());
         }
@@ -280,10 +280,7 @@ public class Gallery extends AppCompatActivity {
                                 List<AlbumDTO> albumList = response.body();
                                 handler.post(() -> {
                                     albumListView.setVisibility(View.VISIBLE);
-                                });
-
-                                aa = new AlbumAdapter(albumList, Gallery.this, isPrivate);
-                                handler.post(() -> {
+                                    aa = new AlbumAdapter(albumList, Gallery.this, isPrivate);
                                     albumListView.setAdapter(aa);
                                 });
 
@@ -342,8 +339,9 @@ public class Gallery extends AppCompatActivity {
                 } else {
                     Log.e("Intent Error", "teamDTO is Null");
                 }
+                ga.disableSelectionMode();
             });
-            ga.disableSelectionMode();
+
         });
 
         /* 채팅 눌림 */
