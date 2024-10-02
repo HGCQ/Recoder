@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -48,6 +49,8 @@ public class MemberInTeamAdapter extends RecyclerView.Adapter<MemberInTeamAdapte
         public TextView level;
         public ImageButton friendDelete, power;
 
+
+
         public MemberInTeamViewHolder(@NonNull View view) {
             super(view);
             name = view.findViewById(R.id.name);
@@ -67,27 +70,25 @@ public class MemberInTeamAdapter extends RecyclerView.Adapter<MemberInTeamAdapte
     @Override
     public void onBindViewHolder(@NonNull MemberInTeamViewHolder holder, int position) {
         MemberInTeamDTO dto = memberList.get(position);
+        MemberDTO memberDTO=new MemberDTO();
         holder.name.setText(dto.getName());
+        holder.power.setVisibility(View.INVISIBLE);
+        holder.friendDelete.setVisibility(View.INVISIBLE);
+
         if (dto.getOwner()) {
             holder.level.setText("그룹장");
         } else if (dto.getAdmin()) {
             holder.level.setText("관리자");
-
         } else {
             holder.level.setText("일반 회원");
-
         }
 
-        // 그룹장일 경우
         if (loginmember.getName().equals(teamDTO.getOwner())) {
-            //그룹장일때는 자기자신의 버튼뺴고 모든 버튼을 보여줘야함
-            holder.level.setText("그룹장");
-            if (!loginmember.getMemberId().equals(dto.getMemberId())) {
 
+            if (!loginmember.getMemberId().equals(dto.getMemberId())) {
                 holder.power.setVisibility(View.VISIBLE);
                 holder.friendDelete.setVisibility(View.VISIBLE);
 
-                // 관리자 승격 처리
                 holder.power.setOnClickListener(v -> {
                     tmDTO = new TeamMemberDTO();
                     tmDTO.setMemberId(dto.getMemberId());
@@ -96,8 +97,6 @@ public class MemberInTeamAdapter extends RecyclerView.Adapter<MemberInTeamAdapte
                     String message = dto.getAdmin() ? "관리자 자격을 박탈하시겠습니까?" : "관리자로 승격 시키겠습니까?";
                     onClick_setting_costume_save(v.getContext(), message, (dialog, which) -> {
                         if (dto.getAdmin()) {
-                            // 관리자 권한 박탈 처리
-
                             tc.revokeAdmin(tmDTO, new Callback<ResponseBody>() {
                                 @Override
                                 public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -182,7 +181,9 @@ public class MemberInTeamAdapter extends RecyclerView.Adapter<MemberInTeamAdapte
                     if (response.isSuccessful()) {
                         List<Long> body = response.body();
                         if (body.contains(loginmember.getMemberId())) {
+
                             if (!dto.getAdmin()) {
+                                Log.i("admin", "admin");
                                 holder.friendDelete.setVisibility(View.VISIBLE);
                                 // 친구 추방 처리
                                 holder.friendDelete.setOnClickListener(v -> {
