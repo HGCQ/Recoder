@@ -38,6 +38,7 @@ import yuhan.hgcq.client.model.dto.member.MemberDTO;
 import yuhan.hgcq.client.model.dto.photo.PhotoDTO;
 import yuhan.hgcq.client.view.AlbumMain;
 import yuhan.hgcq.client.view.AlbumTrash;
+import yuhan.hgcq.client.view.Photo;
 
 public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.AlbumViewHolder> {
     private List<AlbumDTO> albumList;
@@ -51,6 +52,7 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.AlbumViewHol
     private PhotoController pc;
     private PhotoRepository pr;
     private String serverIp;
+    private boolean isPhoto = false;
 
 
     public AlbumAdapter(List<AlbumDTO> albumList, Context context, boolean isPrivate) {
@@ -70,6 +72,10 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.AlbumViewHol
 
     public void setOnItemClickListener(OnItemClickListener listener) {
         this.listener = listener;
+    }
+
+    public void setPhoto() {
+        this.isPhoto = true;
     }
 
     public static class AlbumViewHolder extends RecyclerView.ViewHolder {
@@ -122,7 +128,7 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.AlbumViewHol
                                     .load(Uri.parse(path))
                                     .into(holder.photo);
                         } else {
-                            holder.photo.setImageResource(R.drawable.love); // 기본 이미지 설정
+                            holder.photo.setImageResource(R.drawable.basic2); // 기본 이미지 설정
                         }
                         Log.i("앨범 대표 사진", "Success");
                     });
@@ -168,57 +174,61 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.AlbumViewHol
             });
         }
 
-        holder.albumDelete.setOnClickListener(v -> {
-            int currentPositon = holder.getAdapterPosition();
-            if (isPrivate) {
-                ar.delete(albumDTO.getAlbumId(), new Callback<Boolean>() {
-                    @Override
-                    public void onSuccess(Boolean result) {
-                        if (result != null) {
-                            if (result) {
+        if (isPhoto) {
+            holder.albumDelete.setVisibility(View.INVISIBLE);
+        } else {
+            holder.albumDelete.setOnClickListener(v -> {
+                int currentPositon = holder.getAdapterPosition();
+                if (isPrivate) {
+                    ar.delete(albumDTO.getAlbumId(), new Callback<Boolean>() {
+                        @Override
+                        public void onSuccess(Boolean result) {
+                            if (result != null) {
+                                if (result) {
+                                    albumList.remove(currentPositon);
+                                    handler.post(() -> {
+                                        notifyItemRemoved(currentPositon);
+                                        notifyItemRangeChanged(currentPositon, albumList.size());
+                                        Toast.makeText(context, "앨범을 삭제했습니다.", Toast.LENGTH_SHORT).show();
+                                    });
+                                    Log.i("Delete Private Album", "Success");
+                                } else {
+                                    Log.i("Delete Private Album", "Fail");
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onError(Exception e) {
+                            Log.e("Delete Private Album Error", e.getMessage());
+                        }
+                    });
+                } else {
+                    ac.deleteAlbum(albumDTO, new retrofit2.Callback<ResponseBody>() {
+                        @Override
+                        public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                            if (response.isSuccessful()) {
+                                trashAlbumList.add(albumDTO);
                                 albumList.remove(currentPositon);
                                 handler.post(() -> {
                                     notifyItemRemoved(currentPositon);
                                     notifyItemRangeChanged(currentPositon, albumList.size());
                                     Toast.makeText(context, "앨범을 삭제했습니다.", Toast.LENGTH_SHORT).show();
                                 });
-                                Log.i("Delete Private Album", "Success");
+                                Log.i("Delete Shared Album", "Success");
                             } else {
-                                Log.i("Delete Private Album", "Fail");
+                                Log.i("Delete Shared Album", "Fail");
                             }
                         }
-                    }
 
-                    @Override
-                    public void onError(Exception e) {
-                        Log.e("Delete Private Album Error", e.getMessage());
-                    }
-                });
-            } else {
-                ac.deleteAlbum(albumDTO, new retrofit2.Callback<ResponseBody>() {
-                    @Override
-                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                        if (response.isSuccessful()) {
-                            trashAlbumList.add(albumDTO);
-                            albumList.remove(currentPositon);
-                            handler.post(() -> {
-                                notifyItemRemoved(currentPositon);
-                                notifyItemRangeChanged(currentPositon, albumList.size());
-                                Toast.makeText(context, "앨범을 삭제했습니다.", Toast.LENGTH_SHORT).show();
-                            });
-                            Log.i("Delete Shared Album", "Success");
-                        } else {
-                            Log.i("Delete Shared Album", "Fail");
+                        @Override
+                        public void onFailure(Call<ResponseBody> call, Throwable t) {
+                            Log.e("Delete Shared Album Error", t.getMessage());
                         }
-                    }
-
-                    @Override
-                    public void onFailure(Call<ResponseBody> call, Throwable t) {
-                        Log.e("Delete Shared Album Error", t.getMessage());
-                    }
-                });
-            }
-        });
+                    });
+                }
+            });
+        }
     }
 
     @Override
