@@ -16,6 +16,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -59,8 +60,9 @@ import yuhan.hgcq.client.model.dto.team.TeamDTO;
 
 public class AlbumMain extends AppCompatActivity {
 
-    /* View */ ImageButton search, auto, albumPlus;
+    ImageButton search, auto, albumPlus;
     AppCompatButton albumTrash;
+
     EditText searchText;
     TextView empty;
     RecyclerView albumListView;
@@ -196,6 +198,16 @@ public class AlbumMain extends AppCompatActivity {
                         aa = new AlbumAdapter(result, AlbumMain.this, isPrivate);
                         handler.post(() -> {
                             albumListView.setAdapter(aa);
+                            albumListView.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    int visibleItemCount = 4;  // 화면에 보일 아이템 개수
+                                    int itemHeight = getResources().getDimensionPixelSize(R.dimen.item_height);  // 아이템 높이
+                                    ViewGroup.LayoutParams params=albumListView.getLayoutParams();
+                                    params.height = itemHeight *(visibleItemCount/2) ;
+                                    albumListView.setLayoutParams(params);
+                                }
+                            });
                         });
                         aa.setOnItemClickListener(new AlbumAdapter.OnItemClickListener() {
                             @Override
@@ -356,11 +368,10 @@ public class AlbumMain extends AppCompatActivity {
         });
 
         /* 사진 자동 분류 버튼 눌림 */
-        /*
         auto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                /* 권한 확인
+                /* 권한 확인 */
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && !Environment.isExternalStorageManager()) {
                     Intent permission = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
                     permission.addCategory("android.intent.category.DEFAULT");
@@ -377,7 +388,7 @@ public class AlbumMain extends AppCompatActivity {
                 }
             }
         });
-*/
+
         /* 앨범 생성 버튼 눌림 */
         albumPlus.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -107,39 +107,6 @@ public class FollowAdapter extends RecyclerView.Adapter<FollowAdapter.FollowView
             notifyItemChanged(position);
         });
 
-        /*holder.save.setOnClickListener(v -> {
-            List<Long> selectedMemberIds = getSelectedItems();
-            if (selectedMemberIds.isEmpty()) {
-                Toast.makeText(v.getContext(), "선택된 친구가 없습니다.", Toast.LENGTH_SHORT).show();
-                return;
-            }
-            inviteForm = new TeamInviteForm();
-            inviteForm.setTeamId(teamDTO.getTeamId());
-            inviteForm.setMembers(getSelectedItems());
-            String message = "초대하시겠습니끼?";
-            onClick_setting_costume_save(v.getContext(),message,(dialog, which) -> {
-                tc.inviteTeam(inviteForm, new Callback<ResponseBody>() {
-                    @Override
-                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                        if(response.isSuccessful()){
-
-                            notifyDataSetChanged();
-                            Toast.makeText(v.getContext(), "초대하였습니다.", Toast.LENGTH_SHORT).show();
-
-                        }else{
-                            Toast.makeText(v.getContext(), "초대하지 못하였습니다.", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<ResponseBody> call, Throwable t) {
-                        Toast.makeText(v.getContext() , "오류 발생", Toast.LENGTH_SHORT).show();
-                    }
-                });
-            },(dialog, which) -> {
-                Toast.makeText(v.getContext(), "초대를 취소하시겠습니까?", Toast.LENGTH_SHORT).show();
-            });
-        });*/
     }
 
     @Override
@@ -164,7 +131,6 @@ public class FollowAdapter extends RecyclerView.Adapter<FollowAdapter.FollowView
 
     public void updateList(List<MemberDTO> newList) {
         followList.clear();
-        ;
         followList.addAll(newList);
         notifyDataSetChanged();
     }
