@@ -138,9 +138,9 @@ public class CreateAlbum extends AppCompatActivity {
         loginMember = (MemberDTO) getIntent.getSerializableExtra("loginMember");
 
         if (isPrivate) {
-            getSupportActionBar().setTitle("개인 앨범 생성");
+            getSupportActionBar().setTitle("[개인] 앨범 생성");
         } else if (teamDTO != null) {
-            getSupportActionBar().setTitle("공유 앨범 생성");
+            getSupportActionBar().setTitle("[공유] 앨범 생성");
         }
         calendar.setOnClickListener(new View.OnClickListener() {
             @Override

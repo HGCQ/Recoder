@@ -106,7 +106,7 @@ public class Like extends AppCompatActivity {
 
         /* 개인 초기 설정 */
         if (isPrivate) {
-            getSupportActionBar().setTitle("개인 앨범 좋아요 리스트");
+            getSupportActionBar().setTitle("[개인] 즐겨찾는 항목");
             pr.searchByLike(new Callback<List<PhotoDTO>>() {
                 @Override
                 public void onSuccess(List<PhotoDTO> result) {
@@ -146,7 +146,7 @@ public class Like extends AppCompatActivity {
 
         /* 공유 초기 설정 */
         else {
-            getSupportActionBar().setTitle("공유 그룹 좋아요 리스트");
+            getSupportActionBar().setTitle("[공유] 즐겨찾는 항목");
             lc.likedList(new retrofit2.Callback<List<PhotoDTO>>() {
                 @Override
                 public void onResponse(Call<List<PhotoDTO>> call, Response<List<PhotoDTO>> response) {

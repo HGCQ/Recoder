@@ -219,7 +219,7 @@ public class Photo extends AppCompatActivity {
         } else {
             if (albumDTO != null) {
                 if (isPrivate) {
-                    getSupportActionBar().setTitle("개인 사진");
+                    getSupportActionBar().setTitle("[개인]");
                     pr.searchByAlbum(albumDTO.getAlbumId(), new yuhan.hgcq.client.localDatabase.callback.Callback<List<PhotoDTO>>() {
                         @Override
                         public void onSuccess(List<PhotoDTO> result) {
@@ -252,7 +252,7 @@ public class Photo extends AppCompatActivity {
                         }
                     });
                 } else {
-                    getSupportActionBar().setTitle("공유 사진");
+                    getSupportActionBar().setTitle("[공유]");
                     pc.photoList(albumDTO.getAlbumId(), new Callback<List<PhotoDTO>>() {
                         @Override
                         public void onResponse(Call<List<PhotoDTO>> call, Response<List<PhotoDTO>> response) {

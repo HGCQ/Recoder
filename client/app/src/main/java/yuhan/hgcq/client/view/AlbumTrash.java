@@ -97,7 +97,7 @@ public class AlbumTrash extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        getSupportActionBar().setTitle("앨범 휴지통");
+        getSupportActionBar().setTitle("[앨범 휴지통]");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         super.onCreate(savedInstanceState);
 

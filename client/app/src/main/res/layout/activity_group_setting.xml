@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
+    android:background="#ffffff"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".view.AlbumMain">
@@ -13,8 +14,8 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/groupSetList"
         android:layout_width="match_parent"
-        android:layout_height="371dp"
-        android:layout_marginTop="240dp"
+        android:layout_height="270dp"
+        android:layout_marginTop="245dp"
         android:gravity="center"
         android:padding="0dp"
         app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
@@ -144,6 +145,29 @@
         app:layout_constraintHorizontal_bias="0.35"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+    <View
+        android:layout_width="417dp"
+        android:layout_height="2dp"
+        android:background="#D3D3D3"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.713" />
+
+    <android.widget.Button
+        android:id="@+id/groupImage"
+        android:layout_width="100dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="530dp"
+        android:background="@drawable/edittext"
+        android:scaleType="fitCenter"
+        android:text="대표사진 선택"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.046"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -186,7 +210,7 @@
             android:id="@+id/groupLeave"
             android:layout_width="380dp"
             android:layout_height="45dp"
-            android:layout_marginTop="625dp"
+            android:layout_marginTop="620dp"
             android:layout_marginStart="-373dp"
             android:padding="0dp"
             android:background="@drawable/select"

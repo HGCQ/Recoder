@@ -178,10 +178,10 @@ public class Gallery extends AppCompatActivity {
 
         if (albumDTO != null) {
             if (isPrivate) {
-                getSupportActionBar().setTitle("개인 앨범 : " + albumDTO.getName());
+                getSupportActionBar().setTitle("[개인] " + albumDTO.getName());
                 chat.setVisibility(View.INVISIBLE);
             } else {
-                getSupportActionBar().setTitle("공유 앨범 : " + albumDTO.getName());
+                getSupportActionBar().setTitle("[공유] " + albumDTO.getName());
             }
             date.setText(albumDTO.getStartDate() + " ~ " + albumDTO.getEndDate());
         }
