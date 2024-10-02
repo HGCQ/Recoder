@@ -161,7 +161,7 @@
         android:layout_width="100dp"
         android:layout_height="30dp"
         android:layout_marginTop="530dp"
-        android:background="@drawable/edittext"
+        android:background="@drawable/button3"
         android:scaleType="fitCenter"
         android:text="대표사진 선택"
         app:layout_constraintEnd_toEndOf="parent"
