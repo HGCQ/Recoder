@@ -51,7 +51,7 @@ public class GroupSetting extends AppCompatActivity {
     /* View */
     TextView createGroupText;
     ImageButton retouch, friendAdd;
-    Button groupLeave,save;
+    Button groupLeave, save;
 
     RecyclerView memberListView;
     RecyclerView memberSettingView;
@@ -115,7 +115,7 @@ public class GroupSetting extends AppCompatActivity {
         groupLeave = findViewById(R.id.groupLeave);
         memberListView = findViewById(R.id.groupSetList);
         memberSettingView = findViewById(R.id.followingList);
-        save=findViewById(R.id.save);
+        save = findViewById(R.id.save);
 
 
         /* 관련된 페이지 */
@@ -137,7 +137,7 @@ public class GroupSetting extends AppCompatActivity {
             public void onResponse(Call<List<MemberInTeamDTO>> call, Response<List<MemberInTeamDTO>> response) {
                 if (response.isSuccessful()) {
                     List<MemberInTeamDTO> memberList = response.body();
-                    mita = new MemberInTeamAdapter(memberList,GroupSetting.this,teamDTO,loginMember);
+                    mita = new MemberInTeamAdapter(memberList, GroupSetting.this, teamDTO, loginMember);
 
                     handler.post(() -> {
                         memberListView.setAdapter(mita);
@@ -202,14 +202,14 @@ public class GroupSetting extends AppCompatActivity {
 
         /* 저장 */
         save.setOnClickListener(v -> {
-            List<Long> selectedMemberIds=fa.getSelectedItems();
-            TeamInviteForm form=new TeamInviteForm();
-            if(selectedMemberIds.isEmpty()){
+            List<Long> selectedMemberIds = fa.getSelectedItems();
+            TeamInviteForm form = new TeamInviteForm();
+            if (selectedMemberIds.isEmpty()) {
                 Toast.makeText(v.getContext(), "선택된 친구가 없습니다.", Toast.LENGTH_SHORT).show();
                 return;
             }
             form.setTeamId(teamDTO.getTeamId());
-            form.setMembers(fa.getSelectedItems());
+            form.setMembers(selectedMemberIds);
             onClick_setting_costume_save("초대하시겠습니까?", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
@@ -217,14 +217,13 @@ public class GroupSetting extends AppCompatActivity {
                         @Override
                         public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                             if (response.isSuccessful()) {
-                                handler.post(()->{
+                                handler.post(() -> {
                                     Toast.makeText(v.getContext(), "초대하였습니다.", Toast.LENGTH_SHORT).show();
                                     memberSettingView.setVisibility(View.INVISIBLE);
-                                    notifyAll();
+                                    save.setVisibility(View.INVISIBLE);
                                 });
-
                             } else {
-                                handler.post(()->{
+                                handler.post(() -> {
                                     Toast.makeText(v.getContext(), "초대하지 못하였습니다.", Toast.LENGTH_SHORT).show();
                                 });
 
@@ -233,7 +232,7 @@ public class GroupSetting extends AppCompatActivity {
 
                         @Override
                         public void onFailure(Call<ResponseBody> call, Throwable t) {
-                            handler.post(()->{
+                            handler.post(() -> {
                                 Toast.makeText(v.getContext(), "오류 발생", Toast.LENGTH_SHORT).show();
                             });
                         }
@@ -243,12 +242,11 @@ public class GroupSetting extends AppCompatActivity {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     handler.post(() -> {
-                    Toast.makeText(GroupSetting.this, "취소했습니다.", Toast.LENGTH_SHORT).show();
-                });
+                        Toast.makeText(GroupSetting.this, "취소했습니다.", Toast.LENGTH_SHORT).show();
+                    });
 
                 }
             });
-
 
 
         });
@@ -259,18 +257,18 @@ public class GroupSetting extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
-                fc.followingList(new Callback<List<MemberDTO>>() {
+                fc.inviteFollowingList(teamDTO.getTeamId(), new Callback<List<MemberDTO>>() {
 
                     @Override
                     public void onResponse(Call<List<MemberDTO>> call, Response<List<MemberDTO>> response) {
                         if (response.isSuccessful()) {
                             List<MemberDTO> followList = response.body();
+                            fa = new FollowAdapter(followList, GroupSetting.this, tc, teamDTO);
                             handler.post(() -> {
-                                fa = new FollowAdapter(followList,GroupSetting.this,tc,teamDTO);
                                 memberSettingView.setVisibility(View.VISIBLE);
                                 save.setVisibility(View.VISIBLE);
-                                memberSettingView.setLayoutManager(new LinearLayoutManager(GroupSetting.this));
                                 memberSettingView.setAdapter(fa);
+
 
                             });
                         } else {
@@ -354,14 +352,14 @@ public class GroupSetting extends AppCompatActivity {
                         imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
                     }
                 }
-            } else if(v instanceof RecyclerView) {
+            } else {
                 Rect recyclerViewRect = new Rect();
                 memberSettingView.getGlobalVisibleRect(recyclerViewRect);
 
                 if (!recyclerViewRect.contains((int) ev.getRawX(), (int) ev.getRawY())) {
                     handler.post(() -> {
-                       memberSettingView.setVisibility(View.INVISIBLE);
-                       save.setVisibility(View.INVISIBLE);
+                        memberSettingView.setVisibility(View.INVISIBLE);
+                        save.setVisibility(View.INVISIBLE);
                     });
                 }
 
