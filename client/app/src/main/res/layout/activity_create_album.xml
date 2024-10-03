@@ -32,6 +32,7 @@
         android:background="@drawable/text"
         android:fontFamily="@font/ibm_regular"
         android:gravity="center"
+        android:textSize="15sp"
         android:hint="앨범 이름을 입력해주세요."
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.483"

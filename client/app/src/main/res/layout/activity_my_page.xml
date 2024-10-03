@@ -7,7 +7,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".view.AlbumMain">
-
     <View
         android:layout_width="417dp"
         android:layout_height="282dp"
@@ -41,8 +40,9 @@
         android:layout_height="45dp"
         android:layout_marginTop="288dp"
         android:paddingLeft="5dp"
+        android:textSize="15sp"
         android:background="@drawable/text"
-        android:fontFamily="@font/notosans_medium"
+        android:fontFamily="@font/ibm_regular"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.451"
         app:layout_constraintStart_toStartOf="parent"
@@ -93,7 +93,8 @@
         android:layout_marginTop="380dp"
         android:background="@drawable/text"
         android:paddingLeft="5dp"
-        android:fontFamily="@font/notosans_medium"
+        android:textSize="15sp"
+        android:fontFamily="@font/ibm_regular"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.451"
         app:layout_constraintStart_toStartOf="parent"

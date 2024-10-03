@@ -4,4 +4,5 @@
         android:width="25dp"
         android:height="25dp"
         android:drawable="@drawable/photoplus2"/>
+
 </layer-list>

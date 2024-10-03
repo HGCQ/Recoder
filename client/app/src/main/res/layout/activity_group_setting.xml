@@ -55,7 +55,7 @@
         android:fontFamily="@font/ibm_regular"
         android:gravity="center"
         android:hint="그룹 이름"
-        android:textSize="17dp"
+        android:textSize="15sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.466"
         app:layout_constraintStart_toStartOf="parent"

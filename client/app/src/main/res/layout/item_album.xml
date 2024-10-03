@@ -49,12 +49,13 @@
             android:layout_width="90dp"
             android:layout_height="35dp"
             android:layout_marginStart="-158dp"
-            android:layout_marginTop="155dp"
+            android:layout_marginTop="157dp"
             android:fontFamily="@font/ibm_regular"
             android:padding="2dp"
             android:text="group"
             android:textColor="@color/black"
             android:textSize="15sp" />
+
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
