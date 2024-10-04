@@ -7,9 +7,11 @@
     android:orientation="horizontal"
     android:background="#ffffff"
     android:padding="0dp">
+
 <LinearLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
     <ImageView
         android:id="@+id/profile"
         android:layout_width="60dp"
@@ -24,11 +26,11 @@
         android:id="@+id/name"
         android:layout_width="80dp"
         android:layout_height="30dp"
-        android:fontFamily="@font/notosans_medium"
+        android:fontFamily="@font/ibm_regular"
         android:padding="0dp"
         android:textColor="@color/black"
         android:text="name"
-        android:textSize="15dp" />
+        android:textSize="15sp" />
 
     <android.widget.Button
         android:id="@+id/unfollowButton"
@@ -36,7 +38,7 @@
         android:layout_height="30dp"
         android:layout_marginStart="180dp"
         android:background="@drawable/select"
-        android:fontFamily="@font/notosans_medium"
+        android:fontFamily="@font/ibm_regular"
         android:onClick="onClick_setting_costume_cancel"
         android:padding="0dp"
         android:text="삭제"
