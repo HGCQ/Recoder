@@ -135,16 +135,16 @@ public class GroupMain extends AppCompatActivity {
                     handler.post(()->{
                         groupList.setAdapter(ta);
                         /*리스트 4개씩 보이게*/
-                        groupList.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                int visibleItemCount = 4;  // 화면에 보일 아이템 개수
-                                int itemHeight = getResources().getDimensionPixelSize(R.dimen.item_height);  // 아이템 높이
-                                ViewGroup.LayoutParams params=groupList.getLayoutParams();
-                                params.height = itemHeight *(visibleItemCount/2) ;
-                                groupList.setLayoutParams(params);
-                            }
-                        });
+//                        groupList.post(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                int visibleItemCount = 4;  // 화면에 보일 아이템 개수
+//                                int itemHeight = getResources().getDimensionPixelSize(R.dimen.item_height);  // 아이템 높이
+//                                ViewGroup.LayoutParams params=groupList.getLayoutParams();
+//                                params.height = itemHeight *(visibleItemCount/2) ;
+//                                groupList.setLayoutParams(params);
+//                            }
+//                        });
                     });
                     ta.setOnItemClickListener(new TeamAdapter.OnItemClickListener() {
 

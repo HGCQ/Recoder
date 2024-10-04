@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.util.Log;
 
 import org.apache.commons.io.IOUtils;
 
@@ -47,7 +48,7 @@ public class PhotoController {
      * @param creates   사진 날짜
      * @param callback  비동기 콜백
      */
-    public void uploadPhoto(Long albumId, List<Uri> photoUris, List<LocalDateTime> creates, Callback<ResponseBody> callback) {
+    public void uploadPhoto(Long albumId, List<Uri> photoUris, List<LocalDateTime> creates, List<String> regions, Callback<ResponseBody> callback) {
         RequestBody albumIdPart = RequestBody.create(
                 MediaType.parse("text/plain"),
                 String.valueOf(albumId)
@@ -75,7 +76,20 @@ public class PhotoController {
             createParts.add(createPart);
         }
 
-        Call<ResponseBody> call = photoService.uploadPhoto(albumIdPart, fileParts, createParts);
+        List<RequestBody> regionParts = new ArrayList<>();
+        for (String region : regions) {
+            RequestBody regionPart = RequestBody.create(
+                    MediaType.parse("text/plain"),
+                    region
+            );
+            regionParts.add(regionPart);
+        }
+
+        Log.i("fileParts size : ", String.valueOf(fileParts.size()));
+        Log.i("createParts size : ", String.valueOf(createParts.size()));
+        Log.i("regionParts size : ", String.valueOf(regionParts.size()));
+
+        Call<ResponseBody> call = photoService.uploadPhoto(albumIdPart, fileParts, createParts, regionParts);
         call.enqueue(callback);
     }
 
@@ -120,7 +134,7 @@ public class PhotoController {
      * @param creates   사진 날짜
      * @param callback  비동기 콜백
      */
-    public void autoSavePhoto(List<Uri> photoUris, Long teamId, List<LocalDateTime> creates, Callback<ResponseBody> callback) {
+    public void autoSavePhoto(List<Uri> photoUris, Long teamId, List<LocalDateTime> creates, List<String> regions, Callback<ResponseBody> callback) {
         RequestBody teamIdPart = RequestBody.create(
                 MediaType.parse("text/plain"),
                 String.valueOf(teamId)
@@ -148,7 +162,16 @@ public class PhotoController {
             createParts.add(createPart);
         }
 
-        Call<ResponseBody> call = photoService.autoSavePhoto(fileParts, teamIdPart, createParts);
+        List<RequestBody> regionParts = new ArrayList<>();
+        for (String region : regions) {
+            RequestBody regionPart = RequestBody.create(
+                    MediaType.parse("text/plain"),
+                    region
+            );
+            regionParts.add(regionPart);
+        }
+
+        Call<ResponseBody> call = photoService.autoSavePhoto(fileParts, teamIdPart, createParts, regionParts);
         call.enqueue(callback);
     }
 
