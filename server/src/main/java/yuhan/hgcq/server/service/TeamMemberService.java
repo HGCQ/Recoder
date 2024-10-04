@@ -13,18 +13,6 @@ import yuhan.hgcq.server.repository.TeamMemberRepository;
 
 import java.util.List;
 
-/**
- * 그룹 회원 기능 요구사항 분석
- * 1. 관리자만 그룹에 회원을 초대할 수 있다.
- * 2. 관리자만 그룹에 회원(관리자가 아닐 시)을 추방시킬 수 있다.
- * 3. 그룹 소유자만 관리자 권한을 부여할 수 있다.
- * 4. 그룹 소유자는 관리자 권한을 박탈할 수 있다.
- * 5. 소유자가 아닌 회원이 그룹을 삭제하면 그룹에서 탈퇴한다.
- * 6. 회원마다 가진 그룹 리스트를 추출할 수 있다.
- * 7. 그룹에 속한 회원 리스트를 추출할 수 있다.
- * 8. 그룹에 속한 관리자 리스트를 추출할 수 있다.
- */
-
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -34,14 +22,15 @@ public class TeamMemberService {
     private final TeamMemberRepository tmr;
 
     /**
-     * 그룹에 회원 초대(테스트 완료)
+     * Invite member
      *
-     * @param member     주체
-     * @param teamMember 대상
-     * @throws AccessException 관리자가 아닐 시
+     * @param member     member
+     * @param teamMember teamMember
+     * @throws AccessException          Not admin
+     * @throws IllegalArgumentException Argument is wrong
      */
     @Transactional
-    public void invite(Member member, TeamMember teamMember) throws AccessException, IllegalArgumentException {
+    public void inviteMember(Member member, TeamMember teamMember) throws AccessException, IllegalArgumentException {
         ensureNotNull(member, "Member");
         ensureNotNull(teamMember, "TeamMember");
 
@@ -57,20 +46,21 @@ public class TeamMemberService {
     }
 
     /**
-     * 그룹에 회원 추방(테스트 완료)
+     * Expel Member
      *
-     * @param member     주체
-     * @param teamMember 대상
-     * @throws AccessException 관리자가 아닐 시
+     * @param member     member
+     * @param teamMember teamMember
+     * @throws AccessException          Not admin
+     * @throws IllegalArgumentException Argument is wrong
      */
     @Transactional
-    public void expel(Member member, TeamMember teamMember) throws AccessException, IllegalArgumentException {
+    public void expelMember(Member member, TeamMember teamMember) throws AccessException, IllegalArgumentException {
         ensureNotNull(member, "Member");
         ensureNotNull(teamMember, "TeamMember");
 
         Team team = teamMember.getTeam();
-        boolean isAdmin = isAdmin(member, team); // 주체
-        boolean objIsAdmin = teamMember.getIsAdmin(); // 대상
+        boolean isAdmin = isAdmin(member, team);
+        boolean objIsAdmin = teamMember.getIsAdmin();
 
         if (isAdmin && !objIsAdmin) {
             tmr.delete(teamMember);
@@ -81,13 +71,14 @@ public class TeamMemberService {
     }
 
     /**
-     * 그룹에 속한 회원 검색(테스트 완료)
+     * Find member in team
      *
-     * @param team   그룹
-     * @param member 회원
-     * @return 그룹 회원
+     * @param team   team
+     * @param member member
+     * @return teamMember
+     * @throws IllegalArgumentException Argument is wrong
      */
-    public TeamMember search(Team team, Member member) throws IllegalArgumentException {
+    public TeamMember searchOne(Team team, Member member) throws IllegalArgumentException {
         ensureNotNull(team, "Team");
         ensureNotNull(member, "Member");
 
@@ -95,11 +86,12 @@ public class TeamMemberService {
     }
 
     /**
-     * 관리자 권한 부여(테스트 완료)
+     * Authorize admin
      *
-     * @param member     주체
-     * @param teamMember 대상
-     * @throws AccessException 소유자가 아닐 시
+     * @param member     member
+     * @param teamMember teamMember
+     * @throws AccessException          Not owner
+     * @throws IllegalArgumentException Argument is wrong
      */
     @Transactional
     public void authorizeAdmin(Member member, TeamMember teamMember) throws AccessException, IllegalArgumentException {
@@ -119,11 +111,12 @@ public class TeamMemberService {
     }
 
     /**
-     * 관리자 권한 박탈(테스트 완료)
+     * Revoke admin
      *
-     * @param member     주체
-     * @param teamMember 대상
-     * @throws AccessException 소유자가 아닐 시
+     * @param member     member
+     * @param teamMember teamMember
+     * @throws AccessException          Not owner
+     * @throws IllegalArgumentException Argument is wrong
      */
     @Transactional
     public void revokeAdmin(Member member, TeamMember teamMember) throws AccessException, IllegalArgumentException {
@@ -143,10 +136,11 @@ public class TeamMemberService {
     }
 
     /**
-     * 회원이 가진 그룹 리스트 검색(테스트 완료)
+     * Find teamList the member has
      *
-     * @param member 회원
-     * @return 그룹 리스트
+     * @param member member
+     * @return teamList
+     * @throws IllegalArgumentException Argument is wrong
      */
     public List<Team> searchTeamList(Member member) throws IllegalArgumentException {
         ensureNotNull(member, "Member");
@@ -155,13 +149,14 @@ public class TeamMemberService {
     }
 
     /**
-     * 회원이 가진 그룹 리스트 이름으로 검색(테스트 완료)
+     * Find by the name of the teamList the member has
      *
-     * @param member 회원
-     * @param name   이름
-     * @return 그룹 리스트
+     * @param member member
+     * @param name   team name
+     * @return teamList
+     * @throws IllegalArgumentException Argument is wrong
      */
-    public List<Team> searchTeamList(Member member, String name) throws IllegalArgumentException {
+    public List<Team> searchTeamListByName(Member member, String name) throws IllegalArgumentException {
         ensureNotNull(member, "Member");
         ensureNotNull(name, "Name");
 
@@ -169,10 +164,11 @@ public class TeamMemberService {
     }
 
     /**
-     * 그룹에 속한 회원 리스트 검색(테스트 완료)
+     * Find memberList in Team
      *
-     * @param team 그룹
-     * @return 회원 리스트
+     * @param team team
+     * @return memberList
+     * @throws IllegalArgumentException Argument is wrong
      */
     public List<Member> searchMemberList(Team team) throws IllegalArgumentException {
         ensureNotNull(team, "Team");
@@ -181,10 +177,11 @@ public class TeamMemberService {
     }
 
     /**
-     * 그룹에 속한 관리자 리스트 검색(테스트 완료)
+     * Find adminList in Team
      *
-     * @param team 그룹
-     * @return 관리자 리스트
+     * @param team team
+     * @return adminList
+     * @throws IllegalArgumentException Argument is wrong
      */
     public List<Member> searchAdminList(Team team) throws IllegalArgumentException {
         ensureNotNull(team, "Team");
@@ -192,19 +189,36 @@ public class TeamMemberService {
         return tmr.findAdminByTeam(team);
     }
 
-    /* 매개변수가 null 값인지 확인 */
+    /**
+     * Argument Check if Null
+     *
+     * @param obj  argument
+     * @param name by log
+     */
     private void ensureNotNull(Object obj, String name) {
         if (obj == null) {
             throw new IllegalArgumentException(name + " is null");
         }
     }
 
-    /* 소유자인지 확인 */
+    /**
+     * Check member is owner
+     *
+     * @param member member
+     * @param team   team
+     * @return is owner?
+     */
     private boolean isOwner(Member member, Team team) {
         return team.getOwner().equals(member);
     }
 
-    /* 관리자인지 확인 */
+    /**
+     * Check member is admin
+     *
+     * @param member member
+     * @param team   team
+     * @return is admin?
+     */
     private boolean isAdmin(Member member, Team team) {
         List<Member> adminList = tmr.findAdminByTeam(team);
         return adminList.contains(member);

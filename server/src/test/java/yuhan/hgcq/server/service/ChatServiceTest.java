@@ -14,7 +14,6 @@ import yuhan.hgcq.server.domain.Team;
 import yuhan.hgcq.server.dto.member.SignupForm;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
@@ -58,19 +57,19 @@ class ChatServiceTest {
         m3Id = ms.join(m3);
         m4Id = ms.join(m4);
 
-        Member fm1 = ms.search(m1Id);
-        Member fm2 = ms.search(m2Id);
-        Member fm3 = ms.search(m3Id);
-        Member fm4 = ms.search(m4Id);
+        Member fm1 = ms.searchOne(m1Id);
+        Member fm2 = ms.searchOne(m2Id);
+        Member fm3 = ms.searchOne(m3Id);
+        Member fm4 = ms.searchOne(m4Id);
 
         Team t1 = new Team(fm1, "t1");
         Team t2 = new Team(fm1, "t2");
 
-        t1Id = ts.create(t1);
-        t2Id = ts.create(t2);
+        t1Id = ts.createTeam(t1);
+        t2Id = ts.createTeam(t2);
 
-        Album a1 = new Album(t1, LocalDate.now(), LocalDate.now(), "a1");
-        Album a2 = new Album(t1, LocalDate.now(), LocalDate.now(), "a2");
+        Album a1 = new Album(t1, "a1");
+        Album a2 = new Album(t1, "a2");
 
         try {
             a1Id = as.create(fm1, a1);
@@ -83,26 +82,26 @@ class ChatServiceTest {
     @Test
     @DisplayName("채팅 추가")
     void add() {
-        Member m1 = ms.search(m1Id);
-        Album a1 = as.search(a1Id);
+        Member m1 = ms.searchOne(m1Id);
+        Album a1 = as.searchOne(a1Id);
 
         Chat c1 = new Chat(m1, "test1", a1);
         Long saveId = cs.create(c1);
 
-        Chat find = cs.search(saveId);
+        Chat find = cs.searchOne(saveId);
         assertThat(find).isEqualTo(c1);
     }
 
     @Test
     @DisplayName("채팅 삭제")
     void delete() {
-        Member m1 = ms.search(m1Id);
-        Album a1 = as.search(a1Id);
+        Member m1 = ms.searchOne(m1Id);
+        Album a1 = as.searchOne(a1Id);
 
         Chat c1 = new Chat(m1, "test1", a1);
         Long saveId = cs.create(c1);
 
-        Chat find = cs.search(saveId);
+        Chat find = cs.searchOne(saveId);
 
         try {
             cs.delete(m1, find);
@@ -110,21 +109,21 @@ class ChatServiceTest {
             fail();
         }
 
-        assertThrows(IllegalArgumentException.class, () -> cs.search(saveId));
+        assertThrows(IllegalArgumentException.class, () -> cs.searchOne(saveId));
     }
     
     @Test
     @DisplayName("채팅 삭제는 작성자만 할 수 있다")
     void deleteNotWriter() {
-        Member m1 = ms.search(m1Id);
-        Member m2 = ms.search(m2Id);
+        Member m1 = ms.searchOne(m1Id);
+        Member m2 = ms.searchOne(m2Id);
 
-        Album a1 = as.search(a1Id);
+        Album a1 = as.searchOne(a1Id);
 
         Chat c1 = new Chat(m1, "test1", a1);
         Long saveId = cs.create(c1);
 
-        Chat find = cs.search(saveId);
+        Chat find = cs.searchOne(saveId);
 
         assertThrows(AccessException.class, () -> cs.delete(m2, find));
     }
@@ -132,10 +131,10 @@ class ChatServiceTest {
     @Test
     @DisplayName("채팅 리스트")
     void chatList() {
-        Member m1 = ms.search(m1Id);
-        Member m2 = ms.search(m2Id);
+        Member m1 = ms.searchOne(m1Id);
+        Member m2 = ms.searchOne(m2Id);
 
-        Album a1 = as.search(a1Id);
+        Album a1 = as.searchOne(a1Id);
 
         Chat c1 = new Chat(m1, "test1", a1);
         Chat c2 = new Chat(m2, "test2", a1);
