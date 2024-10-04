@@ -233,7 +233,7 @@ public class CreateAlbum extends AppCompatActivity {
                             if (teamDTO != null) {
                                 Long teamId = teamDTO.getTeamId();
 
-                                AlbumCreateForm form = new AlbumCreateForm(teamId, albumName, editStartDate, editEndDate);
+                                AlbumCreateForm form = new AlbumCreateForm(teamId, albumName);
                                 ac.createAlbum(form, new retrofit2.Callback<ResponseBody>() {
                                     @Override
                                     public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
