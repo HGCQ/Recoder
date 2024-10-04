@@ -17,17 +17,6 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
-/**
- * 앨범 기능 요구사항 분석
- * 1. 그룹 관리자만 앨범을 생성할 수 있다.
- * 2. 그룹 관리자만 앨범을 삭제할 수 있다(휴지통).
- * 3. 그룹 관리자만 앨범 삭제를 취소할 수 있다.
- * 4. 그룹 관리자만 앨범을 수정할 수 있다.
- * 5. 30일이 지나면 휴지통에서 자동 삭제한다. (사진도 같이 삭제)
- * 6. 휴지통에 있는 앨범 리스트 추출할 수 있다.
- * 7. 그룹에 속한 앨범 리스트를 추출할 수 있다.
- */
-
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -40,12 +29,13 @@ public class AlbumService {
     private final static int DELETE_DAY = 30;
 
     /**
-     * 앨범 생성(테스트 완료)
+     * Create album
      *
-     * @param member 회원
-     * @param album  앨범
-     * @return 앨범 id
-     * @throws AccessException 관리자가 아닐 시
+     * @param member member
+     * @param album  album
+     * @return albumId
+     * @throws AccessException          Not admin
+     * @throws IllegalArgumentException Argument is wrong
      */
     @Transactional
     public Long create(Member member, Album album) throws AccessException, IllegalArgumentException {
@@ -64,11 +54,12 @@ public class AlbumService {
     }
 
     /**
-     * 앨범 수정(테스트 완료)
+     * Update album information
      *
-     * @param member 회원
-     * @param album  앨범
-     * @throws AccessException 관리자가 아닐 시
+     * @param member member
+     * @param album  album
+     * @throws AccessException          Not admin
+     * @throws IllegalArgumentException Argument is wrong
      */
     @Transactional
     public void modify(Member member, Album album) throws AccessException, IllegalArgumentException {
@@ -86,14 +77,15 @@ public class AlbumService {
     }
 
     /**
-     * 앨범 삭제(테스트 완료)
+     * Delete album
      *
-     * @param member 회원
-     * @param album  앨범
-     * @throws AccessException 관리자가 아닐 시
+     * @param member member
+     * @param album  album
+     * @throws AccessException          Not admin
+     * @throws IllegalArgumentException Argument is wrong
      */
     @Transactional
-    public void delete(Member member, Album album) throws AccessException, IllegalArgumentException {
+    public void deleteAlbum(Member member, Album album) throws AccessException, IllegalArgumentException {
         ensureNotNull(album, "Album");
 
         boolean isAdmin = isAdmin(member, album);
@@ -108,14 +100,15 @@ public class AlbumService {
     }
 
     /**
-     * 앨범 삭제 취소(테스트 완료)
+     * Delete album cancel
      *
-     * @param member 회원
-     * @param album  앨범
-     * @throws AccessException 관리자가 아닐 시
+     * @param member member
+     * @param album  album
+     * @throws AccessException          Not admin
+     * @throws IllegalArgumentException Argument is wrong
      */
     @Transactional
-    public void cancelDelete(Member member, Album album) throws AccessException, IllegalArgumentException {
+    public void deleteAlbumCancel(Member member, Album album) throws AccessException, IllegalArgumentException {
         ensureNotNull(album, "Album");
 
         boolean isAdmin = isAdmin(member, album);
@@ -130,9 +123,9 @@ public class AlbumService {
     }
 
     /**
-     * 휴지통 자동 삭제(테스트 완료)
+     * Trash empty
      *
-     * @param albums 앨범
+     * @param albums albumList
      */
     @Transactional
     public void trash(List<Album> albums) {
@@ -150,12 +143,13 @@ public class AlbumService {
     }
 
     /**
-     * 앨범 검색(테스트 완료)
+     * Find album
      *
-     * @param id 앨범 id
-     * @return 앨범
+     * @param id albumId
+     * @return album
+     * @throws IllegalArgumentException Argument is wrong
      */
-    public Album search(Long id) throws IllegalArgumentException {
+    public Album searchOne(Long id) throws IllegalArgumentException {
         Album find = ar.findOne(id);
 
         if (find == null) {
@@ -166,10 +160,11 @@ public class AlbumService {
     }
 
     /**
-     * 앨범 리스트 검색(테스트 완료)
+     * Find albumList
      *
-     * @param team 그룹
-     * @return 앨범 리스트
+     * @param team team
+     * @return albumList
+     * @throws IllegalArgumentException Argument is wrong
      */
     public List<Album> searchAll(Team team) throws IllegalArgumentException {
         ensureNotNull(team, "Team");
@@ -178,11 +173,12 @@ public class AlbumService {
     }
 
     /**
-     * 앨범 리스트 이름으로 검색(테스트 완료)
+     * Find album by name
      *
-     * @param team 그룹
-     * @param name 이름
-     * @return 앨범 리스트
+     * @param team team
+     * @param name album name
+     * @return album
+     * @throws IllegalArgumentException Argument is wrong
      */
     public List<Album> searchByName(Team team, String name) throws IllegalArgumentException {
         ensureNotNull(team, "Team");
@@ -192,25 +188,37 @@ public class AlbumService {
     }
 
     /**
-     * 휴지통에 속한 앨범 리스트 검색(테스트 완료)
+     * Find albumTrashList
      *
-     * @param team 그룹
-     * @return 앨범 리스트
+     * @param team team
+     * @return albumTrashList
+     * @throws IllegalArgumentException Argument is wrong
      */
-    public List<Album> searchTrash(Team team) throws IllegalArgumentException {
+    public List<Album> searchAlbumTrashList(Team team) throws IllegalArgumentException {
         ensureNotNull(team, "Team");
 
         return ar.findByDeleted(team);
     }
 
-    /* 매개변수가 null 값인지 확인 */
+    /**
+     * Argument Check if Null
+     *
+     * @param obj  argument
+     * @param name by log
+     */
     private void ensureNotNull(Object obj, String name) {
         if (obj == null) {
             throw new IllegalArgumentException(name + " is null");
         }
     }
 
-    /* 관리자인지 확인 */
+    /**
+     * Check member is admin
+     *
+     * @param member member
+     * @param album  album
+     * @return is admin?
+     */
     private boolean isAdmin(Member member, Album album) {
         Team team = album.getTeam();
 

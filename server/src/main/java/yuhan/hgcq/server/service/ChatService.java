@@ -14,12 +14,6 @@ import yuhan.hgcq.server.repository.ChatRepository;
 import java.util.List;
 import java.util.Objects;
 
-/**
- * 채팅 기능 요구사항 분석
- * 1. 채팅은 작성자만 삭제할 수 있다.
- * 2. 앨범의 채팅 리스트를 추출할 수 있다.
- */
-
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -29,10 +23,11 @@ public class ChatService {
     private final ChatRepository cr;
 
     /**
-     * 채팅 생성(테스트 완료)
+     * Create chat
      *
-     * @param chat 채팅
-     * @return 채팅 id
+     * @param chat chat
+     * @return chatId
+     * @throws IllegalArgumentException Argument is wrong
      */
     @Transactional
     public Long create(Chat chat) throws IllegalArgumentException {
@@ -44,11 +39,12 @@ public class ChatService {
     }
 
     /**
-     * 채팅 삭제(테스트 완료)
+     * Delete chat
      *
-     * @param member 주체
-     * @param chat   대상
-     * @throws AccessException 작성자가 아닐 시
+     * @param member member
+     * @param chat   chat
+     * @throws AccessException          Not writer
+     * @throws IllegalArgumentException Argument is wrong
      */
     @Transactional
     public void delete(Member member, Chat chat) throws AccessException, IllegalArgumentException {
@@ -67,12 +63,13 @@ public class ChatService {
     }
 
     /**
-     * 채팅 검색(테스트 완료)
+     * Find chat
      *
-     * @param id 채팅 id
-     * @return 채팅
+     * @param id chatId
+     * @return chat
+     * @throws IllegalArgumentException Argument is wrong
      */
-    public Chat search(Long id) throws IllegalArgumentException {
+    public Chat searchOne(Long id) throws IllegalArgumentException {
         Chat find = cr.findOne(id);
 
         if (find == null) {
@@ -83,10 +80,11 @@ public class ChatService {
     }
 
     /**
-     * 채팅 리스트 검색(테스트 완료)
+     * Find chattingList
      *
-     * @param album 앨범
-     * @return 채팅 리스트
+     * @param album album
+     * @return chattingList
+     * @throws IllegalArgumentException Argument is wrong
      */
     public List<Chat> searchAll(Album album) throws IllegalArgumentException {
         ensureNotNull(album, "Album");
@@ -94,7 +92,12 @@ public class ChatService {
         return cr.findAll(album);
     }
 
-    /* 매개변수가 null 값인지 확인 */
+    /**
+     * Argument Check if Null
+     *
+     * @param obj  argument
+     * @param name by log
+     */
     private void ensureNotNull(Object obj, String name) {
         if (obj == null) {
             throw new IllegalArgumentException(name + " is null");

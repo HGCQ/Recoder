@@ -59,19 +59,19 @@ class PhotoServiceTest {
         m3Id = ms.join(m3);
         m4Id = ms.join(m4);
 
-        Member fm1 = ms.search(m1Id);
-        Member fm2 = ms.search(m2Id);
-        Member fm3 = ms.search(m3Id);
-        Member fm4 = ms.search(m4Id);
+        Member fm1 = ms.searchOne(m1Id);
+        Member fm2 = ms.searchOne(m2Id);
+        Member fm3 = ms.searchOne(m3Id);
+        Member fm4 = ms.searchOne(m4Id);
 
         Team t1 = new Team(fm1, "t1");
         Team t2 = new Team(fm1, "t2");
 
-        t1Id = ts.create(t1);
-        t2Id = ts.create(t2);
+        t1Id = ts.createTeam(t1);
+        t2Id = ts.createTeam(t2);
 
-        Album a1 = new Album(t1, LocalDate.now(), LocalDate.now(), "a1");
-        Album a2 = new Album(t1, LocalDate.now(), LocalDate.now(), "a2");
+        Album a1 = new Album(t1, "a1");
+        Album a2 = new Album(t1, "a2");
 
         try {
             a1Id = as.create(fm1, a1);
@@ -83,45 +83,45 @@ class PhotoServiceTest {
     
     @Test
     @DisplayName("사진 저장")
-    void save() {
-        Album a1 = as.search(a1Id);
+    void savePhoto() {
+        Album a1 = as.searchOne(a1Id);
         Photo p1 = new Photo(a1, "p1", "/t1/a1/p1", LocalDateTime.now());
 
-        Long saveId = ps.save(p1);
-        Photo find = ps.search(saveId);
+        Long saveId = ps.savePhoto(p1);
+        Photo find = ps.searchOne(saveId);
 
         assertThat(find).isEqualTo(p1);
     }
 
     @Test
     @DisplayName("사진 삭제")
-    void delete() {
-        Album a1 = as.search(a1Id);
+    void deletePhoto() {
+        Album a1 = as.searchOne(a1Id);
         Photo p1 = new Photo(a1, "p1", "/t1/a1/p1", LocalDateTime.now());
 
-        Long saveId = ps.save(p1);
-        Photo find = ps.search(saveId);
+        Long saveId = ps.savePhoto(p1);
+        Photo find = ps.searchOne(saveId);
 
-        ps.delete(find);
+        ps.deletePhoto(find);
 
-        find = ps.search(saveId);
+        find = ps.searchOne(saveId);
         assertThat(find.getIsDeleted()).isTrue();
     }
 
     @Test
     @DisplayName("사진 삭제 취소")
-    void cancelDelete() {
-        Album a1 = as.search(a1Id);
+    void cancelDeletePhoto() {
+        Album a1 = as.searchOne(a1Id);
         Photo p1 = new Photo(a1, "p1", "/t1/a1/p1", LocalDateTime.now());
 
-        Long saveId = ps.save(p1);
-        Photo find = ps.search(saveId);
+        Long saveId = ps.savePhoto(p1);
+        Photo find = ps.searchOne(saveId);
 
-        ps.delete(find);
-        find = ps.search(saveId);
+        ps.deletePhoto(find);
+        find = ps.searchOne(saveId);
 
-        ps.deleteCancel(find);
-        find = ps.search(saveId);
+        ps.deleteCancelPhoto(find);
+        find = ps.searchOne(saveId);
 
         assertThat(find.getIsDeleted()).isFalse();
     }
@@ -129,30 +129,30 @@ class PhotoServiceTest {
     @Test
     @DisplayName("휴지통 사진 삭제")
     void trash() {
-        Album a1 = as.search(a1Id);
+        Album a1 = as.searchOne(a1Id);
         Photo p1 = new Photo(a1, "p1", "/t1/a1/p1", LocalDateTime.of(2024, 8, 1, 1, 1, 1));
 
-        Long saveId = ps.save(p1);
-        Photo find = ps.search(saveId);
+        Long saveId = ps.savePhoto(p1);
+        Photo find = ps.searchOne(saveId);
 
-        ps.delete(find);
-        find = ps.search(saveId);
+        ps.deletePhoto(find);
+        find = ps.searchOne(saveId);
         find.test(LocalDateTime.of(2024, 8, 1, 1, 1, 1));
 
-        List<Photo> trashList = ps.trashList(a1);
+        List<Photo> trashList = ps.searchTrashList(a1);
         ps.trash(trashList);
 
-        assertThrows(IllegalArgumentException.class, () -> ps.search(saveId));
+        assertThrows(IllegalArgumentException.class, () -> ps.searchOne(saveId));
     }
     
     @Test
     @DisplayName("경로로 사진 검색")
-    void searchByPath() {
-        Album a1 = as.search(a1Id);
+    void searchOneByPath() {
+        Album a1 = as.searchOne(a1Id);
         Photo p1 = new Photo(a1, "p1", "/t1/a1/p1", LocalDateTime.of(2024, 8, 1, 1, 1, 1));
 
-        Long saveId = ps.save(p1);
-        Photo find = ps.search("/t1/a1/p1");
+        Long saveId = ps.savePhoto(p1);
+        Photo find = ps.searchOne("/t1/a1/p1");
 
         assertThat(find).isEqualTo(p1);
     }
@@ -160,11 +160,11 @@ class PhotoServiceTest {
     @Test
     @DisplayName("앨범 이동")
     void move() {
-        Album a1 = as.search(a1Id);
-        Album a2 = as.search(a2Id);
+        Album a1 = as.searchOne(a1Id);
+        Album a2 = as.searchOne(a2Id);
 
         Photo p1 = new Photo(a1, "p1", "/t1/a1/p1", LocalDateTime.of(2024, 8, 1, 1, 1, 1));
-        Long saveId = ps.save(p1);
+        Long saveId = ps.savePhoto(p1);
 
         List<Photo> photoList = new ArrayList<>();
         photoList.add(p1);

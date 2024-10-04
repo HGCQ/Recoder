@@ -10,7 +10,5 @@ import java.io.Serializable;
 @ToString
 public class AlbumUpdateForm implements Serializable {
     private Long albumId;
-    private String startDate;
-    private String endDate;
     private String name;
 }

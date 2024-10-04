@@ -1,6 +1,5 @@
 package yuhan.hgcq.server.service;
 
-
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,16 +11,6 @@ import yuhan.hgcq.server.repository.FollowRepository;
 
 import java.util.List;
 
-/**
- * 팔로우 기능 요구사항 분석
- * 1. 팔로잉과 팔로워가 있다.
- * 2. 팔로잉은 회원 주체가 다른 회원을 팔로우한 것이다.
- * 3. 팔로워는 회원을 다른 회원이 팔로우한 것이다.
- * 4. 팔로워 리스트를 추출할 수 있다.
- * 5. 팔로잉 리스트를 추출할 수 있다.
- * 6. 팔로워, 팔로잉을 이름으로 검색할 수 있다.
- */
-
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -31,12 +20,13 @@ public class FollowService {
     private final FollowRepository fr;
 
     /**
-     * 팔로우 추가
+     * Add follow
      *
-     * @param follow 팔로우
+     * @param follow follow
+     * @throws IllegalArgumentException Argument is wrong
      */
     @Transactional
-    public void add(Follow follow) throws IllegalArgumentException {
+    public void addFollow(Follow follow) throws IllegalArgumentException {
         ensureNotNull(follow, "Follow");
 
         fr.save(follow);
@@ -44,12 +34,13 @@ public class FollowService {
     }
 
     /**
-     * 팔로우 삭제
+     * Remove follow
      *
-     * @param follow 팔로우
+     * @param follow follow
+     * @throws IllegalArgumentException Argument is wrong
      */
     @Transactional
-    public void remove(Follow follow) throws IllegalArgumentException {
+    public void removeFollow(Follow follow) throws IllegalArgumentException {
         ensureNotNull(follow, "Follow");
 
         fr.delete(follow);
@@ -57,13 +48,14 @@ public class FollowService {
     }
 
     /**
-     * 팔로우 검색
+     * Find follow
      *
-     * @param member 회원
-     * @param follow 팔로우
-     * @return 팔로우
+     * @param member member
+     * @param follow member
+     * @return follow
+     * @throws IllegalArgumentException Argument is wrong
      */
-    public Follow search(Member member, Member follow) throws IllegalArgumentException {
+    public Follow searchOne(Member member, Member follow) throws IllegalArgumentException {
         ensureNotNull(member, "Member");
         ensureNotNull(follow, "Follow");
 
@@ -71,56 +63,65 @@ public class FollowService {
     }
 
     /**
-     * 회원의 팔로잉 리스트
+     * Find followingList
      *
-     * @param member 회원
-     * @return 팔로우 리스트
+     * @param member member
+     * @return followingList
+     * @throws IllegalArgumentException Argument is wrong
      */
-    public List<Member> searchFollowing(Member member) throws IllegalArgumentException {
+    public List<Member> searchFollowingList(Member member) throws IllegalArgumentException {
         ensureNotNull(member, "Member");
 
         return fr.findFollowingList(member);
     }
 
     /**
-     * 회원의 팔로잉 리스트 이름으로 검색
+     * Find followingList by name
      *
-     * @param member 회원
-     * @param name   이름
-     * @return 팔로잉 리스트
+     * @param member member
+     * @param name   following name
+     * @return followingList
+     * @throws IllegalArgumentException Argument is wrong
      */
-    public List<Member> searchFollowingByName(Member member, String name) throws IllegalArgumentException {
+    public List<Member> searchFollowingListByName(Member member, String name) throws IllegalArgumentException {
         ensureNotNull(member, "Member");
 
         return fr.findFollowingListByName(member, name);
     }
 
     /**
-     * 회원의 팔로워 리스트
+     * Find followerList
      *
-     * @param member 회원
-     * @return 팔로워 리스트
+     * @param member member
+     * @return followerList
+     * @throws IllegalArgumentException Argument is wrong
      */
-    public List<Member> searchFollower(Member member) throws IllegalArgumentException {
+    public List<Member> searchFollowerList(Member member) throws IllegalArgumentException {
         ensureNotNull(member, "Member");
 
         return fr.findFollowerList(member);
     }
 
     /**
-     * 회원의 팔로워 리스트 이름으로 검색
+     * Find followerList by name
      *
-     * @param member 회원
-     * @param name   이름
-     * @return 팔로워 리스트
+     * @param member member
+     * @param name   follower name
+     * @return followerList
+     * @throws IllegalArgumentException Argument is wrong
      */
-    public List<Member> searchFollowerByName(Member member, String name) throws IllegalArgumentException {
+    public List<Member> searchFollowerListByName(Member member, String name) throws IllegalArgumentException {
         ensureNotNull(member, "Member");
 
         return fr.findFollowerListByName(member, name);
     }
 
-    /* 매개변수가 null 값인지 확인 */
+    /**
+     * Argument Check if Null
+     *
+     * @param obj  argument
+     * @param name by log
+     */
     private void ensureNotNull(Object obj, String name) {
         if (obj == null) {
             throw new IllegalArgumentException(name + " is null");

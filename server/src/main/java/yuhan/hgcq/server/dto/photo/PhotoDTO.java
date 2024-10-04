@@ -13,6 +13,7 @@ public class PhotoDTO implements Serializable {
     private Long albumId;
     private String name;
     private String path;
+    private String region;
     private String created;
     private Boolean isLiked;
 }
