@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -47,7 +48,8 @@ public class MyPage extends AppCompatActivity {
 
     ImageView profile;
     TextView name, email;
-    ImageButton profileAdd, retouch;
+    ImageButton profileAdd;
+    Button retouch;
     BottomNavigationView navi;
 
     MemberController mc;
