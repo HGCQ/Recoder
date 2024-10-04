@@ -27,11 +27,11 @@ public class LikedController {
     private final LikedService ls;
 
     /**
-     * 좋아요 추가
+     * Create like
      *
-     * @param likedDTO 좋아요 DTO
-     * @param request  요청
-     * @return 성공 시 201 상태 코드, 실패 시 404 상태 코드, 세션 없을 시 401 상태 코드
+     * @param likedDTO like dto
+     * @param request  request
+     * @return status code
      */
     @PostMapping("/add")
     public ResponseEntity<?> createLiked(@RequestBody LikedDTO likedDTO, HttpServletRequest request) {
@@ -42,27 +42,27 @@ public class LikedController {
 
             if (loginMember != null) {
                 try {
-                    Member findMember = ms.search(loginMember.getMemberId());
+                    Member findMember = ms.searchOne(loginMember.getMemberId());
 
                     if (findMember != null) {
                         try {
-                            Photo fp = ps.search(likedDTO.getPhotoId());
+                            Photo fp = ps.searchOne(likedDTO.getPhotoId());
 
                             if (fp != null) {
                                 Liked newLiked = new Liked(findMember, fp);
                                 try {
-                                    ls.add(newLiked);
+                                    ls.addLike(newLiked);
                                     return ResponseEntity.status(HttpStatus.CREATED).body("Add Liked Success");
                                 } catch (IllegalArgumentException e) {
-                                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Add Liked Fail");
+                                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
                                 }
                             }
                         } catch (IllegalArgumentException e) {
-                            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found Photo Fail");
+                            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
                         }
                     }
                 } catch (IllegalArgumentException e) {
-                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found Member Fail");
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
                 }
             }
         }
@@ -71,11 +71,11 @@ public class LikedController {
     }
 
     /**
-     * 좋아요 삭제
+     * Delete like
      *
-     * @param likedDTO 좋아요 DTO
-     * @param request  요청
-     * @return 성공 시 200 상태 코드, 실패 시 404 상태 코드, 세션 없을 시 401 상태 코드
+     * @param likedDTO like dto
+     * @param request  request
+     * @return status code
      */
     @PostMapping("/delete")
     public ResponseEntity<?> deleteLiked(@RequestBody LikedDTO likedDTO, HttpServletRequest request) {
@@ -86,34 +86,34 @@ public class LikedController {
 
             if (loginMember != null) {
                 try {
-                    Member findMember = ms.search(loginMember.getMemberId());
+                    Member findMember = ms.searchOne(loginMember.getMemberId());
 
                     if (findMember != null) {
                         try {
-                            Photo fp = ps.search(likedDTO.getPhotoId());
+                            Photo fp = ps.searchOne(likedDTO.getPhotoId());
 
                             if (fp != null) {
                                 try {
-                                    Liked fl = ls.search(findMember, fp);
+                                    Liked fl = ls.searchOne(findMember, fp);
 
                                     if (fl != null) {
                                         try {
-                                            ls.remove(fl);
+                                            ls.removeLike(fl);
                                             return ResponseEntity.status(HttpStatus.OK).body("Delete Liked Success");
                                         } catch (IllegalArgumentException e) {
-                                            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Delete Liked Fail");
+                                            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
                                         }
                                     }
                                 } catch (IllegalArgumentException e) {
-                                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found Liked Fail");
+                                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
                                 }
                             }
                         } catch (IllegalArgumentException e) {
-                            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found Photo Fail");
+                            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
                         }
                     }
                 } catch (IllegalArgumentException e) {
-                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found Member Fail");
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
                 }
             }
         }
@@ -122,10 +122,10 @@ public class LikedController {
     }
 
     /**
-     * 좋아요한 사진 리스트
+     * Find likeList
      *
-     * @param request 요청
-     * @return 성공 시 200 상태 코드와 사진 리스트, 실패 시 404 상태 코드, 세션 없을 시 401 상태 코드
+     * @param request request
+     * @return status code, likeList
      */
     @GetMapping("/list")
     public ResponseEntity<?> listLiked(HttpServletRequest request) {
@@ -136,7 +136,7 @@ public class LikedController {
 
             if (loginMember != null) {
                 try {
-                    Member findMember = ms.search(loginMember.getMemberId());
+                    Member findMember = ms.searchOne(loginMember.getMemberId());
 
                     if (findMember != null) {
                         try {
@@ -151,11 +151,11 @@ public class LikedController {
 
                             return ResponseEntity.status(HttpStatus.OK).body(photoDTOList);
                         } catch (IllegalArgumentException e) {
-                            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found LikedList Fail");
+                            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
                         }
                     }
                 } catch (IllegalArgumentException e) {
-                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found Member Fail");
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
                 }
             }
         }
@@ -163,12 +163,6 @@ public class LikedController {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Not Login");
     }
 
-    /**
-     * Photo -> PhotoDTO
-     *
-     * @param photo 사진
-     * @return PhotoDTO
-     */
     private PhotoDTO mapping(Photo photo) {
         PhotoDTO dto = new PhotoDTO();
         dto.setPhotoId(photo.getId());

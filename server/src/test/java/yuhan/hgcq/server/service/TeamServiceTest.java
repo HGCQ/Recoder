@@ -40,97 +40,97 @@ class TeamServiceTest {
         m1Id = ms.join(m1);
         m2Id = ms.join(m2);
 
-        Member fm1 = ms.search(m1Id);
-        Member fm2 = ms.search(m2Id);
+        Member fm1 = ms.searchOne(m1Id);
+        Member fm2 = ms.searchOne(m2Id);
     }
 
     @Test
     @DisplayName("그룹 생성")
-    void create() {
-        Member findMember = ms.search(m1Id);
+    void createTeam() {
+        Member findMember = ms.searchOne(m1Id);
 
         Team t1 = new Team(findMember, "t1");
 
-        Long t1Id = ts.create(t1);
-        Team findTeam = ts.search(t1Id);
+        Long t1Id = ts.createTeam(t1);
+        Team findTeam = ts.searchOne(t1Id);
 
         assertThat(findTeam).isEqualTo(t1);
     }
 
     @Test
     @DisplayName("그룹 수정")
-    void update() {
-        Member findMember = ms.search(m1Id);
+    void updateTeam() {
+        Member findMember = ms.searchOne(m1Id);
 
         Team t1 = new Team(findMember, "t1");
 
-        Long t1Id = ts.create(t1);
-        Team findTeam = ts.search(t1Id);
+        Long t1Id = ts.createTeam(t1);
+        Team findTeam = ts.searchOne(t1Id);
 
         findTeam.changeName("newT1");
 
         try {
-            ts.update(findMember, findTeam);
+            ts.updateTeam(findMember, findTeam);
         } catch (AccessException e) {
             fail();
         }
 
-        Team updateTeam = ts.search(t1Id);
+        Team updateTeam = ts.searchOne(t1Id);
         assertThat(updateTeam.getName()).isEqualTo("newT1");
     }
 
     @Test
     @DisplayName("관리자만 그룹 수정이 가능함")
-    void updateByAdmin() {
-        Member findMember = ms.search(m1Id);
-        Member notAdmin = ms.search(m2Id);
+    void updateTeamByAdmin() {
+        Member findMember = ms.searchOne(m1Id);
+        Member notAdmin = ms.searchOne(m2Id);
 
         Team t1 = new Team(findMember, "t1");
 
-        Long t1Id = ts.create(t1);
-        Team findTeam = ts.search(t1Id);
+        Long t1Id = ts.createTeam(t1);
+        Team findTeam = ts.searchOne(t1Id);
 
         findTeam.changeName("newT1");
 
-        assertThrows(AccessException.class, () -> ts.update(notAdmin, findTeam));
+        assertThrows(AccessException.class, () -> ts.updateTeam(notAdmin, findTeam));
     }
 
     @Test
     @DisplayName("그룹 삭제")
-    void delete() {
-        Member findMember = ms.search(m1Id);
+    void deleteTeam() {
+        Member findMember = ms.searchOne(m1Id);
 
         Team t1 = new Team(findMember, "t1");
 
-        Long t1Id = ts.create(t1);
-        Team findTeam = ts.search(t1Id);
+        Long t1Id = ts.createTeam(t1);
+        Team findTeam = ts.searchOne(t1Id);
 
-        ts.delete(findMember, findTeam);
+        ts.deleteTeam(findMember, findTeam);
 
-        assertThrows(IllegalArgumentException.class, () -> ts.search(t1Id));
+        assertThrows(IllegalArgumentException.class, () -> ts.searchOne(t1Id));
     }
 
     @Test
     @DisplayName("그룹 소유자만 그룹을 삭제할 수 있다")
-    void deleteByAdmin() {
-        Member m1 = ms.search(m1Id);
-        Member m2 = ms.search(m2Id);
+    void deleteTeamByAdmin() {
+        Member m1 = ms.searchOne(m1Id);
+        Member m2 = ms.searchOne(m2Id);
 
         Team t1 = new Team(m1, "t1");
-        Long t1Id = ts.create(t1);
+        Long t1Id = ts.createTeam(t1);
 
         TeamMember tm1 = new TeamMember(t1, m2);
 
         try {
-            tms.invite(m1, tm1);
+            tms.inviteMember(m1, tm1);
         } catch (AccessException e) {
             fail();
         }
 
-        Team findTeam = ts.search(t1Id);
+        Team findTeam = ts.searchOne(t1Id);
 
-        ts.delete(m2, findTeam);
-        findTeam = ts.search(t1Id);
+        ts.deleteTeam(m2, findTeam);
+        findTeam = ts.searchOne(t1Id);
         List<Team> teamList = tms.searchTeamList(m2);
 
         assertThat(findTeam).isEqualTo(t1);

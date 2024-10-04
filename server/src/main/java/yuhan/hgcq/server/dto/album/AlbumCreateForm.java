@@ -11,6 +11,4 @@ import java.io.Serializable;
 public class AlbumCreateForm implements Serializable {
     private Long teamId;
     private String name;
-    private String startTime;
-    private String endTime;
 }

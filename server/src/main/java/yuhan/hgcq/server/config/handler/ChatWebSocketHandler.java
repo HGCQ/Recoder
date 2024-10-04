@@ -58,8 +58,8 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
             return;
         }
 
-        Album fa = as.search(albumId);
-        Member fm = ms.search(chatDTO.getWriterId());
+        Album fa = as.searchOne(albumId);
+        Member fm = ms.searchOne(chatDTO.getWriterId());
         Chat chat = new Chat(fm, chatDTO.getMessage(), fa);
 
         cs.create(chat);

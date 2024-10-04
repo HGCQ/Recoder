@@ -19,7 +19,6 @@ import yuhan.hgcq.server.service.AlbumService;
 import yuhan.hgcq.server.service.MemberService;
 import yuhan.hgcq.server.service.TeamService;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,11 +32,11 @@ public class AlbumController {
     private final AlbumService as;
 
     /**
-     * 앨범 생성
+     * Create album
      *
-     * @param albumCreateForm 앨범 생성 폼
-     * @param request         요청
-     * @return 성공시 201 상태 코드, 실패 시 404 상태 코드, 권한 없을 시 401 상태 코드, 세션 없을 시 401 상태 코드
+     * @param albumCreateForm create album form
+     * @param request         request
+     * @return status code
      */
     @PostMapping("/create")
     public ResponseEntity<?> createAlbum(@RequestBody AlbumCreateForm albumCreateForm, HttpServletRequest request) {
@@ -48,30 +47,30 @@ public class AlbumController {
 
             if (loginMember != null) {
                 try {
-                    Member findMember = ms.search(loginMember.getMemberId());
+                    Member findMember = ms.searchOne(loginMember.getMemberId());
 
                     if (findMember != null) {
                         try {
-                            Team ft = ts.search(albumCreateForm.getTeamId());
+                            Team ft = ts.searchOne(albumCreateForm.getTeamId());
 
                             if (ft != null) {
-                                Album newAlbum = new Album(ft, LocalDate.parse(albumCreateForm.getStartTime()), LocalDate.parse(albumCreateForm.getEndTime()), albumCreateForm.getName());
+                                Album newAlbum = new Album(ft, albumCreateForm.getName());
 
                                 try {
                                     as.create(findMember, newAlbum);
                                     return ResponseEntity.status(HttpStatus.CREATED).body("Create Album Success");
                                 } catch (AccessException e) {
-                                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Not Admin In Group");
+                                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
                                 } catch (IllegalArgumentException e) {
-                                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Create Album Fail");
+                                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
                                 }
                             }
                         } catch (IllegalArgumentException e) {
-                            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found Team Fail");
+                            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
                         }
                     }
                 } catch (IllegalArgumentException e) {
-                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found Member Fail");
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
                 }
             }
         }
@@ -80,11 +79,11 @@ public class AlbumController {
     }
 
     /**
-     * 앨범 삭제
+     * Delete album
      *
-     * @param albumDTO 앨범 DTO
-     * @param request  요청
-     * @return 성공시 200 상태 코드, 실패 시 404 상태 코드, 권한 없을 시 401 상태 코드, 세션 없을 시 401 상태 코드
+     * @param albumDTO album dto
+     * @param request  request
+     * @return status code
      */
     @PostMapping("/delete")
     public ResponseEntity<?> deleteAlbum(@RequestBody AlbumDTO albumDTO, HttpServletRequest request) {
@@ -95,28 +94,28 @@ public class AlbumController {
 
             if (loginMember != null) {
                 try {
-                    Member findMember = ms.search(loginMember.getMemberId());
+                    Member findMember = ms.searchOne(loginMember.getMemberId());
 
                     if (findMember != null) {
                         try {
-                            Album fa = as.search(albumDTO.getAlbumId());
+                            Album fa = as.searchOne(albumDTO.getAlbumId());
 
                             if (fa != null) {
                                 try {
-                                    as.delete(findMember, fa);
+                                    as.deleteAlbum(findMember, fa);
                                     return ResponseEntity.status(HttpStatus.OK).body("Delete Album Success");
                                 } catch (AccessException e) {
-                                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Not Admin In Group");
+                                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
                                 } catch (IllegalArgumentException e) {
-                                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Delete Album Fail");
+                                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
                                 }
                             }
                         } catch (IllegalArgumentException e) {
-                            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found Album Fail");
+                            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
                         }
                     }
                 } catch (IllegalArgumentException e) {
-                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found Member Fail");
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
                 }
             }
         }
@@ -125,11 +124,11 @@ public class AlbumController {
     }
 
     /**
-     * 앨범 삭제 취소
+     * Delete album cancel
      *
-     * @param form    앨범 id 리스트
-     * @param request 요청
-     * @return 성공시 200 상태 코드, 실패 시 404 상태 코드, 권한 없을 시 401 상태 코드, 세션 없을 시 401 상태 코드
+     * @param form    delete album cancel form
+     * @param request request
+     * @return status code
      */
     @PostMapping("/delete/cancel")
     public ResponseEntity<?> deleteCancelAlbum(@RequestBody DeleteCancelAlbumForm form, HttpServletRequest request) {
@@ -140,31 +139,31 @@ public class AlbumController {
 
             if (loginMember != null) {
                 try {
-                    Member findMember = ms.search(loginMember.getMemberId());
+                    Member findMember = ms.searchOne(loginMember.getMemberId());
 
                     if (findMember != null) {
                         try {
                             List<Long> albumIds = form.getAlbumIds();
                             for (Long albumId : albumIds) {
-                                Album fa = as.search(albumId);
+                                Album fa = as.searchOne(albumId);
 
                                 if (fa != null) {
                                     try {
-                                        as.cancelDelete(findMember, fa);
+                                        as.deleteAlbumCancel(findMember, fa);
                                     } catch (AccessException e) {
-                                        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Not Admin In Group");
+                                        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
                                     } catch (IllegalArgumentException e) {
-                                        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Delete Cancel Album Fail");
+                                        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
                                     }
                                 }
                             }
                             return ResponseEntity.status(HttpStatus.OK).body("Delete Cancel Album Success");
                         } catch (IllegalArgumentException e) {
-                            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found Album Fail");
+                            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
                         }
                     }
                 } catch (IllegalArgumentException e) {
-                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found Member Fail");
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
                 }
             }
         }
@@ -173,11 +172,11 @@ public class AlbumController {
     }
 
     /**
-     * 앨범 수정
+     * Update album information
      *
-     * @param albumUpdateForm 앨범 수정 폼
-     * @param request         요청
-     * @return 성공시 200 상태 코드, 실패 시 404 상태 코드, 권한 없을 시 401 상태 코드, 세션 없을 시 401 상태 코드
+     * @param albumUpdateForm album update form
+     * @param request         request
+     * @return status code
      */
     @PostMapping("/update")
     public ResponseEntity<?> updateAlbum(@RequestBody AlbumUpdateForm albumUpdateForm, HttpServletRequest request) {
@@ -188,44 +187,34 @@ public class AlbumController {
 
             if (loginMember != null) {
                 try {
-                    Member findMember = ms.search(loginMember.getMemberId());
+                    Member findMember = ms.searchOne(loginMember.getMemberId());
 
                     if (findMember != null) {
                         try {
-                            Album fa = as.search(albumUpdateForm.getAlbumId());
+                            Album fa = as.searchOne(albumUpdateForm.getAlbumId());
 
                             if (fa != null) {
                                 String updateName = albumUpdateForm.getName();
-                                LocalDate updateStartDate = LocalDate.parse(albumUpdateForm.getStartDate());
-                                LocalDate updateEndDate = LocalDate.parse(albumUpdateForm.getEndDate());
 
                                 if (updateName != null) {
                                     fa.changeName(updateName);
-                                }
-
-                                if (updateStartDate != null) {
-                                    fa.changeStartDate(updateStartDate);
-                                }
-
-                                if (updateEndDate != null) {
-                                    fa.changeEndDate(updateEndDate);
                                 }
 
                                 try {
                                     as.modify(findMember, fa);
                                     return ResponseEntity.status(HttpStatus.OK).body("Update Album Success");
                                 } catch (AccessException e) {
-                                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Not Admin");
+                                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
                                 } catch (IllegalArgumentException e) {
-                                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Update Album Fail");
+                                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
                                 }
                             }
                         } catch (IllegalArgumentException e) {
-                            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found Album Fail");
+                            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
                         }
                     }
                 } catch (IllegalArgumentException e) {
-                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found Member Fail");
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
                 }
             }
         }
@@ -234,11 +223,11 @@ public class AlbumController {
     }
 
     /**
-     * 앨범 리스트
+     * Find albumList
      *
-     * @param teamId  그룹 id
-     * @param request 요청
-     * @return 성공시 200 상태 코드와 앨범 리스트, 실패 시 404 상태 코드, 세션 없을 시 401 상태 코드
+     * @param teamId  teamId
+     * @param request request
+     * @return status code, albumList
      */
     @GetMapping("/list/teamId")
     public ResponseEntity<?> listAlbums(@RequestParam("teamId") Long teamId, HttpServletRequest request) {
@@ -249,11 +238,11 @@ public class AlbumController {
 
             if (loginMember != null) {
                 try {
-                    Member findMember = ms.search(loginMember.getMemberId());
+                    Member findMember = ms.searchOne(loginMember.getMemberId());
 
                     if (findMember != null) {
                         try {
-                            Team ft = ts.search(teamId);
+                            Team ft = ts.searchOne(teamId);
 
                             if (ft != null) {
                                 try {
@@ -268,15 +257,15 @@ public class AlbumController {
 
                                     return ResponseEntity.status(HttpStatus.OK).body(albumDTOList);
                                 } catch (IllegalArgumentException e) {
-                                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found AlbumList Fail");
+                                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
                                 }
                             }
                         } catch (IllegalArgumentException e) {
-                            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found Team Fail");
+                            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
                         }
                     }
                 } catch (IllegalArgumentException e) {
-                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found Member Fail");
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
                 }
             }
         }
@@ -285,12 +274,12 @@ public class AlbumController {
     }
 
     /**
-     * 앨범 리스트 이름으로 조회
+     * Find albumList by name
      *
-     * @param teamId  그룹 id
-     * @param name    이름
-     * @param request 요청
-     * @return 성공시 200 상태 코드와 앨범 리스트, 실패 시 404 상태 코드, 세션 없을 시 401 상태 코드
+     * @param teamId  teamId
+     * @param name    name
+     * @param request request
+     * @return status code, albumList
      */
     @GetMapping("/list/teamId/name")
     public ResponseEntity<?> listAlbumsByName(@RequestParam("teamId") Long teamId, @RequestParam("name") String name, HttpServletRequest request) {
@@ -301,11 +290,11 @@ public class AlbumController {
 
             if (loginMember != null) {
                 try {
-                    Member findMember = ms.search(loginMember.getMemberId());
+                    Member findMember = ms.searchOne(loginMember.getMemberId());
 
                     if (findMember != null) {
                         try {
-                            Team ft = ts.search(teamId);
+                            Team ft = ts.searchOne(teamId);
 
                             if (ft != null) {
                                 try {
@@ -320,15 +309,15 @@ public class AlbumController {
 
                                     return ResponseEntity.status(HttpStatus.OK).body(albumDTOList);
                                 } catch (IllegalArgumentException e) {
-                                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found AlbumList Fail");
+                                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
                                 }
                             }
                         } catch (IllegalArgumentException e) {
-                            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found Team Fail");
+                            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
                         }
                     }
                 } catch (IllegalArgumentException e) {
-                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found Member Fail");
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
                 }
             }
         }
@@ -337,11 +326,11 @@ public class AlbumController {
     }
 
     /**
-     * 휴지통 리스트
+     * Find albumTrashList
      *
-     * @param teamId  그룹 id
-     * @param request 요청
-     * @return 성공시 200 상태 코드와 앨범 리스트, 실패 시 404 상태 코드, 세션 없을 시 401 상태 코드
+     * @param teamId  teamId
+     * @param request request
+     * @return status code, albumTrashList
      */
     @GetMapping("/list/teamId/trash")
     public ResponseEntity<?> listAlbumsTrash(@RequestParam("teamId") Long teamId, HttpServletRequest request) {
@@ -352,19 +341,19 @@ public class AlbumController {
 
             if (loginMember != null) {
                 try {
-                    Member findMember = ms.search(loginMember.getMemberId());
+                    Member findMember = ms.searchOne(loginMember.getMemberId());
 
                     if (findMember != null) {
                         try {
-                            Team ft = ts.search(teamId);
+                            Team ft = ts.searchOne(teamId);
 
                             if (ft != null) {
                                 try {
-                                    List<Album> trashList = as.searchTrash(ft);
+                                    List<Album> trashList = as.searchAlbumTrashList(ft);
 
                                     as.trash(trashList);
 
-                                    List<Album> trashListAfterClear = as.searchTrash(ft);
+                                    List<Album> trashListAfterClear = as.searchAlbumTrashList(ft);
                                     List<AlbumDTO> albumDTOList = new ArrayList<>();
 
                                     for (Album album : trashListAfterClear) {
@@ -374,15 +363,15 @@ public class AlbumController {
 
                                     return ResponseEntity.status(HttpStatus.OK).body(albumDTOList);
                                 } catch (IllegalArgumentException e) {
-                                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found AlbumTrashList Fail");
+                                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
                                 }
                             }
                         } catch (IllegalArgumentException e) {
-                            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found Team Fail");
+                            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
                         }
                     }
                 } catch (IllegalArgumentException e) {
-                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found Member Fail");
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
                 }
             }
         }
@@ -390,19 +379,10 @@ public class AlbumController {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Not Login");
     }
 
-
-    /**
-     * Album -> AlbumDTO
-     *
-     * @param album 앨범
-     * @return AlbumDTO
-     */
     private AlbumDTO mapping(Album album) {
         AlbumDTO dto = new AlbumDTO();
         dto.setAlbumId(album.getId());
         dto.setName(album.getName());
-        dto.setStartDate(album.getStartDate().toString());
-        dto.setEndDate(album.getEndDate().toString());
         dto.setTeamId(album.getTeam().getId());
         return dto;
     }

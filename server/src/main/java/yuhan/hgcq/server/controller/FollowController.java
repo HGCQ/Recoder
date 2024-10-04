@@ -31,14 +31,14 @@ public class FollowController {
     private final TeamMemberService tms;
 
     /**
-     * 팔로우 추가
+     * Add Following
      *
-     * @param dto     팔로우
-     * @param request 요청
-     * @return 성공 시 201 상태 코드, 실패 시 404 상태 코드, 세션 없을 시 401 상태 코드
+     * @param dto     follow dto
+     * @param request request
+     * @return status code
      */
     @PostMapping("/add")
-    public ResponseEntity<?> addFollow(@RequestBody FollowDTO dto, HttpServletRequest request) {
+    public ResponseEntity<?> addFollowing(@RequestBody FollowDTO dto, HttpServletRequest request) {
         HttpSession session = request.getSession(false);
 
         if (session != null) {
@@ -46,29 +46,29 @@ public class FollowController {
 
             if (loginMember != null) {
                 try {
-                    Member findMember = ms.search(loginMember.getMemberId());
+                    Member findMember = ms.searchOne(loginMember.getMemberId());
 
                     if (findMember != null) {
                         Long followId = dto.getFollowId();
 
                         try {
-                            Member follow = ms.search(followId);
+                            Member follow = ms.searchOne(followId);
 
                             if (follow != null) {
                                 Follow following = new Follow(findMember, follow);
                                 try {
-                                    fs.add(following);
+                                    fs.addFollow(following);
                                     return ResponseEntity.status(HttpStatus.CREATED).body("Add Following Success");
                                 } catch (IllegalArgumentException e) {
-                                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Add Following Fail");
+                                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
                                 }
                             }
                         } catch (IllegalArgumentException e) {
-                            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found Follow Member Fail");
+                            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
                         }
                     }
                 } catch (IllegalArgumentException e) {
-                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found Member Fail");
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
                 }
             }
         }
@@ -77,14 +77,14 @@ public class FollowController {
     }
 
     /**
-     * 팔로우 삭제
+     * Delete following
      *
-     * @param dto     팔로우
-     * @param request 요청
-     * @return 성공 시 200 상태 코드, 실패 시 404 상태 코드, 세션 없을 시 401 상태 코드
+     * @param dto     follow dto
+     * @param request request
+     * @return status code
      */
     @PostMapping("/delete")
-    public ResponseEntity<?> deleteFollow(@RequestBody FollowDTO dto, HttpServletRequest request) {
+    public ResponseEntity<?> deleteFollowing(@RequestBody FollowDTO dto, HttpServletRequest request) {
         HttpSession session = request.getSession(false);
 
         if (session != null) {
@@ -92,32 +92,32 @@ public class FollowController {
 
             if (loginMember != null) {
                 try {
-                    Member findMember = ms.search(loginMember.getMemberId());
+                    Member findMember = ms.searchOne(loginMember.getMemberId());
 
                     if (findMember != null) {
                         Long followId = dto.getFollowId();
 
                         try {
-                            Member follow = ms.search(followId);
+                            Member follow = ms.searchOne(followId);
 
                             if (follow != null) {
-                                Follow ff = fs.search(findMember, follow);
+                                Follow ff = fs.searchOne(findMember, follow);
 
                                 if (ff != null) {
                                     try {
-                                        fs.remove(ff);
+                                        fs.removeFollow(ff);
                                         return ResponseEntity.status(HttpStatus.OK).body("Delete Following Success");
                                     } catch (IllegalArgumentException e) {
-                                        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Delete Following Fail");
+                                        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
                                     }
                                 }
                             }
                         } catch (IllegalArgumentException e) {
-                            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found Follow Member Fail");
+                            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
                         }
                     }
                 } catch (IllegalArgumentException e) {
-                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found Member Fail");
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
                 }
             }
         }
@@ -126,10 +126,10 @@ public class FollowController {
     }
 
     /**
-     * 팔로잉 리스트
+     * Find followingList
      *
-     * @param request 요청
-     * @return 성공 시 200 상태 코드와 팔로잉 리스트, 실패 시 404 상태 코드, 세션 없을 시 401 상태 코드
+     * @param request request
+     * @return status code, followingList
      */
     @GetMapping("/followinglist")
     public ResponseEntity<?> followingList(HttpServletRequest request) {
@@ -140,11 +140,11 @@ public class FollowController {
 
             if (loginMember != null) {
                 try {
-                    Member findMember = ms.search(loginMember.getMemberId());
+                    Member findMember = ms.searchOne(loginMember.getMemberId());
 
                     if (findMember != null) {
                         try {
-                            List<Member> followingList = fs.searchFollowing(findMember);
+                            List<Member> followingList = fs.searchFollowingList(findMember);
                             List<MemberDTO> dtoList = new ArrayList<>();
 
                             for (Member following : followingList) {
@@ -154,11 +154,11 @@ public class FollowController {
 
                             return ResponseEntity.status(HttpStatus.OK).body(dtoList);
                         } catch (IllegalArgumentException e) {
-                            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found followingList Fail");
+                            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
                         }
                     }
                 } catch (IllegalArgumentException e) {
-                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found Member Fail");
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
                 }
             }
         }
@@ -167,11 +167,11 @@ public class FollowController {
     }
 
     /**
-     * 팔로잉 리스트 이름으로 검색
+     * Find followingList by name
      *
-     * @param name    이름
-     * @param request 요청
-     * @return 성공 시 200 상태 코드와 팔로잉 리스트, 실패 시 404 상태 코드, 세션 없을 시 401 상태 코드
+     * @param name    following name
+     * @param request request
+     * @return status code, followingList
      */
     @GetMapping("/followinglist/name")
     public ResponseEntity<?> searchFollowingListByName(@RequestParam("name") String name, HttpServletRequest request) {
@@ -182,11 +182,11 @@ public class FollowController {
 
             if (loginMember != null) {
                 try {
-                    Member findMember = ms.search(loginMember.getMemberId());
+                    Member findMember = ms.searchOne(loginMember.getMemberId());
 
                     if (findMember != null) {
                         try {
-                            List<Member> followingList = fs.searchFollowingByName(findMember, name);
+                            List<Member> followingList = fs.searchFollowingListByName(findMember, name);
                             List<MemberDTO> dtoList = new ArrayList<>();
 
                             for (Member following : followingList) {
@@ -196,11 +196,11 @@ public class FollowController {
 
                             return ResponseEntity.status(HttpStatus.OK).body(dtoList);
                         } catch (IllegalArgumentException e) {
-                            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found followingList By Name Fail");
+                            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
                         }
                     }
                 } catch (IllegalArgumentException e) {
-                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found Member Fail");
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
                 }
             }
         }
@@ -209,10 +209,11 @@ public class FollowController {
     }
 
     /**
-     * 초대할 팔로잉 리스트
+     * Find can invite followingList
      *
-     * @param request 요청
-     * @return 성공 시 200 상태 코드와 팔로잉 리스트, 실패 시 404 상태 코드, 세션 없을 시 401 상태 코드
+     * @param teamId  teamId
+     * @param request request
+     * @return status code, followingList
      */
     @GetMapping("/followinglist/teamId")
     public ResponseEntity<?> inviteFollowingList(@RequestParam("teamId") Long teamId, HttpServletRequest request) {
@@ -223,13 +224,13 @@ public class FollowController {
 
             if (loginMember != null) {
                 try {
-                    Member findMember = ms.search(loginMember.getMemberId());
+                    Member findMember = ms.searchOne(loginMember.getMemberId());
 
                     if (findMember != null) {
                         try {
-                            List<Member> followingList = fs.searchFollowing(findMember);
+                            List<Member> followingList = fs.searchFollowingList(findMember);
                             try {
-                                Team ft = ts.search(teamId);
+                                Team ft = ts.searchOne(teamId);
                                 List<Member> memberList = tms.searchMemberList(ft);
                                 List<MemberDTO> dtoList = new ArrayList<>();
 
@@ -243,14 +244,14 @@ public class FollowController {
 
                                 return ResponseEntity.status(HttpStatus.OK).body(dtoList);
                             } catch (IllegalArgumentException e) {
-                                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found Team Fail");
+                                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
                             }
                         } catch (IllegalArgumentException e) {
-                            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found followingList Fail");
+                            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
                         }
                     }
                 } catch (IllegalArgumentException e) {
-                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found Member Fail");
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
                 }
             }
         }
@@ -259,10 +260,10 @@ public class FollowController {
     }
 
     /**
-     * 팔로워 리스트
+     * Find followerList
      *
-     * @param request 요청
-     * @return 성공 시 200 상태 코드와 팔로워 리스트, 실패 시 404 상태 코드, 세션 없을 시 401 상태 코드
+     * @param request request
+     * @return status code, followerList
      */
     @GetMapping("/followerlist")
     public ResponseEntity<?> followerList(HttpServletRequest request) {
@@ -273,12 +274,12 @@ public class FollowController {
 
             if (loginMember != null) {
                 try {
-                    Member findMember = ms.search(loginMember.getMemberId());
+                    Member findMember = ms.searchOne(loginMember.getMemberId());
 
                     if (findMember != null) {
                         try {
-                            List<Member> followerList = fs.searchFollower(findMember);
-                            List<Member> followingList = fs.searchFollowing(findMember);
+                            List<Member> followerList = fs.searchFollowerList(findMember);
+                            List<Member> followingList = fs.searchFollowingList(findMember);
                             List<MemberDTO> followerDtoList = new ArrayList<>();
                             List<MemberDTO> followingDtoList = new ArrayList<>();
 
@@ -299,11 +300,11 @@ public class FollowController {
 
                             return ResponseEntity.status(HttpStatus.OK).body(follower);
                         } catch (IllegalArgumentException e) {
-                            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found followerList Fail");
+                            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
                         }
                     }
                 } catch (IllegalArgumentException e) {
-                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found Member Fail");
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
                 }
             }
         }
@@ -312,11 +313,11 @@ public class FollowController {
     }
 
     /**
-     * 팔로워 리스트 이름으로 검색
+     * Find followerList by name
      *
-     * @param name    이름
-     * @param request 요청
-     * @return 성공 시 200 상태 코드와 팔로워 리스트, 실패 시 404 상태 코드, 세션 없을 시 401 상태 코드
+     * @param name    follower name
+     * @param request request
+     * @return status code, followerList
      */
     @GetMapping("/followerlist/name")
     public ResponseEntity<?> searchFollowerListByName(@RequestParam("name") String name, HttpServletRequest request) {
@@ -327,12 +328,12 @@ public class FollowController {
 
             if (loginMember != null) {
                 try {
-                    Member findMember = ms.search(loginMember.getMemberId());
+                    Member findMember = ms.searchOne(loginMember.getMemberId());
 
                     if (findMember != null) {
                         try {
-                            List<Member> followerList = fs.searchFollowerByName(findMember, name);
-                            List<Member> followingList = fs.searchFollowing(findMember);
+                            List<Member> followerList = fs.searchFollowerListByName(findMember, name);
+                            List<Member> followingList = fs.searchFollowingList(findMember);
                             List<MemberDTO> followerDtoList = new ArrayList<>();
                             List<MemberDTO> followingDtoList = new ArrayList<>();
 
@@ -353,11 +354,11 @@ public class FollowController {
 
                             return ResponseEntity.status(HttpStatus.OK).body(follower);
                         } catch (IllegalArgumentException e) {
-                            return ResponseEntity.status(HttpStatus.OK).body("Found followerList By Name Fail");
+                            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
                         }
                     }
                 } catch (IllegalArgumentException e) {
-                    return ResponseEntity.status(HttpStatus.OK).body("Found Member Fail");
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
                 }
             }
         }
@@ -365,12 +366,6 @@ public class FollowController {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Not Login");
     }
 
-    /**
-     * Member -> MemberDTO
-     *
-     * @param member 회원
-     * @return MemberDTO
-     */
     private MemberDTO mapping(Member member) {
         MemberDTO dto = new MemberDTO();
         dto.setMemberId(member.getId());

@@ -15,12 +15,6 @@ public class MemberRepository {
     @PersistenceContext
     private final EntityManager em;
 
-    /**
-     * 회원 저장
-     *
-     * @param member 회원
-     * @return 회원 id
-     */
     public Long save(Member member) {
         if (member.getId() == null) {
             em.persist(member);
@@ -30,32 +24,15 @@ public class MemberRepository {
         return member.getId();
     }
 
-    /**
-     * 회원 삭제
-     *
-     * @param memberId 회원 id
-     */
     public void delete(Long memberId) {
         Member findMember = findOne(memberId);
         em.remove(findMember);
     }
 
-    /**
-     * 회원 조회
-     *
-     * @param id 회원 id
-     * @return 회원
-     */
     public Member findOne(Long id) {
         return em.find(Member.class, id);
     }
 
-    /**
-     * 회원 조회
-     *
-     * @param email 이메일
-     * @return 회원
-     */
     public Member findOne(String email) {
         try {
             return em.createQuery("select m from Member m where m.email = :email", Member.class)
@@ -66,43 +43,22 @@ public class MemberRepository {
         }
     }
 
-    /**
-     * 회원 리스트 조회
-     *
-     * @param name 이름
-     * @return 회원 리스트
-     */
     public List<Member> findByName(String name) {
         return em.createQuery("select m from Member m where m.name like :name", Member.class)
                 .setParameter("name", "%" + name + "%")
                 .getResultList();
     }
 
-    /**
-     * 회원 리스트 조회
-     *
-     * @return 회원 리스트
-     */
     public List<Member> findAll() {
         return em.createQuery("select m from Member m", Member.class)
                 .getResultList();
     }
 
-    /**
-     * 이메일 리스트 조회
-     *
-     * @return 이메일 리스트
-     */
     public List<String> findAllEmails() {
         return em.createQuery("select m.email from Member m order by m.email", String.class)
                 .getResultList();
     }
 
-    /**
-     * 이름 리스트 조회
-     *
-     * @return 이름 리스트
-     */
     public List<String> findAllNames() {
         return em.createQuery("select m.name from Member m order by m.name", String.class)
                 .getResultList();

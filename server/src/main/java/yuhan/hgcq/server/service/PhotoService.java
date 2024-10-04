@@ -20,18 +20,9 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
-
-/**
- * 사진 기능 요구사항 분석
- * 1. 사진은 서버의 외부 디렉터리에 저장을 한다.(추후 AWS 변경 가능성 있음)
- * 2. 사진을 삭제 요청하면 휴지통으로 이동하고, 30일 후 삭제된다.
- * 3. 사진 리스트를 받아서 그룹에 있는 앨범의 날짜에 속하면 사진을 추가한다.
- * 4. 사진을 다른 앨범으로 이동할 수 있다.
- */
 
 @Service
 @Transactional(readOnly = true)
@@ -50,13 +41,14 @@ public class PhotoService {
             + "images" + File.separator;
 
     /**
-     * 사진 저장(테스트 완료)
+     * Upload photo
      *
-     * @param photo 사진
-     * @return 사진 id
+     * @param photo photo
+     * @return photoId
+     * @throws IllegalArgumentException Argument is wrong
      */
     @Transactional
-    public Long save(Photo photo) throws IllegalArgumentException {
+    public Long savePhoto(Photo photo) throws IllegalArgumentException {
         ensureNotNull(photo, "Photo");
 
         Long saveId = pr.save(photo);
@@ -65,15 +57,21 @@ public class PhotoService {
     }
 
     /**
-     * 사진 리스트 저장
+     * Upload photoList
      *
-     * @param form 사진 리스트 폼
-     * @throws IOException 예외
+     * @param form photoList
+     * @throws IOException              Upload error
+     * @throws IllegalArgumentException Argument is wrong
      */
     @Transactional
-    public void save(UploadPhotoForm form) throws IOException, IllegalArgumentException {
+    public void savePhoto(UploadPhotoForm form) throws IOException, IllegalArgumentException {
         List<MultipartFile> files = form.getFiles();
         List<String> creates = form.getCreates();
+        List<String> regions = form.getRegions();
+
+        log.info("files size : {}", files.size());
+        log.info("creates size : {}", creates.size());
+        log.info("regions size : {}", regions.size());
 
 
         ensureNotNull(files, "Files");
@@ -94,6 +92,8 @@ public class PhotoService {
 
             for (int i = 0; i < size; i++) {
                 MultipartFile file = files.get(i);
+                String region = regions.get(i);
+                String create = creates.get(i);
                 String name = file.getOriginalFilename();
 
                 if (nameList.contains(name)) {
@@ -104,24 +104,25 @@ public class PhotoService {
                 file.transferTo(path);
                 String imagePath = "/images/" + albumId + "/" + name;
 
-                Photo p = new Photo(fa, name, imagePath, LocalDateTime.parse(creates.get(i)));
+                Photo p = new Photo(fa, name, imagePath, region, LocalDateTime.parse(create));
                 pr.save(p);
 
                 log.info("Save Photos : {}", p);
             }
         } catch (IOException e) {
-            log.error("IO Error");
+            log.error("Upload Photo Error");
             throw new IOException();
         }
     }
 
     /**
-     * 사진 삭제(휴지통)(테스트 완료)
+     * Delete photo
      *
-     * @param photo 사진
+     * @param photo photo
+     * @throws IllegalArgumentException Argument is wrong
      */
     @Transactional
-    public void delete(Photo photo) throws IllegalArgumentException {
+    public void deletePhoto(Photo photo) throws IllegalArgumentException {
         ensureNotNull(photo, "Photo");
 
         photo.delete();
@@ -132,12 +133,13 @@ public class PhotoService {
     }
 
     /**
-     * 사진 삭제 취소(테스트 완료)
+     * Delete photo cancel
      *
-     * @param photo 사진
+     * @param photo photo
+     * @throws IllegalArgumentException Argument is wrong
      */
     @Transactional
-    public void deleteCancel(Photo photo) throws IllegalArgumentException {
+    public void deleteCancelPhoto(Photo photo) throws IllegalArgumentException {
         ensureNotNull(photo, "Photo");
 
         photo.cancelDelete();
@@ -147,9 +149,9 @@ public class PhotoService {
     }
 
     /**
-     * 휴지통 자동 삭제(테스트 완료)
+     * Trash empty
      *
-     * @param photos 사진 리스트
+     * @param photos photoTrashList
      */
     @Transactional
     public void trash(List<Photo> photos) {
@@ -166,42 +168,45 @@ public class PhotoService {
     }
 
     /**
-     * 사진 검색(테스트 완료)
+     * Find photo by path
      *
-     * @param id 사진 id
-     * @return 사진
+     * @param id photoId
+     * @return photo
+     * @throws IllegalArgumentException Argument is wrong
      */
-    public Photo search(Long id) throws IllegalArgumentException {
+    public Photo searchOne(Long id) throws IllegalArgumentException {
         Photo find = pr.findOne(id);
 
         if (find == null) {
-            throw new IllegalArgumentException("photo not found");
+            throw new IllegalArgumentException("Photo not found");
         }
 
         return find;
     }
 
     /**
-     * 사진 경로로 검색(테스트 완료)
+     * Find photo by path
      *
-     * @param path 경로
-     * @return 사진
+     * @param path path
+     * @return photo
+     * @throws IllegalArgumentException Argument is wrong
      */
-    public Photo search(String path) throws IllegalArgumentException {
+    public Photo searchOne(String path) throws IllegalArgumentException {
         Photo find = pr.findByPath(path);
 
         if (find == null) {
-            throw new IllegalArgumentException("photo not found");
+            throw new IllegalArgumentException("Photo not found");
         }
 
         return find;
     }
 
     /**
-     * 사진 리스트 검색(테스트 완료)
+     * Find photoList
      *
-     * @param album 앨범
-     * @return 사진 리스트
+     * @param album album
+     * @return photoList
+     * @throws IllegalArgumentException Argument is wrong
      */
     public List<Photo> searchAll(Album album) throws IllegalArgumentException {
         ensureNotNull(album, "Album");
@@ -210,22 +215,23 @@ public class PhotoService {
     }
 
     /**
-     * 휴지통 리스트 검색(테스트 완료)
+     * Find photoTrashList
      *
-     * @param album 앨범
-     * @return 사진 리스트
+     * @param album album
+     * @return photoTrashList
+     * @throws IllegalArgumentException Argument is wrong
      */
-    public List<Photo> trashList(Album album) throws IllegalArgumentException {
+    public List<Photo> searchTrashList(Album album) throws IllegalArgumentException {
         ensureNotNull(album, "Album");
 
         return pr.findByDeleted(album);
     }
 
     /**
-     * 선택된 앨범에 사진 자동으로 저장
+     * Auto save photoList
      *
-     * @param form 사진 자동 저장 폼
-     * @throws IOException 예외
+     * @param form photoList
+     * @throws IOException Upload error
      */
     @Transactional
     public void autoSave(AutoSavePhotoForm form) throws IOException {
@@ -235,18 +241,17 @@ public class PhotoService {
         List<Album> albumList = ar.findAll(ft);
         List<MultipartFile> files = form.getFiles();
         List<String> creates = form.getCreates();
+        List<String> regions = form.getRegions();
 
         int size = files.size();
 
         for (int i = 0; i < size; i++) {
-            LocalDateTime photoTime = LocalDateTime.parse(creates.get(i));
+
 
             for (Album album : albumList) {
                 List<String> nameList = pr.findNameAll(album);
-                LocalDate startDate = album.getStartDate();
-                LocalDate endDate = album.getEndDate();
 
-                if (photoTime.isAfter(startDate.atStartOfDay()) && photoTime.isBefore(endDate.atStartOfDay())) {
+                if (true) {
                     Long albumId = album.getId();
 
                     try {
@@ -266,12 +271,12 @@ public class PhotoService {
                         file.transferTo(path);
                         String imagePath = "/images/" + albumId + "/" + name;
 
-                        Photo p = new Photo(album, name, imagePath, LocalDateTime.parse(creates.get(i)));
-                        pr.save(p);
-
-                        log.info("Save Photo : {}", p);
+//                        Photo p = new Photo();
+//                        pr.save(p);
+//
+//                        log.info("AutoSave Photo : {}", p);
                     } catch (IOException e) {
-                        log.error("IO Error");
+                        log.error("AutoSave Photo Error");
                         throw new IOException();
                     }
                 }
@@ -280,10 +285,11 @@ public class PhotoService {
     }
 
     /**
-     * 앨범 이동(테스트 완료)
+     * Move photo to album
      *
-     * @param newAlbum 옮길 앨범
-     * @param photos   사진 리스트
+     * @param newAlbum new album
+     * @param photos   photoList
+     * @throws IllegalArgumentException Argument is wrong
      */
     @Transactional
     public void move(Album newAlbum, List<Photo> photos) throws IllegalArgumentException {
@@ -297,10 +303,14 @@ public class PhotoService {
         }
     }
 
-    /* 매개변수가 null 값인지 확인 */
+    /**
+     * Argument Check if Null
+     *
+     * @param obj  argument
+     * @param name by log
+     */
     private void ensureNotNull(Object obj, String name) {
         if (obj == null) {
-            log.error("{} is Null", name);
             throw new IllegalArgumentException(name + " is null");
         }
     }
