@@ -27,6 +27,7 @@
         android:fontFamily="@font/ibm_regular"
         android:textColor="@color/black"
         android:text="name"
+        android:layout_marginTop="5dp"
         android:textSize="15sp"
         android:padding="0dp"
         app:layout_constraintEnd_toEndOf="parent"

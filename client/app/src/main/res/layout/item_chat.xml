@@ -17,8 +17,8 @@
 
         <ImageView
             android:id="@+id/basicProfile"
-            android:layout_width="60dp"
-            android:layout_height="40dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:layout_marginTop="10dp"
             android:src="@drawable/profile"
             app:layout_constraintStart_toStartOf="parent"
@@ -30,7 +30,7 @@
             android:layout_height="30dp"
             android:fontFamily="@font/ibm_regular"
             android:padding="0dp"
-            android:text="name"
+            android:text="  name"
             android:textColor="@color/black"
             android:textSize="15dp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -42,7 +42,7 @@
             android:id="@+id/chatting"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="-80dp"
+            android:layout_marginStart="-75dp"
             android:layout_marginTop="27dp"
             android:background="@drawable/text"
             android:fontFamily="@font/ibm_regular"
