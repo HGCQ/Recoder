@@ -19,11 +19,10 @@ import yuhan.hgcq.client.controller.MemberController;
 import yuhan.hgcq.client.model.dto.member.MemberDTO;
 
 public class Select extends AppCompatActivity {
-
     /* View */
     ImageButton privated, share;
 
-    /* 서버와 통신 */
+    /* http 통신 */
     MemberController mc;
 
     /* 받아올 값 */
@@ -31,10 +30,11 @@ public class Select extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        getSupportActionBar().setTitle("Recoder");
         super.onCreate(savedInstanceState);
+        getSupportActionBar().setTitle("Recoder");
 
         EdgeToEdge.enable(this);
+        /* Layout */
         setContentView(R.layout.activity_select);
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
@@ -43,10 +43,9 @@ public class Select extends AppCompatActivity {
             return insets;
         });
 
-        /* 서버와 연결할 Controller 생성 */
+        /* 초기화 */
         mc = new MemberController(this);
 
-        /* View와 Layout 연결 */
         privated = (ImageButton) findViewById(R.id.privated);
         share = (ImageButton) findViewById(R.id.share);
 
@@ -61,17 +60,19 @@ public class Select extends AppCompatActivity {
             public void onResponse(Call<MemberDTO> call, Response<MemberDTO> response) {
                 if (response.isSuccessful()) {
                     loginMember = response.body();
+                } else {
+                    /* Toast 메시지 */
                 }
             }
 
             @Override
             public void onFailure(Call<MemberDTO> call, Throwable t) {
-
+                /* Toast 메시지 */
             }
         });
 
 
-        /* 개인 버튼 눌림 */
+        /* 개인 */
         privated.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -83,7 +84,7 @@ public class Select extends AppCompatActivity {
             }
         });
 
-        /* 공유 버튼 눌림 */
+        /* 공유 */
         share.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
