@@ -7,7 +7,6 @@ import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -35,7 +34,6 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import yuhan.hgcq.client.R;
-import yuhan.hgcq.client.adapter.FollowAdapter;
 import yuhan.hgcq.client.adapter.FollowerAdapter;
 import yuhan.hgcq.client.adapter.FollowingAdapter;
 import yuhan.hgcq.client.controller.FollowController;
@@ -43,11 +41,10 @@ import yuhan.hgcq.client.model.dto.follow.Follower;
 import yuhan.hgcq.client.model.dto.member.MemberDTO;
 
 public class FriendList extends AppCompatActivity {
-
     /* View */
     TextView empty;
     EditText searchText;
-    ImageButton search, friendAdd;
+    ImageButton friendAdd;
     Button follower, following;
     RecyclerView friendListView;
     BottomNavigationView navi;
@@ -56,27 +53,26 @@ public class FriendList extends AppCompatActivity {
     FollowerAdapter fra;
     FollowingAdapter fga;
 
-    /* 서버와 통신 */
+    /* http 통신 */
     FollowController fc;
 
-    /* 개인 공유 확인 */
-    boolean isPrivate;
-
     /* 받아올 값 */
+    boolean isPrivate;
     MemberDTO loginMember;
 
     /* 팔로워, 팔로우 버튼 구별 */
     boolean isFollower = false;
 
-    /* Toast */
+    /* 메인 스레드 */
     Handler handler = new Handler(Looper.getMainLooper());
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        getSupportActionBar().setTitle("친구 목록");
         super.onCreate(savedInstanceState);
+        getSupportActionBar().setTitle("친구 목록");
 
         EdgeToEdge.enable(this);
+        /* Layout */
         setContentView(R.layout.activity_friend_list);
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
@@ -85,22 +81,15 @@ public class FriendList extends AppCompatActivity {
             return insets;
         });
 
-        /* 서버와 연결할 Controller 생성 */
+        /* 초기화 */
         fc = new FollowController(this);
 
-        /* View와 Layout 연결 */
         empty = findViewById(R.id.empty);
-
         searchText = findViewById(R.id.searchText);
-
-        search = findViewById(R.id.search);
         friendAdd = findViewById(R.id.friendAdd);
-
         follower = findViewById(R.id.follower);
         following = findViewById(R.id.following);
-
         friendListView = findViewById(R.id.friendList);
-
         navi = findViewById(R.id.bottom_navigation_view);
 
         /* 관련된 페이지 */
@@ -111,8 +100,8 @@ public class FriendList extends AppCompatActivity {
         Intent myPage = new Intent(this, MyPage.class);
         Intent friendAddPage = new Intent(this, FriendAdd.class);
 
-        Intent getIntent = getIntent();
         /* 받아 올 값 */
+        Intent getIntent = getIntent();
         isPrivate = getIntent.getBooleanExtra("isPrivate", false);
         loginMember = (MemberDTO) getIntent.getSerializableExtra("loginMember");
 
@@ -135,19 +124,18 @@ public class FriendList extends AppCompatActivity {
                     handler.post(() -> {
                         friendListView.setAdapter(fga);
                     });
-                    Log.i("Found FollowingList", "Success");
                 } else {
-                    Log.i("Found FollowingList", "Fail");
+                    /* Toast 메시지 */
                 }
             }
 
             @Override
             public void onFailure(Call<List<MemberDTO>> call, Throwable t) {
-                Log.e("Found FollowingList Error", t.getMessage());
+                /* Toast 메시지 */
             }
         });
 
-        /* 팔로워 버튼 눌림 */
+        /* 팔로워 */
         follower.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -159,10 +147,6 @@ public class FriendList extends AppCompatActivity {
 
                             List<MemberDTO> followerList = body.getFollowerList();
                             List<MemberDTO> followingList = body.getFollowingList();
-
-                            for (MemberDTO dto : followingList) {
-                                Log.i("followingList", dto.toString());
-                            }
 
                             if (followerList.isEmpty()) {
                                 handler.post(() -> {
@@ -178,21 +162,20 @@ public class FriendList extends AppCompatActivity {
                                 friendListView.setAdapter(fra);
                             });
                             isFollower = true;
-                            Log.i("Found FollowerList", "Success");
                         } else {
-                            Log.i("Found FollowerList", "Fail");
+                            /* Toast 메시지 */
                         }
                     }
 
                     @Override
                     public void onFailure(Call<Follower> call, Throwable t) {
-                        Log.i("Found FollowerList Error", t.getMessage());
+                        /* Toast 메시지 */
                     }
                 });
             }
         });
 
-        /* 팔로잉 버튼 눌림 */
+        /* 팔로잉 */
         following.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -215,90 +198,20 @@ public class FriendList extends AppCompatActivity {
                                 friendListView.setAdapter(fga);
                             });
                             isFollower = false;
-                            Log.i("Found FollowingList", "Success");
                         } else {
-                            Log.i("Found FollowingList", "Fail");
+                            /* Toast 메시지 */
                         }
                     }
 
                     @Override
                     public void onFailure(Call<List<MemberDTO>> call, Throwable t) {
-                        Log.e("Found FollowingList Error", t.getMessage());
+                        /* Toast 메시지 */
                     }
                 });
             }
         });
 
-        /* 검색 눌림 */
-        search.setOnClickListener(v -> {
-            String name = searchText.getText().toString();
-            if (isFollower) {
-                fc.searchFollowerByName(name, new Callback<Follower>() {
-                    @Override
-                    public void onResponse(Call<Follower> call, Response<Follower> response) {
-                        if (response.isSuccessful()) {
-                            Follower body = response.body();
-
-                            List<MemberDTO> followerList = body.getFollowerList();
-                            List<MemberDTO> followingList = body.getFollowingList();
-
-                            if (followerList.isEmpty()) {
-                                handler.post(() -> {
-                                    empty.setVisibility(View.VISIBLE);
-                                });
-                            } else {
-                                handler.post(() -> {
-                                    empty.setVisibility(View.INVISIBLE);
-                                });
-                            }
-                            fra = new FollowerAdapter(FriendList.this, followerList, followingList);
-                            handler.post(() -> {
-                                friendListView.setAdapter(fra);
-                            });
-                            Log.i("Found FollowerList By Name", "Success");
-                        } else {
-                            Log.i("Found FollowerList By Name", "Fail");
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<Follower> call, Throwable t) {
-                        Log.i("Found FollowerList By Name Error", t.getMessage());
-                    }
-                });
-            } else {
-                fc.searchFollowingByName(name, new Callback<List<MemberDTO>>() {
-                    @Override
-                    public void onResponse(Call<List<MemberDTO>> call, Response<List<MemberDTO>> response) {
-                        if (response.isSuccessful()) {
-                            List<MemberDTO> followingList = response.body();
-                            if (followingList.isEmpty()) {
-                                handler.post(() -> {
-                                    empty.setVisibility(View.VISIBLE);
-                                });
-                            } else {
-                                handler.post(() -> {
-                                    empty.setVisibility(View.INVISIBLE);
-                                });
-                            }
-                            handler.post(() -> {
-                                fga.updateList(followingList);
-                            });
-                            Log.i("Found FollowingList", "Success");
-                        } else {
-                            Log.i("Found FollowingList", "Fail");
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<List<MemberDTO>> call, Throwable t) {
-                        Log.e("Found FollowingList Error", t.getMessage());
-                    }
-                });
-            }
-        });
-
-        /* 친구 추가 버튼 눌림 */
+        /* 팔로우 추가 */
         friendAdd.setOnClickListener(v -> {
             if (isPrivate) {
                 friendAddPage.putExtra("isPrivate", isPrivate);
@@ -307,7 +220,7 @@ public class FriendList extends AppCompatActivity {
             startActivity(friendAddPage);
         });
 
-        /* 내비게이션 바 */
+        /* 네비게이션 */
         navi.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
@@ -371,6 +284,7 @@ public class FriendList extends AppCompatActivity {
                 .show();
     }
 
+    /* 화면 이벤트 처리 */
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
         if (ev.getAction() == MotionEvent.ACTION_DOWN) {

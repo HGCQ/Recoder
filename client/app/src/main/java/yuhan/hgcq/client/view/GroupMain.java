@@ -6,7 +6,6 @@ import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -39,9 +38,8 @@ import yuhan.hgcq.client.model.dto.member.MemberDTO;
 import yuhan.hgcq.client.model.dto.team.TeamDTO;
 
 public class GroupMain extends AppCompatActivity {
-
     /* View */
-    ImageButton search, groupAdd;
+    ImageButton groupAdd;
     EditText searchText;
     RecyclerView groupList;
     BottomNavigationView navi;
@@ -50,13 +48,13 @@ public class GroupMain extends AppCompatActivity {
     /* Adapter */
     TeamAdapter ta;
 
-    /* 서버와 통신 */
+    /* http 통신 */
     TeamController tc;
 
-    /* 받아온 값 */
+    /* 받아올 값 */
     MemberDTO loginMember;
 
-    /* Toast */
+    /* 메인 스레드 */
     Handler handler = new Handler(Looper.getMainLooper());
 
     /* 뒤로 가기 */
@@ -75,11 +73,12 @@ public class GroupMain extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         getSupportActionBar().setTitle("Recoder");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        super.onCreate(savedInstanceState);
 
         EdgeToEdge.enable(this);
+        /* Layout */
         setContentView(R.layout.activity_group_main);
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
@@ -88,18 +87,13 @@ public class GroupMain extends AppCompatActivity {
             return insets;
         });
 
-        /* 서버와 연결할 Controller 생성 */
+        /* 초기화 */
         tc = new TeamController(this);
 
-        /* View와 Layout 연결 */
-        search = findViewById(R.id.search);
         groupAdd = findViewById(R.id.groupAdd);
-        empty=findViewById(R.id.empty);
-
+        empty = findViewById(R.id.empty);
         searchText = findViewById(R.id.searchText);
-
         groupList = findViewById(R.id.GroupList);
-
         navi = findViewById(R.id.bottom_navigation_view);
 
         /* 관련된 페이지 */
@@ -108,125 +102,68 @@ public class GroupMain extends AppCompatActivity {
         Intent likePage = new Intent(this, Like.class);
         Intent createGroupPage = new Intent(this, CreateGroup.class);
         Intent albumMainPage = new Intent(this, AlbumMain.class);
-        Intent myPage =new Intent(this, MyPage.class);
+        Intent myPage = new Intent(this, MyPage.class);
 
 
-        Intent getIntent = getIntent();
         /* 받아 올 값 */
+        Intent getIntent = getIntent();
         loginMember = (MemberDTO) getIntent.getSerializableExtra("loginMember");
 
         /* 초기 설정 */
         tc.teamList(new Callback<List<TeamDTO>>() {
-
             @Override
             public void onResponse(Call<List<TeamDTO>> call, Response<List<TeamDTO>> response) {
                 if (response.isSuccessful()) {
                     List<TeamDTO> findGroupList = response.body();
                     if (findGroupList.isEmpty()) {
-                        handler.post(()->{
+                        handler.post(() -> {
                             empty.setVisibility(View.VISIBLE);
                         });
                     } else {
-                        handler.post(()->{
+                        handler.post(() -> {
                             empty.setVisibility(View.INVISIBLE);
                         });
                     }
                     ta = new TeamAdapter(GroupMain.this, loginMember, findGroupList);
-                    handler.post(()->{
+                    handler.post(() -> {
                         groupList.setAdapter(ta);
-                        /*리스트 4개씩 보이게*/
-//                        groupList.post(new Runnable() {
-//                            @Override
-//                            public void run() {
-//                                int visibleItemCount = 4;  // 화면에 보일 아이템 개수
-//                                int itemHeight = getResources().getDimensionPixelSize(R.dimen.item_height);  // 아이템 높이
-//                                ViewGroup.LayoutParams params=groupList.getLayoutParams();
-//                                params.height = itemHeight *(visibleItemCount/2) ;
-//                                groupList.setLayoutParams(params);
-//                            }
-//                        });
+                        groupList.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                int visibleItemCount = 4;  // 화면에 보일 아이템 개수
+                                int itemHeight = getResources().getDimensionPixelSize(R.dimen.item_height);  // 아이템 높이
+                                ViewGroup.LayoutParams params = groupList.getLayoutParams();
+                                params.height = itemHeight * (visibleItemCount / 2);
+                                groupList.setLayoutParams(params);
+                            }
+                        });
                     });
                     ta.setOnItemClickListener(new TeamAdapter.OnItemClickListener() {
-
                         @Override
                         public void onItemClick(View view, int position) {
                             TeamDTO teamDTO = findGroupList.get(position);
                             albumMainPage.putExtra("teamDTO", teamDTO);
                             albumMainPage.putExtra("loginMember", loginMember);
-                            Log.i("TeamDTO Check", "TeamDTO: " + teamDTO);
-
-                            Log.i("Found GroupList", "Success");
                             startActivity(albumMainPage);
                         }
                     });
                 } else {
-                    Log.i("Found GroupList", "Fail");
+                    /* Toast 메시지 */
                 }
             }
 
             @Override
             public void onFailure(Call<List<TeamDTO>> call, Throwable t) {
-                Log.e("Found GroupList Error", t.getMessage());
+                /* Toast 메시지 */
             }
         });
 
-        /* 그룹 생성 버튼 눌림 */
+        /* 그룹 생성 */
         groupAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 createGroupPage.putExtra("loginMember", loginMember);
                 startActivity(createGroupPage);
-            }
-        });
-
-        /* 검색 버튼 눌림 */
-        search.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String groupName = searchText.getText().toString();
-                tc.searchTeam(groupName, new Callback<List<TeamDTO>>() {
-                    @Override
-                    public void onResponse(Call<List<TeamDTO>> call, Response<List<TeamDTO>> response) {
-                        if (response.isSuccessful()) {
-
-                            List<TeamDTO> findGroupList = response.body();
-                            if (findGroupList.isEmpty()) {
-                                handler.post(()->{
-                                    empty.setVisibility(View.VISIBLE);
-                                });
-                            } else {
-                                handler.post(()->{
-                                    empty.setVisibility(View.INVISIBLE);
-                                });
-                            }
-                            ta = new TeamAdapter(GroupMain.this, loginMember, findGroupList);
-                            handler.post(()->{
-                                groupList.setAdapter(ta);
-                            });
-                            ta.setOnItemClickListener(new TeamAdapter.OnItemClickListener() {
-                                @Override
-                                public void onItemClick(View view, int position) {
-                                    TeamDTO teamDTO = findGroupList.get(position);
-                                    albumMainPage.putExtra("teamDTO", teamDTO);
-                                    albumMainPage.putExtra("loginMember",loginMember);
-                                    startActivity(albumMainPage);
-                                    Log.i("Found GroupList", "Success");
-                                }
-                            });
-                            Log.i("Found Group By Name", "Success");
-                        } else {
-                            Log.i("Found Group By Name", "Fail");
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<List<TeamDTO>> call, Throwable t) {
-                        handler.post(() -> {
-                            Toast.makeText(GroupMain.this, "그룹 검색에 실패했습니다.", Toast.LENGTH_SHORT).show();
-                        });
-                        Log.e("Found Group By Name Error", t.getMessage());
-                    }
-                });
             }
         });
 
@@ -241,7 +178,7 @@ public class GroupMain extends AppCompatActivity {
                     return true;
                 } else if (itemId == R.id.fragment_friend) {
                     if (loginMember == null) {
-                        handler.post(()->{
+                        handler.post(() -> {
                             Toast.makeText(GroupMain.this, "로그인 후 이용 가능합니다.", Toast.LENGTH_SHORT).show();
                         });
                     } else {
@@ -263,6 +200,7 @@ public class GroupMain extends AppCompatActivity {
         });
     }
 
+    /* 화면 이벤트 처리 */
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
         if (ev.getAction() == MotionEvent.ACTION_DOWN) {

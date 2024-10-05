@@ -7,7 +7,6 @@ import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -40,7 +39,6 @@ import yuhan.hgcq.client.model.dto.team.TeamCreateForm;
 import yuhan.hgcq.client.model.dto.team.TeamDTO;
 
 public class CreateGroup extends AppCompatActivity {
-
     /* View */
     EditText createGroupText;
     Button save;
@@ -50,22 +48,23 @@ public class CreateGroup extends AppCompatActivity {
     /* Adapter */
     FollowAdapter fa;
 
-    /* 서버와 통신 */
+    /* http 통신 */
     TeamController tc;
     FollowController fc;
 
-    /* 받아온 값 */
+    /* 받아올 값 */
     MemberDTO loginMember;
 
-    /* Toast */
+    /* 메인 스레드 */
     Handler handler = new Handler(Looper.getMainLooper());
 
+    /* 뒤로 가기 */
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
                 Intent groupMainPage = new Intent(this, GroupMain.class);
-                groupMainPage.putExtra("loginMember",loginMember);
+                groupMainPage.putExtra("loginMember", loginMember);
                 startActivity(groupMainPage);
                 finish();
                 return true;
@@ -76,11 +75,12 @@ public class CreateGroup extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         getSupportActionBar().setTitle("그룹 생성");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        super.onCreate(savedInstanceState);
 
         EdgeToEdge.enable(this);
+        /* Layout */
         setContentView(R.layout.activity_create_group);
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
@@ -89,23 +89,19 @@ public class CreateGroup extends AppCompatActivity {
             return insets;
         });
 
-
-        /* 서버와 연결할 Controller 생성 */
+        /* 초기화 */
         tc = new TeamController(this);
         fc = new FollowController(this);
 
-        /* View와 Layout 연결 */
         createGroupText = findViewById(R.id.GroupText);
-
         save = findViewById(R.id.save);
-
         followingListView = findViewById(R.id.createGroupList);
 
         /* 관련된 페이지 */
         Intent groupMainPage = new Intent(this, GroupMain.class);
 
-        Intent getIntent = getIntent();
         /* 받아 올 값 */
+        Intent getIntent = getIntent();
         loginMember = (MemberDTO) getIntent.getSerializableExtra("loginMember");
 
         /* 초기 설정 */
@@ -114,23 +110,22 @@ public class CreateGroup extends AppCompatActivity {
             public void onResponse(Call<List<MemberDTO>> call, Response<List<MemberDTO>> response) {
                 if (response.isSuccessful()) {
                     List<MemberDTO> followingList = response.body();
-                    fa = new FollowAdapter(followingList,CreateGroup.this,tc,teamDTO);
-                    handler.post(()->{
+                    fa = new FollowAdapter(followingList, CreateGroup.this, tc, teamDTO);
+                    handler.post(() -> {
                         followingListView.setAdapter(fa);
                     });
-                    Log.i("Found FollowList", "Success");
                 } else {
-                    Log.i("Found FollowList", "Fail");
+                    /* Toast 메시지 */
                 }
             }
 
             @Override
             public void onFailure(Call<List<MemberDTO>> call, Throwable t) {
-                Log.e("Found FollowList Error", t.getMessage());
+                /* Toast 메시지 */
             }
         });
 
-        /* 생성 버튼 눌림 */
+        /* 생성 */
         save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -138,36 +133,31 @@ public class CreateGroup extends AppCompatActivity {
                 onClick_setting_costume_save("그룹을 생성하시겠습니까?", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        //널값아니더라도 추가해야됨
                         List<Long> selectedFollowList = fa.getSelectedItems();
                         TeamCreateForm form = new TeamCreateForm();
                         form.setName(groupName);
                         form.setMembers(selectedFollowList);
-                        Log.d("form", form.toString());
                         tc.createTeam(form, new Callback<ResponseBody>() {
                             @Override
                             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                                 if (response.isSuccessful()) {
                                     groupMainPage.putExtra("loginMember", loginMember);
                                     startActivity(groupMainPage);
-                                    Log.i("Create Group", "Success");
                                 } else {
-                                    Log.i("Create Group", "Fail");
+                                    /* Toast 메시지 */
                                 }
                             }
 
                             @Override
                             public void onFailure(Call<ResponseBody> call, Throwable t) {
-                                Log.e("Create Group Error", t.getMessage());
+                                /* Toast 메시지 */
                             }
                         });
                     }
                 }, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        handler.post(()->{
-                            Toast.makeText(CreateGroup.this, "취소했습니다.", Toast.LENGTH_SHORT).show();
-                        });
+                        Toast.makeText(CreateGroup.this, "취소했습니다.", Toast.LENGTH_SHORT).show();
                     }
                 });
             }
@@ -188,6 +178,7 @@ public class CreateGroup extends AppCompatActivity {
                 .show();
     }
 
+    /* 화면 이벤트 처리 */
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
         if (ev.getAction() == MotionEvent.ACTION_DOWN) {
