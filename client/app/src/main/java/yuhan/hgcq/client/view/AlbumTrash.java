@@ -21,6 +21,7 @@ import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatButton;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -46,7 +47,7 @@ import yuhan.hgcq.client.model.dto.team.TeamDTO;
 public class AlbumTrash extends AppCompatActivity {
 
     /* View */
-    ImageButton recover;
+    AppCompatButton recover;
     TextView empty;
     RecyclerView albumTrashListView;
     BottomNavigationView navi;
@@ -97,7 +98,7 @@ public class AlbumTrash extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        getSupportActionBar().setTitle("앨범 휴지통");
+        getSupportActionBar().setTitle("[앨범 휴지통]");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         super.onCreate(savedInstanceState);
 

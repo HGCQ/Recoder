@@ -5,22 +5,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import yuhan.hgcq.server.domain.Member;
 import yuhan.hgcq.server.dto.member.LoginForm;
 import yuhan.hgcq.server.dto.member.MemberUpdateForm;
 import yuhan.hgcq.server.dto.member.SignupForm;
+import yuhan.hgcq.server.dto.photo.UploadMemberForm;
 import yuhan.hgcq.server.repository.MemberRepository;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
-
-/**
- * 회원 기능 요구사항 분석
- * 1. 회원가입을 할 때 이름과 이메일은 중복이 안되도록 한다.
- * 2. 로그인은 이메일과 패스워드로 한다.
- * 3. 회원 정보 수정은 이름과 패스워드만 가능하다.
- * 4. 전체 회원 리스트를 추출할 수 있다.
- * 5. 회원 리스트를 이름으로 검색할 수 있다.
- */
 
 @Service
 @Transactional(readOnly = true)
@@ -30,11 +27,17 @@ public class MemberService {
 
     private final MemberRepository mr;
 
+    private final static String DIRECTORY_PATH = "D:" + File.separator
+            + "app" + File.separator
+            + "images" + File.separator
+            + "member" + File.separator;
+
     /**
-     * 회원 가입
+     * Join
      *
-     * @param form 회원 가입 폼
-     * @return 회원 id
+     * @param form Join form
+     * @return memberId
+     * @throws IllegalArgumentException Argument is wrong
      */
     @Transactional
     public synchronized Long join(SignupForm form) throws IllegalArgumentException {
@@ -58,10 +61,11 @@ public class MemberService {
     }
 
     /**
-     * 로그인
+     * Login
      *
-     * @param loginForm 로그인 폼
-     * @return 로그인 유무
+     * @param loginForm login form
+     * @return member
+     * @throws IllegalArgumentException Argument is wrong
      */
     @Transactional
     public Member login(LoginForm loginForm) throws IllegalArgumentException {
@@ -71,7 +75,6 @@ public class MemberService {
         String memberPassword = loginForm.getPassword();
 
         if (!emailList.contains(memberEmail)) {
-            log.error("Login Error (Not exist Email) : {}", memberEmail);
             throw new IllegalArgumentException("Not exist Email");
         }
 
@@ -81,25 +84,25 @@ public class MemberService {
             log.info("Login Success : {}", fm);
             return fm;
         } else {
-            log.info("Login Error (Wrong Password) : {}", memberEmail);
             throw new IllegalArgumentException("Wrong Password");
         }
     }
 
     /**
-     * 회원 정보 수정
+     * Update member information
      *
-     * @param member 회원
-     * @param form   회원 정보 수정 폼
+     * @param member member
+     * @param form   update form
+     * @throws IllegalArgumentException Argument is wrong
      */
     @Transactional
-    public void update(Member member, MemberUpdateForm form) throws IllegalArgumentException {
+    public void updateMember(Member member, MemberUpdateForm form) throws IllegalArgumentException {
         ensureNotNull(member, "Member");
 
         String newName = form.getName();
         String newPassword = form.getPassword();
 
-        if (newName != null && !duplicateName(newName)) {
+        if (newName != null && duplicateName(newName)) {
             member.changeName(newName);
         }
 
@@ -112,12 +115,13 @@ public class MemberService {
     }
 
     /**
-     * 회원 검색
+     * Find member
      *
-     * @param id 회원 id
-     * @return 회원
+     * @param id memberId
+     * @return member
+     * @throws IllegalArgumentException Argument is wrong
      */
-    public Member search(Long id) throws IllegalArgumentException {
+    public Member searchOne(Long id) throws IllegalArgumentException {
         Member fm = mr.findOne(id);
 
         if (fm == null) {
@@ -128,10 +132,11 @@ public class MemberService {
     }
 
     /**
-     * 회원 이메일로 검색
+     * Find member by email
      *
-     * @param email 이메일
-     * @return 회원
+     * @param email email
+     * @return member
+     * @throws IllegalArgumentException Argument is wrong
      */
     public Member searchByEmail(String email) throws IllegalArgumentException {
         Member fm = mr.findOne(email);
@@ -144,33 +149,41 @@ public class MemberService {
     }
 
     /**
-     * 회원 이름으로 검색
+     * Find member by name
      *
-     * @param name 이름
-     * @return 회원 리스트
+     * @param name name
+     * @return member
+     * @throws IllegalArgumentException Argument is wrong
      */
     public List<Member> searchByName(String name) throws IllegalArgumentException {
         return mr.findByName(name);
     }
 
+
     /**
-     * 회원 리스트
+     * Find memberList
      *
-     * @return 회원 리스트
+     * @return memberList
      */
     public List<Member> searchAll() {
         return mr.findAll();
     }
 
+    /**
+     * Find memberList by name
+     *
+     * @param name name
+     * @return memberList
+     */
     public List<Member> searchAllByName(String name) {
         return mr.findByName(name);
     }
 
     /**
-     * 이메일 중복 검사
+     * Check duplicate email
      *
-     * @param email 이메일
-     * @return 중복 유무
+     * @param email email
+     * @return is duplicate?
      */
     public boolean duplicateEmail(String email) {
         List<String> emails = mr.findAllEmails();
@@ -178,17 +191,62 @@ public class MemberService {
     }
 
     /**
-     * 닉네임 중복 검사
+     * Check duplicate name
      *
-     * @param name 닉네임
-     * @return 중복 유무
+     * @param name name
+     * @return is duplicate?
      */
     public boolean duplicateName(String name) {
         List<String> names = mr.findAllNames();
         return !names.contains(name);
     }
 
-    /* 매개변수가 null 값인지 확인 */
+    /**
+     * Upload member image
+     *
+     * @param member member
+     * @param form   member image
+     * @return image path
+     * @throws IOException              Upload error
+     * @throws IllegalArgumentException Argument is wrong
+     */
+    @Transactional
+    public String upload(Member member, UploadMemberForm form) throws IOException, IllegalArgumentException {
+        ensureNotNull(member, "Member");
+
+        MultipartFile file = form.getFile();
+
+        try {
+            String newPath = DIRECTORY_PATH + member.getId() + File.separator;
+            File directory = new File(newPath);
+
+            if (!directory.exists()) {
+                directory.mkdirs();
+            }
+
+            String name = file.getOriginalFilename();
+
+            Path path = Paths.get(newPath + name);
+            file.transferTo(path);
+            String imagePath = "/images/member/" + member.getId() + "/" + name;
+
+            member.changeImage(imagePath);
+            mr.save(member);
+
+            log.info("Upload Member : {}", member);
+            return imagePath;
+        } catch (IOException e) {
+            log.error("Upload Member Image Error");
+            throw new IOException();
+        }
+    }
+
+    /**
+     * Argument Check if Null
+     *
+     * @param obj  argument
+     * @param name by log
+     */
     private void ensureNotNull(Object obj, String name) {
         if (obj == null) {
             throw new IllegalArgumentException(name + " is null");

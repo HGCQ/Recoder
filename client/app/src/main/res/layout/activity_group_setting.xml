@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
+    android:background="#ffffff"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".view.AlbumMain">
@@ -13,8 +14,8 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/groupSetList"
         android:layout_width="match_parent"
-        android:layout_height="371dp"
-        android:layout_marginTop="240dp"
+        android:layout_height="270dp"
+        android:layout_marginTop="245dp"
         android:gravity="center"
         android:padding="0dp"
         app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
@@ -45,7 +46,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
+    <EditText
         android:id="@+id/createGroupText"
         android:layout_width="233dp"
         android:layout_height="40dp"
@@ -112,25 +113,25 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
-        android:layout_width="55dp"
-        android:layout_height="48dp"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
         android:layout_marginTop="188dp"
         android:background="@drawable/text"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.033"
+        app:layout_constraintHorizontal_bias="0.02"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:tint="#234567" />
 
-    <ImageView
+    <ImageButton
         android:id="@+id/friendAdd"
         android:layout_width="25dp"
         android:layout_height="25dp"
-        android:layout_marginTop="200dp"
+        android:layout_marginTop="198dp"
         android:background="@drawable/profileadd"
         android:scaleType="fitCenter"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.07"
+        app:layout_constraintHorizontal_bias="0.046"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -141,7 +142,30 @@
         android:fontFamily="@font/notosans_bold"
         android:text="회원 초대"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.463"
+        app:layout_constraintHorizontal_bias="0.35"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+    <View
+        android:layout_width="417dp"
+        android:layout_height="2dp"
+        android:background="#D3D3D3"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.713" />
+
+    <android.widget.Button
+        android:id="@+id/groupImage"
+        android:layout_width="100dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="530dp"
+        android:background="@drawable/button3"
+        android:scaleType="fitCenter"
+        android:text="대표사진 선택"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.046"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -155,6 +179,7 @@
             android:layout_width="350dp"
             android:layout_height="410dp"
             android:layout_marginTop="180dp"
+            android:paddingTop="3dp"
             android:layout_marginStart="30dp"
             android:background="@drawable/text"
             android:gravity="center"
@@ -185,7 +210,7 @@
             android:id="@+id/groupLeave"
             android:layout_width="380dp"
             android:layout_height="45dp"
-            android:layout_marginTop="625dp"
+            android:layout_marginTop="620dp"
             android:layout_marginStart="-373dp"
             android:padding="0dp"
             android:background="@drawable/select"

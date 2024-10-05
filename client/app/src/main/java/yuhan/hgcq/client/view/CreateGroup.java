@@ -45,6 +45,7 @@ public class CreateGroup extends AppCompatActivity {
     EditText createGroupText;
     Button save;
     RecyclerView followingListView;
+    TeamDTO teamDTO;
 
     /* Adapter */
     FollowAdapter fa;
@@ -113,7 +114,7 @@ public class CreateGroup extends AppCompatActivity {
             public void onResponse(Call<List<MemberDTO>> call, Response<List<MemberDTO>> response) {
                 if (response.isSuccessful()) {
                     List<MemberDTO> followingList = response.body();
-                    fa = new FollowAdapter(followingList);
+                    fa = new FollowAdapter(followingList,CreateGroup.this,tc,teamDTO);
                     handler.post(()->{
                         followingListView.setAdapter(fa);
                     });
@@ -137,6 +138,7 @@ public class CreateGroup extends AppCompatActivity {
                 onClick_setting_costume_save("그룹을 생성하시겠습니까?", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        //널값아니더라도 추가해야됨
                         List<Long> selectedFollowList = fa.getSelectedItems();
                         TeamCreateForm form = new TeamCreateForm();
                         form.setName(groupName);

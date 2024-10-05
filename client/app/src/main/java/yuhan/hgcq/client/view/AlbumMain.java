@@ -1,9 +1,13 @@
 package yuhan.hgcq.client.view;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Rect;
+import android.location.Address;
+import android.location.Geocoder;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -17,6 +21,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -27,24 +32,34 @@ import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatButton;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.drew.imaging.ImageMetadataReader;
+import com.drew.metadata.Metadata;
+import com.drew.metadata.exif.GpsDirectory;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import java.io.InputStream;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Response;
 import yuhan.hgcq.client.R;
 import yuhan.hgcq.client.adapter.AlbumAdapter;
+import yuhan.hgcq.client.config.NetworkClient;
 import yuhan.hgcq.client.controller.AlbumController;
 import yuhan.hgcq.client.controller.PhotoController;
 import yuhan.hgcq.client.localDatabase.Repository.AlbumRepository;
@@ -52,11 +67,14 @@ import yuhan.hgcq.client.localDatabase.Repository.PhotoRepository;
 import yuhan.hgcq.client.localDatabase.callback.Callback;
 import yuhan.hgcq.client.model.dto.album.AlbumDTO;
 import yuhan.hgcq.client.model.dto.member.MemberDTO;
+import yuhan.hgcq.client.model.dto.photo.PhotoDTO;
 import yuhan.hgcq.client.model.dto.team.TeamDTO;
 
 public class AlbumMain extends AppCompatActivity {
 
-    /* View */ ImageButton search, auto, albumPlus, albumTrash;
+    ImageButton search, albumPlus;
+    AppCompatButton albumTrash, auto;
+
     EditText searchText;
     TextView empty;
     RecyclerView albumListView;
@@ -171,8 +189,7 @@ public class AlbumMain extends AppCompatActivity {
         Intent myPage = new Intent(this, MyPage.class);
 
         /* 갤러리 */
-        Intent gallery = new Intent(Intent.ACTION_GET_CONTENT);
-        gallery.setType("image/*");
+        Intent gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         gallery.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
         gallery.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
         gallery.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
@@ -186,7 +203,7 @@ public class AlbumMain extends AppCompatActivity {
         loginMember = (MemberDTO) getIntent.getSerializableExtra("loginMember");
 
         if (isPrivate) {
-            getSupportActionBar().setTitle("개인 앨범");
+            getSupportActionBar().setTitle("[개인] 앨범");
         } else if (teamDTO != null) {
             getSupportActionBar().setTitle(teamDTO.getName());
         }
@@ -210,6 +227,16 @@ public class AlbumMain extends AppCompatActivity {
                         aa = new AlbumAdapter(result, AlbumMain.this, isPrivate);
                         handler.post(() -> {
                             albumListView.setAdapter(aa);
+//                            albumListView.post(new Runnable() {
+//                                @Override
+//                                public void run() {
+//                                    int visibleItemCount = 4;  // 화면에 보일 아이템 개수
+//                                    int itemHeight = getResources().getDimensionPixelSize(R.dimen.item_height);  // 아이템 높이
+//                                    ViewGroup.LayoutParams params=albumListView.getLayoutParams();
+//                                    params.height = itemHeight *(visibleItemCount/2) ;
+//                                    albumListView.setLayoutParams(params);
+//                                }
+//                            });
                         });
                         aa.setOnItemClickListener(new AlbumAdapter.OnItemClickListener() {
                             @Override
@@ -292,7 +319,7 @@ public class AlbumMain extends AppCompatActivity {
                         @Override
                         public void onSuccess(List<AlbumDTO> result) {
                             if (result != null) {
-                                handler.post(()->{
+                                handler.post(() -> {
                                     aa.updateList(result);
                                 });
                                 if (result.isEmpty()) {
@@ -300,7 +327,7 @@ public class AlbumMain extends AppCompatActivity {
                                         empty.setVisibility(View.VISIBLE);
                                     });
                                 } else {
-                                    handler.post(()->{
+                                    handler.post(() -> {
                                         empty.setVisibility(View.INVISIBLE);
                                     });
                                 }
@@ -332,15 +359,15 @@ public class AlbumMain extends AppCompatActivity {
 
                                     if (albumList != null) {
                                         if (albumList.isEmpty()) {
-                                            handler.post(()->{
+                                            handler.post(() -> {
                                                 empty.setVisibility(View.VISIBLE);
                                             });
                                         } else {
-                                            handler.post(()->{
+                                            handler.post(() -> {
                                                 empty.setVisibility(View.INVISIBLE);
                                             });
                                         }
-                                        handler.post(()->{
+                                        handler.post(() -> {
                                             aa.updateList(albumList);
                                         });
                                     }
@@ -441,7 +468,7 @@ public class AlbumMain extends AppCompatActivity {
                     return true;
                 } else if (itemId == R.id.fragment_friend) {
                     if (loginMember == null) {
-                        handler.post(()->{
+                        handler.post(() -> {
                             Toast.makeText(AlbumMain.this, "로그인 후 이용 가능합니다.", Toast.LENGTH_SHORT).show();
                         });
                     } else {
@@ -464,7 +491,7 @@ public class AlbumMain extends AppCompatActivity {
                 } else if (itemId == R.id.fragment_setting) {
                     //마이 페이지로 이동시키기
                     if (loginMember == null) {
-                        handler.post(()->{
+                        handler.post(() -> {
                             Toast.makeText(AlbumMain.this, "로그인 후 이용 가능합니다.", Toast.LENGTH_SHORT).show();
                         });
                     } else {
@@ -491,21 +518,22 @@ public class AlbumMain extends AppCompatActivity {
                     List<Uri> uriList = new ArrayList<>(count);
                     List<String> paths = new ArrayList<>(count);
                     List<LocalDateTime> creates = new ArrayList<>(count);
+                    List<String> regions = new ArrayList<>();
 
                     for (int i = 0; i < count; i++) {
                         Uri imageUri = data.getClipData().getItemAt(i).getUri();
                         getContentResolver().takePersistableUriPermission(imageUri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
                         PhotoMetaData metadata = getImageMetadata(imageUri);
+
                         String path = imageUri.toString();
                         LocalDateTime created = metadata.getCreated();
-
-                        Log.d("path", path);
-                        Log.d("created", created.toString());
+                        String region = metadata.getRegion();
 
                         uriList.add(imageUri);
                         paths.add(path);
                         creates.add(created);
+                        regions.add(region);
                     }
 
                     /* 개인 */
@@ -533,7 +561,7 @@ public class AlbumMain extends AppCompatActivity {
                     else {
                         if (teamDTO != null) {
                             Long teamId = teamDTO.getTeamId();
-                            pc.autoSavePhoto(uriList, teamId, creates, new retrofit2.Callback<ResponseBody>() {
+                            pc.autoSavePhoto(uriList, teamId, creates, regions, new retrofit2.Callback<ResponseBody>() {
                                 @Override
                                 public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                                     if (response.isSuccessful()) {
@@ -561,21 +589,22 @@ public class AlbumMain extends AppCompatActivity {
                     List<Uri> uriList = new ArrayList<>(count);
                     List<String> paths = new ArrayList<>(count);
                     List<LocalDateTime> creates = new ArrayList<>(count);
+                    List<String> regions = new ArrayList<>(count);
 
                     for (int i = 0; i < count; i++) {
                         Uri imageUri = data.getClipData().getItemAt(i).getUri();
                         getContentResolver().takePersistableUriPermission(imageUri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
                         PhotoMetaData metadata = getImageMetadata(imageUri);
+
                         String path = imageUri.toString();
                         LocalDateTime created = metadata.getCreated();
-
-                        Log.d("path", path);
-                        Log.d("created", created.toString());
+                        String region = metadata.getRegion();
 
                         uriList.add(imageUri);
                         paths.add(path);
                         creates.add(created);
+                        regions.add(region);
                     }
 
                     /* 개인 */
@@ -603,7 +632,7 @@ public class AlbumMain extends AppCompatActivity {
                     else {
                         if (teamDTO != null) {
                             Long teamId = teamDTO.getTeamId();
-                            pc.autoSavePhoto(uriList, teamId, creates, new retrofit2.Callback<ResponseBody>() {
+                            pc.autoSavePhoto(uriList, teamId, creates, regions, new retrofit2.Callback<ResponseBody>() {
                                 @Override
                                 public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                                     if (response.isSuccessful()) {
@@ -634,11 +663,13 @@ public class AlbumMain extends AppCompatActivity {
     static class PhotoMetaData {
         private String photoName;
         private LocalDateTime created;
+        private String region;
 
-        public static PhotoMetaData create(String photoName, LocalDateTime created) {
+        public static PhotoMetaData create(String photoName, LocalDateTime created, String region) {
             PhotoMetaData photoMetaData = new PhotoMetaData();
             photoMetaData.setPhotoName(photoName);
             photoMetaData.setCreated(created);
+            photoMetaData.setRegion(region);
             return photoMetaData;
         }
 
@@ -657,23 +688,66 @@ public class AlbumMain extends AppCompatActivity {
         public void setCreated(LocalDateTime created) {
             this.created = created;
         }
+
+        public String getRegion() {
+            return region;
+        }
+
+        public void setRegion(String region) {
+            this.region = region;
+        }
     }
 
-    /* 사진의 metadata 추출 */
     private PhotoMetaData getImageMetadata(Uri imageUri) {
-        String[] projection = {MediaStore.Images.Media.DISPLAY_NAME, // 사진 이름
-                MediaStore.Images.Media.DATE_TAKEN, // 사진 날짜
+        String photoName = null;
+        LocalDateTime createdToLocalDateTime = null;
+        Double latitude = null;
+        Double longitude = null;
+        String cityName = null;
+
+        String[] projection = {MediaStore.Images.Media.DISPLAY_NAME,
+                MediaStore.Images.Media.DATE_TAKEN,
         };
 
-        try (Cursor cursor = getContentResolver().query(imageUri, projection, null, null, null)) {
+        ContentResolver resolver = getContentResolver();
 
+        try (Cursor cursor = resolver.query(imageUri, projection, null, null, null)) {
             if (cursor != null && cursor.moveToFirst()) {
-                String photoName = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DISPLAY_NAME));
+                photoName = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DISPLAY_NAME));
                 long created = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATE_TAKEN));
 
-                LocalDateTime createdToLocalDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(created), ZoneId.systemDefault());
+                createdToLocalDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(created), ZoneId.systemDefault());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-                return PhotoMetaData.create(photoName, createdToLocalDateTime);
+        try (InputStream inputStream = resolver.openInputStream(imageUri)) {
+            Metadata metadata = ImageMetadataReader.readMetadata(inputStream);
+
+            GpsDirectory directory = metadata.getFirstDirectoryOfType(GpsDirectory.class);
+            if (directory != null) {
+                latitude = directory.getGeoLocation().getLatitude();
+                longitude = directory.getGeoLocation().getLongitude();
+            }
+
+            if (latitude != null && longitude != null) {
+                Geocoder geocoder = new Geocoder(getApplicationContext(), Locale.KOREAN);
+                List<Address> addresses = geocoder.getFromLocation(latitude, longitude, 1);
+                if (addresses != null && !addresses.isEmpty()) {
+                    Address address = addresses.get(0);
+                    cityName = address.getLocality();
+                    if (cityName == null) {
+                        cityName = address.getSubLocality();
+                    }
+                }
+            }
+
+            if (photoName != null && createdToLocalDateTime != null) {
+                if (cityName == null) {
+                    cityName = "null";
+                }
+                return PhotoMetaData.create(photoName, createdToLocalDateTime, cityName);
             }
         } catch (Exception e) {
             e.printStackTrace();

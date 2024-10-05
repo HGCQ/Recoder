@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -18,8 +17,6 @@ public class Album {
     @Column(name = "album_id")
     private Long id;
 
-    private LocalDate startDate;
-    private LocalDate endDate;
     private String name;
     private Boolean isDeleted;
     private LocalDate deletedAt;
@@ -42,27 +39,17 @@ public class Album {
         }
     }
 
-    public Album(Team team, LocalDate startDate, LocalDate endDate, String name) {
+    public Album(Team team, String name) {
         if (team == null) {
             throw new IllegalStateException("Team cannot be null");
         }
         this.team = team;
-        this.startDate = startDate;
-        this.endDate = endDate;
         this.name = name;
         this.isDeleted = false;
     }
 
     public void changeName(String name) {
         this.name = name;
-    }
-
-    public void changeStartDate(LocalDate startDate) {
-        this.startDate = startDate;
-    }
-
-    public void changeEndDate(LocalDate endDate) {
-        this.endDate = endDate;
     }
 
     public void deleteAlbum() {
@@ -87,8 +74,6 @@ public class Album {
     public String toString() {
         return "Album{" +
                 "id=" + id +
-                ", startDate=" + startDate +
-                ", endDate=" + endDate +
                 ", name='" + name + '\'' +
                 ", isDeleted=" + isDeleted +
                 ", deletedAt=" + deletedAt +

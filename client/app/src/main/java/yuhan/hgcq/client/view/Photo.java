@@ -133,6 +133,7 @@ public class Photo extends AppCompatActivity {
         /* 서버와 연결할 Controller 생성 */
         pc = new PhotoController(this);
         lc = new LikedController(this);
+        ac = new AlbumController(this);
 
         /* 로컬 DB 연결할 Repository 생성 */
         pr = new PhotoRepository(this);
@@ -219,7 +220,7 @@ public class Photo extends AppCompatActivity {
         } else {
             if (albumDTO != null) {
                 if (isPrivate) {
-                    getSupportActionBar().setTitle("개인 사진");
+                    getSupportActionBar().setTitle("[개인]");
                     pr.searchByAlbum(albumDTO.getAlbumId(), new yuhan.hgcq.client.localDatabase.callback.Callback<List<PhotoDTO>>() {
                         @Override
                         public void onSuccess(List<PhotoDTO> result) {
@@ -252,7 +253,7 @@ public class Photo extends AppCompatActivity {
                         }
                     });
                 } else {
-                    getSupportActionBar().setTitle("공유 사진");
+                    getSupportActionBar().setTitle("[공유]");
                     pc.photoList(albumDTO.getAlbumId(), new Callback<List<PhotoDTO>>() {
                         @Override
                         public void onResponse(Call<List<PhotoDTO>> call, Response<List<PhotoDTO>> response) {
@@ -429,63 +430,173 @@ public class Photo extends AppCompatActivity {
 
         /* 앨범 이동 눌림 */
         move.setOnClickListener(v -> {
-            if (teamDTO != null) {
-                Long teamId = teamDTO.getTeamId();
-                ac.albumList(teamId, new retrofit2.Callback<List<AlbumDTO>>() {
+            if (isPrivate) {
+                ar.searchAll(new yuhan.hgcq.client.localDatabase.callback.Callback<List<AlbumDTO>>() {
                     @Override
-                    public void onResponse(Call<List<AlbumDTO>> call, Response<List<AlbumDTO>> response) {
-                        if (response.isSuccessful() && response.body() != null) {
-                            List<AlbumDTO> albumList = response.body();
+                    public void onSuccess(List<AlbumDTO> result) {
+                        if(result != null) {
+                            aa = new AlbumAdapter(result, Photo.this, isPrivate);
+                            aa.setPhoto();
                             handler.post(() -> {
                                 albumListView.setVisibility(View.VISIBLE);
-                                aa = new AlbumAdapter(albumList, Photo.this, isPrivate);
                                 albumListView.setAdapter(aa);
                             });
 
                             aa.setOnItemClickListener(new AlbumAdapter.OnItemClickListener() {
                                 @Override
                                 public void onItemClick(View view, int position) {
-                                    int index = photoView.getCurrentItem();
-                                    AlbumDTO albumDTO = albumList.get(position);
-                                    List<PhotoDTO> photoList = pa.getPhotoList();
-                                    PhotoDTO dto = photoList.get(index);
-                                    List<PhotoDTO> pls = new ArrayList<>();
-                                    pls.add(dto);
-
-                                    MovePhotoForm form = new MovePhotoForm(albumDTO.getAlbumId(), pls);
-                                    pc.moveAlbumPhoto(form, new Callback<ResponseBody>() {
+                                    onClick_setting_costume_save("앨범 이동 하시겠습니까?", new DialogInterface.OnClickListener() {
                                         @Override
-                                        public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                                            if (response.isSuccessful()) {
-                                                handler.post(() -> {
-                                                    Toast.makeText(Photo.this, "앨범 이동 했습니다.", Toast.LENGTH_SHORT).show();
-                                                });
-                                                Log.i("앨범 이동 성공", "Success");
-                                            } else {
-                                                Log.i("앨범 이동 실패", "Fail");
-                                            }
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            int index = photoView.getCurrentItem();
+                                            AlbumDTO albumDTO = result.get(position);
+                                            List<PhotoDTO> photoList = pa.getPhotoList();
+                                            PhotoDTO dto = photoList.get(index);
+                                            List<PhotoDTO> pls = new ArrayList<>();
+                                            pls.add(dto);
+
+                                            MovePhotoForm form = new MovePhotoForm(albumDTO.getAlbumId(), pls);
+                                            pr.move(form, new yuhan.hgcq.client.localDatabase.callback.Callback<Boolean>() {
+                                                @Override
+                                                public void onSuccess(Boolean result) {
+                                                    if (result != null) {
+                                                        photoList.remove(index);
+                                                        handler.post(() -> {
+                                                            photoView.getAdapter().notifyItemRemoved(index);
+                                                            photoView.getAdapter().notifyItemRangeChanged(index, photoList.size());
+                                                            Toast.makeText(Photo.this, "앨범 이동 했습니다.", Toast.LENGTH_SHORT).show();
+                                                            albumListView.setVisibility(View.INVISIBLE);
+                                                        });
+                                                        int newItemPosition = index;
+                                                        if (index == photoList.size()) {
+                                                            if (index != 0) {
+                                                                newItemPosition = index - 1;
+                                                            }
+                                                        }
+                                                        if (!photoList.isEmpty()) {
+                                                            int finalNewItemPosition = newItemPosition;
+                                                            handler.post(() -> {
+                                                                photoView.setCurrentItem(finalNewItemPosition, true);
+                                                            });
+                                                        }
+                                                        Log.i("앨범 이동 성공", "Success");
+                                                    } else {
+                                                        Log.i("앨범 이동 실패", "Fail");
+                                                    }
+                                                }
+
+                                                @Override
+                                                public void onError(Exception e) {
+                                                    Log.e("앨범 이동 실패", e.getMessage());
+                                                }
+                                            });
                                         }
-
+                                    }, new DialogInterface.OnClickListener() {
                                         @Override
-                                        public void onFailure(Call<ResponseBody> call, Throwable t) {
-                                            Log.i("앨범 이동 실패", t.getMessage());
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            Toast.makeText(Photo.this, "취소했습니다.", Toast.LENGTH_SHORT).show();
                                         }
                                     });
                                 }
                             });
-                            Log.i("Found Shared AlbumList", "Success");
-                        } else {
-                            Log.i("Found Shared AlbumList", "Fail");
+                            Log.i("Found Private AlbumList", "Success");
+                        }else{
+                            Log.i("Found Private AlbumList", "Fail");
                         }
                     }
-
                     @Override
-                    public void onFailure(Call<List<AlbumDTO>> call, Throwable t) {
-                        Log.e("Found Shared AlbumList Error", t.getMessage());
+                    public void onError(Exception e) {
+                        Log.e("Found Private AlbumList", e.getMessage());
                     }
                 });
+
             } else {
-                Log.e("Intent Error", "teamDTO is Null");
+                if (teamDTO != null) {
+                    Long teamId = teamDTO.getTeamId();
+                    ac.albumList(teamId, new retrofit2.Callback<List<AlbumDTO>>() {
+                        @Override
+                        public void onResponse(Call<List<AlbumDTO>> call, Response<List<AlbumDTO>> response) {
+                            if (response.isSuccessful() && response.body() != null) {
+                                List<AlbumDTO> albumList = response.body();
+                                aa = new AlbumAdapter(albumList, Photo.this, isPrivate);
+                                aa.setPhoto();
+                                handler.post(() -> {
+                                    albumListView.setVisibility(View.VISIBLE);
+                                    albumListView.setAdapter(aa);
+                                });
+
+                                aa.setOnItemClickListener(new AlbumAdapter.OnItemClickListener() {
+                                    @Override
+                                    public void onItemClick(View view, int position) {
+                                        onClick_setting_costume_save("앨범 이동 하시겠습니까?", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialogInterface, int i) {
+                                                int index = photoView.getCurrentItem();
+                                                AlbumDTO albumDTO = albumList.get(position);
+                                                List<PhotoDTO> photoList = pa.getPhotoList();
+                                                PhotoDTO dto = photoList.get(index);
+                                                List<PhotoDTO> pls = new ArrayList<>();
+                                                pls.add(dto);
+
+                                                MovePhotoForm form = new MovePhotoForm(albumDTO.getAlbumId(), pls);
+                                                pc.moveAlbumPhoto(form, new Callback<ResponseBody>() {
+                                                    @Override
+                                                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                                                        if (response.isSuccessful()) {
+                                                            photoList.remove(index);
+                                                            handler.post(() -> {
+                                                                photoView.getAdapter().notifyItemRemoved(index);
+                                                                photoView.getAdapter().notifyItemRangeChanged(index, photoList.size());
+                                                                Toast.makeText(Photo.this, "앨범 이동 했습니다.", Toast.LENGTH_SHORT).show();
+                                                                albumListView.setVisibility(View.INVISIBLE);
+                                                            });
+                                                            int newItemPosition = index;
+                                                            if (index == photoList.size()) {
+                                                                if (index != 0) {
+                                                                    newItemPosition = index - 1;
+                                                                }
+                                                            }
+                                                            if (!photoList.isEmpty()) {
+                                                                int finalNewItemPosition = newItemPosition;
+                                                                handler.post(() -> {
+                                                                    photoView.setCurrentItem(finalNewItemPosition, true);
+                                                                });
+                                                            }
+                                                            Log.i("앨범 이동 성공", "Success");
+                                                        } else {
+                                                            Log.i("앨범 이동 실패", "Fail");
+                                                        }
+                                                    }
+
+                                                    @Override
+                                                    public void onFailure(Call<ResponseBody> call, Throwable t) {
+                                                        Log.i("앨범 이동 실패", t.getMessage());
+                                                    }
+                                                });
+                                            }
+                                        }, new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialogInterface, int i) {
+                                                Toast.makeText(Photo.this, "취소했습니다.", Toast.LENGTH_SHORT).show();
+                                            }
+                                        });
+
+                                    }
+                                });
+                                Log.i("Found Shared AlbumList", "Success");
+                            } else {
+                                Log.i("Found Shared AlbumList", "Fail");
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<List<AlbumDTO>> call, Throwable t) {
+                            Log.e("Found Shared AlbumList Error", t.getMessage());
+                        }
+                    });
+                } else {
+                    Log.e("Intent Error", "teamDTO is Null");
+                }
             }
         });
 
@@ -669,6 +780,14 @@ public class Photo extends AppCompatActivity {
                     if (imm != null) {
                         imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
                     }
+                }
+            } else {
+                Rect rect = new Rect();
+                albumListView.getGlobalVisibleRect(rect);
+                if (!rect.contains((int) ev.getRawX(), (int) ev.getRawY())) {
+                    handler.post(() -> {
+                        albumListView.setVisibility(View.INVISIBLE);
+                    });
                 }
             }
         }

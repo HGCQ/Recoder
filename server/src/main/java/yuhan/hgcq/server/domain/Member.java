@@ -24,6 +24,8 @@ public class Member {
 
     private String password;
 
+    private String image;
+
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
     private List<Team> owners = new ArrayList<>();
 
@@ -47,11 +49,17 @@ public class Member {
         this.password = password;
     }
 
+    public void changeImage(String image) {
+        this.image = image;
+    }
+
     @Override
     public String toString() {
         return "Member{" +
-                "name='" + name + '\'' +
+                "id=" + id +
+                ", name='" + name + '\'' +
                 ", email='" + email + '\'' +
+                ", image='" + image + '\'' +
                 '}';
     }
 }

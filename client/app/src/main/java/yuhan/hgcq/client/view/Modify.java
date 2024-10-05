@@ -64,6 +64,7 @@ public class Modify extends AppCompatActivity {
         switch (item.getItemId()) {
             case android.R.id.home:
                 Intent myPage = new Intent(this, MyPage.class);
+                myPage.putExtra("loginMember", loginMember);
                 startActivity(myPage);
                 finish();
                 return true;
@@ -174,39 +175,41 @@ public class Modify extends AppCompatActivity {
                 if (userPw.equals(userPwCheck)) {
 
                     if (isDuplicateName && userName.equals(checkedName)) {
-                            onClick_setting_costume_save("수정하시겠습니까?", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    MemberUpdateForm form = new MemberUpdateForm(userName, userPw);
-                                    mc.updateMember(form, new Callback<ResponseBody>() {
-                                        @Override
-                                        public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                                            if (response.isSuccessful()) {
-                                                handler.post(() -> {
-                                                    Toast.makeText(Modify.this, "정보 수정 성공했습니다.", Toast.LENGTH_SHORT).show();
-                                                });
-                                                startActivity(myPage);
-                                            } else {
-                                                handler.post(() -> {
-                                                    Toast.makeText(Modify.this, "정보 수정 실패했습니다.", Toast.LENGTH_SHORT).show();
-                                                });
-                                            }
-                                        }
-
-                                        @Override
-                                        public void onFailure(Call<ResponseBody> call, Throwable t) {
+                        onClick_setting_costume_save("수정하시겠습니까?", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                MemberUpdateForm form = new MemberUpdateForm(userName, userPw);
+                                mc.updateMember(form, new Callback<ResponseBody>() {
+                                    @Override
+                                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                                        if (response.isSuccessful()) {
+                                            loginMember.setName(userName);
+                                            handler.post(() -> {
+                                                Toast.makeText(Modify.this, "정보 수정 성공했습니다.", Toast.LENGTH_SHORT).show();
+                                            });
+                                            myPage.putExtra("loginMember", loginMember);
+                                            startActivity(myPage);
+                                        } else {
                                             handler.post(() -> {
                                                 Toast.makeText(Modify.this, "정보 수정 실패했습니다.", Toast.LENGTH_SHORT).show();
                                             });
                                         }
-                                    });
-                                }
-                            }, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    Toast.makeText(Modify.this, "취소했습니다.", Toast.LENGTH_SHORT).show();
-                                }
-                            });
+                                    }
+
+                                    @Override
+                                    public void onFailure(Call<ResponseBody> call, Throwable t) {
+                                        handler.post(() -> {
+                                            Toast.makeText(Modify.this, "정보 수정 실패했습니다.", Toast.LENGTH_SHORT).show();
+                                        });
+                                    }
+                                });
+                            }
+                        }, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                Toast.makeText(Modify.this, "취소했습니다.", Toast.LENGTH_SHORT).show();
+                            }
+                        });
                     } else {
                         Toast.makeText(Modify.this, "닉네임 중복 확인을 해주세요.", Toast.LENGTH_SHORT).show();
                     }

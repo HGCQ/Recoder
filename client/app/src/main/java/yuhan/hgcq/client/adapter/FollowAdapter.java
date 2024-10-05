@@ -1,28 +1,52 @@
 package yuhan.hgcq.client.adapter;
 
+import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import yuhan.hgcq.client.R;
+import yuhan.hgcq.client.controller.FollowController;
+import yuhan.hgcq.client.controller.TeamController;
+import yuhan.hgcq.client.model.dto.follow.FollowDTO;
 import yuhan.hgcq.client.model.dto.member.MemberDTO;
+import yuhan.hgcq.client.model.dto.team.MemberInTeamDTO;
+import yuhan.hgcq.client.model.dto.team.TeamDTO;
+import yuhan.hgcq.client.model.dto.team.TeamInviteForm;
 
 public class FollowAdapter extends RecyclerView.Adapter<FollowAdapter.FollowViewHolder> {
 
     private List<MemberDTO> followList;
+    private TeamDTO teamDTO;
+    private  List<MemberInTeamDTO> memberList;
+
+    private TeamController tc;
+    private TeamInviteForm inviteForm;
+
+
     private List<Integer> selectedItems = new ArrayList<>();
     private OnItemClickListener listener;
 
-    public FollowAdapter(List<MemberDTO> followList) {
+    public FollowAdapter(List<MemberDTO> followList, Context context,TeamController tc,TeamDTO teamDTO) {
         this.followList = followList;
+        this.tc=new TeamController(context);
+        this.teamDTO=teamDTO;
     }
 
     public interface OnItemClickListener {
@@ -35,7 +59,6 @@ public class FollowAdapter extends RecyclerView.Adapter<FollowAdapter.FollowView
 
     public static class FollowViewHolder extends RecyclerView.ViewHolder {
         public TextView name;
-
         public FollowViewHolder(@NonNull View view, OnItemClickListener listener) {
             super(view);
 
@@ -52,6 +75,8 @@ public class FollowAdapter extends RecyclerView.Adapter<FollowAdapter.FollowView
                     }
                 }
             });
+
+
         }
     }
 
@@ -81,6 +106,7 @@ public class FollowAdapter extends RecyclerView.Adapter<FollowAdapter.FollowView
             }
             notifyItemChanged(position);
         });
+
     }
 
     @Override
@@ -105,8 +131,10 @@ public class FollowAdapter extends RecyclerView.Adapter<FollowAdapter.FollowView
 
     public void updateList(List<MemberDTO> newList) {
         followList.clear();
-        ;
         followList.addAll(newList);
         notifyDataSetChanged();
+    }
+    public void onClick_setting_costume_save(Context context, String message, DialogInterface.OnClickListener positive, DialogInterface.OnClickListener negative) {
+        new AlertDialog.Builder(context).setTitle("Recoder").setMessage(message).setIcon(R.drawable.album).setPositiveButton(android.R.string.yes, positive).setNegativeButton(android.R.string.no, negative).show();
     }
 }

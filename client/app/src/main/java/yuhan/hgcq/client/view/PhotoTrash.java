@@ -21,6 +21,7 @@ import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatButton;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -48,7 +49,7 @@ public class PhotoTrash extends AppCompatActivity {
 
     /* View */
     TextView empty;
-    ImageButton recover;
+    AppCompatButton recover;
     RecyclerView photoTrashListView;
     BottomNavigationView navi;
 
@@ -139,7 +140,7 @@ public class PhotoTrash extends AppCompatActivity {
         albumDTO = (AlbumDTO) getIntent.getSerializableExtra("albumDTO");
 
         if (albumDTO != null) {
-            getSupportActionBar().setTitle("휴지통 : " + albumDTO.getName());
+            getSupportActionBar().setTitle("[휴지통] " + albumDTO.getName());
             /* 개인 초기 설정 */
             if (isPrivate) {
                 pr.searchTrash(new Callback<List<PhotoDTO>>() {

@@ -12,12 +12,6 @@ import yuhan.hgcq.server.repository.LikedRepository;
 
 import java.util.List;
 
-/**
- * 좋아요 기능 요구사항 분석
- * 1. 회원마다 사진에 좋아요를 할 수 있다.
- * 2. 좋아요를 한 사진 리스트를 볼 수 있다.
- */
-
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -27,12 +21,13 @@ public class LikedService {
     private final LikedRepository lr;
 
     /**
-     * 좋아요 추가(테스트 완료)
+     * Add like
      *
-     * @param liked 좋아요
+     * @param liked like
+     * @throws IllegalArgumentException Argument is wrong
      */
     @Transactional
-    public void add(Liked liked) throws IllegalArgumentException {
+    public void addLike(Liked liked) throws IllegalArgumentException {
         ensureNotNull(liked, "Liked");
 
         Member member = liked.getMember();
@@ -50,28 +45,30 @@ public class LikedService {
     }
 
     /**
-     * 좋아요 삭제(테스트 완료)
+     * Remove like
      *
-     * @param liked 좋아요
+     * @param liked like
+     * @throws IllegalArgumentException Argument is wrong
      */
     @Transactional
-    public void remove(Liked liked) throws IllegalArgumentException {
+    public void removeLike(Liked liked) throws IllegalArgumentException {
         ensureNotNull(liked, "Liked");
 
         liked.cancelLiked();
 
         lr.update(liked);
-        log.info("Cancel Like : {}", liked);
+        log.info("Remove Like : {}", liked);
     }
 
     /**
-     * 좋아요 검색(테스트 완료)
+     * Find like
      *
-     * @param member 회원
-     * @param photo  사진
-     * @return 좋아요
+     * @param member member
+     * @param photo  photo
+     * @return like
+     * @throws IllegalArgumentException Argument is wrong
      */
-    public Liked search(Member member, Photo photo) throws IllegalArgumentException {
+    public Liked searchOne(Member member, Photo photo) throws IllegalArgumentException {
         ensureNotNull(member, "Member");
         ensureNotNull(photo, "Photo");
 
@@ -85,10 +82,11 @@ public class LikedService {
     }
 
     /**
-     * 좋아요한 사진 리스트 검색(테스트 완료)
+     * Find likeList
      *
-     * @param member 회원
-     * @return 사진 리스트
+     * @param member member
+     * @return likeList
+     * @throws IllegalArgumentException Argument is wrong
      */
     public List<Photo> searchAll(Member member) throws IllegalArgumentException {
         ensureNotNull(member, "Member");
@@ -96,7 +94,12 @@ public class LikedService {
         return lr.findAll(member);
     }
 
-    /* 매개변수가 null 값인지 확인 */
+    /**
+     * Argument Check if Null
+     *
+     * @param obj  argument
+     * @param name by log
+     */
     private void ensureNotNull(Object obj, String name) {
         if (obj == null) {
             throw new IllegalArgumentException(name + " is null");
