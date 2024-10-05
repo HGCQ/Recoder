@@ -23,6 +23,7 @@ import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @Transactional(readOnly = true)
@@ -238,7 +239,7 @@ public class PhotoService {
         Long teamId = form.getTeamId();
         Team ft = tr.findOne(teamId);
 
-        List<Album> albumList = ar.findAll(ft);
+        Set<String> albumNames = ar.findAlbumName(ft);
         List<MultipartFile> files = form.getFiles();
         List<String> creates = form.getCreates();
         List<String> regions = form.getRegions();
@@ -246,39 +247,59 @@ public class PhotoService {
         int size = files.size();
 
         for (int i = 0; i < size; i++) {
+            String region = regions.get(i);
+            Album fa = null;
 
+            if (region.equals("null")) {
+                if (albumNames.contains("위치 정보 없음")) {
+                    fa = ar.findOneByName(ft, "위치 정보 없음");
+                } else {
+                    Album album = new Album(ft, "위치 정보 없음");
+                    Long saveId = ar.save(album);
+                    log.info("Save Album : {}", album);
+                    fa = ar.findOne(saveId);
+                    albumNames.add(fa.getName());
+                }
+            } else if (albumNames.contains(region)) {
+                fa = ar.findOneByName(ft, region);
+            } else {
+                Album album = new Album(ft, region);
+                Long saveId = ar.save(album);
+                log.info("Save Album : {}", album);
+                fa = ar.findOne(saveId);
+                albumNames.add(fa.getName());
+            }
 
-            for (Album album : albumList) {
-                List<String> nameList = pr.findNameAll(album);
+            if (fa != null) {
+                try {
+                    List<String> nameList = pr.findNameAll(fa);
+                    Long albumId = fa.getId();
 
-                if (true) {
-                    Long albumId = album.getId();
+                    String newPath = DIRECTORY_PATH + albumId + File.separator;
+                    File directory = new File(newPath);
 
-                    try {
-                        String newPath = DIRECTORY_PATH + albumId + File.separator;
-                        File directory = new File(newPath);
-
-                        if (!directory.exists()) {
-                            directory.mkdirs();
-                        }
-
-                        MultipartFile file = files.get(i);
-                        String name = file.getOriginalFilename();
-                        if (nameList.contains(name)) {
-                            continue;
-                        }
-                        Path path = Paths.get(newPath + name);
-                        file.transferTo(path);
-                        String imagePath = "/images/" + albumId + "/" + name;
-
-//                        Photo p = new Photo();
-//                        pr.save(p);
-//
-//                        log.info("AutoSave Photo : {}", p);
-                    } catch (IOException e) {
-                        log.error("AutoSave Photo Error");
-                        throw new IOException();
+                    if (!directory.exists()) {
+                        directory.mkdirs();
                     }
+
+                    MultipartFile file = files.get(i);
+                    String name = file.getOriginalFilename();
+
+                    if (nameList.contains(name)) {
+                        continue;
+                    }
+
+                    Path path = Paths.get(newPath + name);
+                    file.transferTo(path);
+                    String imagePath = "/images/" + albumId + "/" + name;
+
+                    Photo p = new Photo(fa, name, imagePath, region, LocalDateTime.parse(creates.get(i)));
+                    pr.save(p);
+
+                    log.info("AutoSave Photo : {}", p);
+                } catch (IOException e) {
+                    log.error("AutoSave Photo Error");
+                    throw new IOException();
                 }
             }
         }
