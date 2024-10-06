@@ -11,7 +11,5 @@ import java.io.Serializable;
 public class AlbumDTO implements Serializable {
     private Long albumId;
     private Long teamId;
-    private String startDate;
-    private String endDate;
     private String name;
 }

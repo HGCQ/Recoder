@@ -17,7 +17,6 @@ import com.bumptech.glide.Glide;
 import yuhan.hgcq.client.R;
 
 public class Loading extends AppCompatActivity {
-
     /* View */
     MediaPlayer mediaPlayer;
 
@@ -26,10 +25,11 @@ public class Loading extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        getSupportActionBar().setTitle("Recoder");
         super.onCreate(savedInstanceState);
+        getSupportActionBar().setTitle("Recoder");
 
         EdgeToEdge.enable(this);
+        /* Layout */
         setContentView(R.layout.activity_loading);
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {

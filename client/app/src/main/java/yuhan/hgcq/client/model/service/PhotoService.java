@@ -25,7 +25,8 @@ public interface PhotoService {
     Call<ResponseBody> uploadPhoto(
             @Part("albumId") RequestBody albumId,
             @Part List<MultipartBody.Part> files,
-            @Part("creates") List<RequestBody> creates
+            @Part("creates") List<RequestBody> creates,
+            @Part("regions") List<RequestBody> regions
     );
 
     @POST("/photo/delete")
@@ -42,7 +43,8 @@ public interface PhotoService {
     Call<ResponseBody> autoSavePhoto(
             @Part List<MultipartBody.Part> files,
             @Part("teamId") RequestBody teamId,
-            @Part("creates") List<RequestBody> creates
+            @Part("creates") List<RequestBody> creates,
+            @Part("regions") List<RequestBody> regions
     );
 
     @GET("/photo/gallery/albumId")

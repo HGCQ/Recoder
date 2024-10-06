@@ -19,6 +19,7 @@ import java.lang.reflect.Member;
 import java.util.List;
 
 import yuhan.hgcq.client.R;
+import yuhan.hgcq.client.model.dto.album.AlbumDTO;
 import yuhan.hgcq.client.model.dto.member.MemberDTO;
 import yuhan.hgcq.client.model.dto.team.TeamDTO;
 import yuhan.hgcq.client.view.GroupMain;
@@ -95,5 +96,12 @@ public class TeamAdapter extends RecyclerView.Adapter<TeamAdapter.TeamViewHolder
     @Override
     public int getItemCount() {
         return groupList.size();
+    }
+
+    /*수정 Lee*/
+    public void updateList(List<TeamDTO> newList) {
+        groupList.clear();
+        groupList.addAll(newList);
+        notifyDataSetChanged();
     }
 }

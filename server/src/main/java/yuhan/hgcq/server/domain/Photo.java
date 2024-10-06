@@ -21,6 +21,7 @@ public class Photo {
     @Column(unique = true, nullable = false)
     private String path;
 
+    private String region;
     private LocalDateTime created;
     private Boolean isDeleted;
     private LocalDateTime deleted;
@@ -37,13 +38,14 @@ public class Photo {
         }
     }
 
-    public Photo(Album album, String name, String path, LocalDateTime created) {
+    public Photo(Album album, String name, String path, String region, LocalDateTime created) {
         if (album == null || path == null) {
             throw new NullPointerException("Album or Path cannot be null");
         }
         this.album = album;
         this.name = name;
         this.path = path;
+        this.region = region;
         this.created = created;
         this.isDeleted = false;
     }

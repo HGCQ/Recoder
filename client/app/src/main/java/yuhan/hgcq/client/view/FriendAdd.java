@@ -7,13 +7,13 @@ import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
@@ -37,26 +37,22 @@ import yuhan.hgcq.client.model.dto.member.MemberDTO;
 import yuhan.hgcq.client.model.dto.member.Members;
 
 public class FriendAdd extends AppCompatActivity {
-
     /* View */
     TextView empty;
     EditText searchText;
-    ImageButton search;
     RecyclerView memberListView;
 
     /* Adapter */
     FollowerAdapter fa;
 
-    /* 서버와 통신 */
+    /* http 통신 */
     MemberController mc;
 
-    /* 개인 공유 확인 */
-    boolean isPrivate;
-
     /* 받아올 값 */
+    boolean isPrivate;
     MemberDTO loginMember;
 
-    /* Toast */
+    /* 메인 스레드 */
     Handler handler = new Handler(Looper.getMainLooper());
 
     /* 뒤로 가기 */
@@ -79,11 +75,12 @@ public class FriendAdd extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        getSupportActionBar().setTitle("친구 추가");
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         super.onCreate(savedInstanceState);
+        getSupportActionBar().setTitle("팔로우 추가");
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         EdgeToEdge.enable(this);
+        /* Layout */
         setContentView(R.layout.activity_friend_add);
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
@@ -92,20 +89,15 @@ public class FriendAdd extends AppCompatActivity {
             return insets;
         });
 
-        /* 서버와 연결할 Controller 생성 */
+        /* 초기화 */
         mc = new MemberController(this);
 
-        /* View와 Layout 연결 */
         empty = findViewById(R.id.empty);
-
         searchText = findViewById(R.id.searchText);
-
-        search = findViewById(R.id.search);
-
         memberListView = findViewById(R.id.friendList);
 
-        Intent getIntent = getIntent();
         /* 받아 올 값 */
+        Intent getIntent = getIntent();
         isPrivate = getIntent.getBooleanExtra("isPrivate", false);
         loginMember = (MemberDTO) getIntent.getSerializableExtra("loginMember");
 
@@ -129,43 +121,60 @@ public class FriendAdd extends AppCompatActivity {
                     handler.post(() -> {
                         memberListView.setAdapter(fa);
                     });
-                    Log.i("Found MemberList", "Success");
+                    searchText.addTextChangedListener(new TextWatcher() {
+                        @Override
+                        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                        }
+
+                        @Override
+                        public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                            String text=s.toString();
+
+                            mc.memberListByName("%" + text + "%", new Callback<Members>() {
+                                @Override
+                                public void onResponse(Call<Members> call, Response<Members> response) {
+                                    if(response.isSuccessful()){
+                                        List<MemberDTO> memberList=response.body().getMemberList();
+                                        if(memberList!=null){
+                                            if(memberList.isEmpty()){
+                                                handler.post(()->{
+                                                   empty.setVisibility(View.VISIBLE);
+                                                });
+                                            }else{
+                                                handler.post(()->{
+                                                   empty.setVisibility(View.INVISIBLE);
+                                                });
+                                            }
+                                            handler.post(()->{
+                                               fa.updateList(memberList);
+                                            });
+                                        }
+                                    }
+                                }
+
+                                @Override
+                                public void onFailure(Call<Members> call, Throwable t) {
+
+                                }
+                            });
+                        }
+
+                        @Override
+                        public void afterTextChanged(Editable s) {
+
+                        }
+                    });
                 } else {
-                    Log.i("Found MemberList", "Fail");
+                    /* Toast 메시지 */
                 }
             }
 
             @Override
             public void onFailure(Call<Members> call, Throwable t) {
-                Log.e("Found MemberList Error", t.getMessage());
+                /* Toast 메시지 */
             }
-        });
-
-        /* 검색 눌림 */
-        search.setOnClickListener(v -> {
-            String name = searchText.getText().toString();
-
-            mc.memberListByName(name, new Callback<Members>() {
-                @Override
-                public void onResponse(Call<Members> call, Response<Members> response) {
-                    if (response.isSuccessful()) {
-                        Members body = response.body();
-                        List<MemberDTO> memberList = body.getMemberList();
-                        fa = new FollowerAdapter(FriendAdd.this, memberList, body.getFollowingList());
-                        handler.post(() -> {
-                           memberListView.setAdapter(fa);
-                        });
-                        Log.i("Found MemberList By Name", "Success");
-                    } else {
-                        Log.i("Found MemberList By Name", "Fail");
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<Members> call, Throwable t) {
-                    Log.e("Found MemberList By Name Error", t.getMessage());
-                }
-            });
         });
     }
 
@@ -183,6 +192,7 @@ public class FriendAdd extends AppCompatActivity {
                 .show();
     }
 
+    /* 화면 이벤트 처리 */
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
         if (ev.getAction() == MotionEvent.ACTION_DOWN) {

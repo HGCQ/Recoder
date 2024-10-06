@@ -7,7 +7,6 @@ import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -25,7 +24,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
@@ -44,15 +42,12 @@ import yuhan.hgcq.client.model.dto.member.MemberDTO;
 import yuhan.hgcq.client.model.dto.team.MemberInTeamDTO;
 import yuhan.hgcq.client.model.dto.team.TeamDTO;
 import yuhan.hgcq.client.model.dto.team.TeamInviteForm;
-import yuhan.hgcq.client.model.dto.team.TeamUpdateForm;
 
 public class GroupSetting extends AppCompatActivity {
-
     /* View */
     TextView createGroupText;
-    ImageButton retouch, friendAdd;
+    ImageButton friendAdd;
     Button groupLeave, save;
-
     RecyclerView memberListView;
     RecyclerView memberSettingView;
 
@@ -63,20 +58,18 @@ public class GroupSetting extends AppCompatActivity {
     /* 받아올 값 */
     MemberDTO loginMember;
     TeamDTO teamDTO;
-    TeamUpdateForm tuf;
     FollowDTO followDTO;
 
-    /* 서버와 통신 */
+    /* http 통신 */
     TeamController tc;
     FollowController fc;
 
-    /* Toast */
+    /* 메인 스레드 */
     Handler handler = new Handler(Looper.getMainLooper());
 
     /* 뒤로 가기 */
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-
         switch (item.getItemId()) {
             case android.R.id.home:
                 Intent groupMainPage = new Intent(this, GroupMain.class);
@@ -91,11 +84,12 @@ public class GroupSetting extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         getSupportActionBar().setTitle("그룹 설정");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        super.onCreate(savedInstanceState);
 
         EdgeToEdge.enable(this);
+        /* Layout */
         setContentView(R.layout.activity_group_setting);
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
@@ -104,34 +98,28 @@ public class GroupSetting extends AppCompatActivity {
             return insets;
         });
 
-        /* 서버와 연결할 Controller 생성 */
+        /* 초기화 */
         tc = new TeamController(this);
         fc = new FollowController(this);
 
-        /* View와 Layout 연결 */
         createGroupText = findViewById(R.id.createGroupText);
-        retouch = findViewById(R.id.retouch);
         friendAdd = findViewById(R.id.friendAdd);
         groupLeave = findViewById(R.id.groupLeave);
         memberListView = findViewById(R.id.groupSetList);
         memberSettingView = findViewById(R.id.followingList);
         save = findViewById(R.id.save);
 
-
         /* 관련된 페이지 */
         Intent groupMainPage = new Intent(this, GroupMain.class);
 
-        Intent getIntent = getIntent();
         /* 받아 올 값 */
+        Intent getIntent = getIntent();
         loginMember = (MemberDTO) getIntent.getSerializableExtra("loginMember");
         teamDTO = (TeamDTO) getIntent.getSerializableExtra("teamDTO");
         followDTO = (FollowDTO) getIntent.getSerializableExtra("followDTO");
 
-
         /* 초기 설정 */
-
         createGroupText.setText(teamDTO.getName());
-
         tc.memberListInTeam(teamDTO.getTeamId(), new Callback<List<MemberInTeamDTO>>() {
             @Override
             public void onResponse(Call<List<MemberInTeamDTO>> call, Response<List<MemberInTeamDTO>> response) {
@@ -142,74 +130,29 @@ public class GroupSetting extends AppCompatActivity {
                     handler.post(() -> {
                         memberListView.setAdapter(mita);
                     });
-                    Log.i("Found MemberList In Team", "Success");
                 } else {
-                    Log.i("Found MemberList In Team", "Fail");
+                    /* Toast 메시지 */
                 }
             }
 
             @Override
             public void onFailure(Call<List<MemberInTeamDTO>> call, Throwable t) {
-                Log.e("Found MemberList In Team Error", t.getMessage());
-            }
-        });
-
-
-        /*그룹 이룸 수정*/
-        retouch.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onClick_setting_costume_save("그룹 이름을 수정하시겠습니까?\n((회장이면 그룹이 삭제됩니다))", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        String newName = createGroupText.getText().toString();
-                        teamDTO.setName(newName);
-                        createGroupText.setText(newName);
-                        tuf = new TeamUpdateForm();
-                        tuf.setName(newName);
-                        tuf.setTeamId(teamDTO.getTeamId());
-                        tc.updateTeam(tuf, new Callback<ResponseBody>() {
-                            @Override
-                            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                                if (response.isSuccessful()) {
-                                    handler.post(() -> {
-                                        Toast.makeText(GroupSetting.this, "그룹 이름이 수정되었습니다.", Toast.LENGTH_SHORT).show();
-                                    });
-                                    Log.i("Updated Group Name", "Success");
-                                    groupMainPage.putExtra("loginMember", loginMember);
-                                    groupMainPage.putExtra("teamDTO", teamDTO);
-                                } else {
-                                    Log.i("Error Parsing", "fail");
-                                }
-                            }
-
-                            @Override
-                            public void onFailure(Call<ResponseBody> call, Throwable t) {
-                                Log.e("update Group Name Error", t.getMessage());
-                            }
-                        });
-                    }
-                }, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        handler.post(() -> {
-                            Toast.makeText(GroupSetting.this, "취소했습니다.", Toast.LENGTH_SHORT).show();
-                        });
-                    }
-                });
+                /* Toast 메시지 */
             }
         });
 
         /* 저장 */
         save.setOnClickListener(v -> {
             List<Long> selectedMemberIds = fa.getSelectedItems();
-            TeamInviteForm form = new TeamInviteForm();
             if (selectedMemberIds.isEmpty()) {
                 Toast.makeText(v.getContext(), "선택된 친구가 없습니다.", Toast.LENGTH_SHORT).show();
                 return;
             }
+
+            TeamInviteForm form = new TeamInviteForm();
             form.setTeamId(teamDTO.getTeamId());
             form.setMembers(selectedMemberIds);
+
             onClick_setting_costume_save("초대하시겠습니까?", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
@@ -226,7 +169,6 @@ public class GroupSetting extends AppCompatActivity {
                                 handler.post(() -> {
                                     Toast.makeText(v.getContext(), "초대하지 못하였습니다.", Toast.LENGTH_SHORT).show();
                                 });
-
                             }
                         }
 
@@ -241,24 +183,16 @@ public class GroupSetting extends AppCompatActivity {
             }, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    handler.post(() -> {
-                        Toast.makeText(GroupSetting.this, "취소했습니다.", Toast.LENGTH_SHORT).show();
-                    });
-
+                    Toast.makeText(GroupSetting.this, "취소했습니다.", Toast.LENGTH_SHORT).show();
                 }
             });
-
-
         });
 
-
-        /*회원 초대 눌림*/
+        /* 회원 초대 */
         friendAdd.setOnClickListener(new View.OnClickListener() {
-
             @Override
             public void onClick(View v) {
                 fc.inviteFollowingList(teamDTO.getTeamId(), new Callback<List<MemberDTO>>() {
-
                     @Override
                     public void onResponse(Call<List<MemberDTO>> call, Response<List<MemberDTO>> response) {
                         if (response.isSuccessful()) {
@@ -268,23 +202,21 @@ public class GroupSetting extends AppCompatActivity {
                                 memberSettingView.setVisibility(View.VISIBLE);
                                 save.setVisibility(View.VISIBLE);
                                 memberSettingView.setAdapter(fa);
-
-
                             });
                         } else {
-                            Log.i("Error Pasing", "Fail");
+                            /* Toast 메시지 */
                         }
                     }
 
                     @Override
                     public void onFailure(Call<List<MemberDTO>> call, Throwable t) {
-                        Log.e("group setting Error", t.getMessage());
+                        /* Toast 메시지 */
                     }
                 });
             }
         });
 
-        /* 나가기 버튼 눌림 */
+        /* 나가기 */
         groupLeave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -298,26 +230,23 @@ public class GroupSetting extends AppCompatActivity {
                                     handler.post(() -> {
                                         Toast.makeText(GroupSetting.this, teamDTO.getName() + " 그룹에서 나갔습니다.", Toast.LENGTH_SHORT).show();
                                     });
-                                    Log.i("Delete Team", "Success");
                                     groupMainPage.putExtra("loginMember", loginMember);
                                     startActivity(groupMainPage);
                                 } else {
-                                    Log.i("Delete Team", "Fail");
+                                    /* Toast 메시지 */
                                 }
                             }
 
                             @Override
                             public void onFailure(Call<ResponseBody> call, Throwable t) {
-                                Log.e("Delete Team Error", t.getMessage());
+                                /* Toast 메시지 */
                             }
                         });
                     }
                 }, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        handler.post(() -> {
-                            Toast.makeText(GroupSetting.this, "취소했습니다.", Toast.LENGTH_SHORT).show();
-                        });
+                        Toast.makeText(GroupSetting.this, "취소했습니다.", Toast.LENGTH_SHORT).show();
                     }
                 });
             }
@@ -338,6 +267,7 @@ public class GroupSetting extends AppCompatActivity {
                 .show();
     }
 
+    /* 화면 이벤트 처리 */
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
         if (ev.getAction() == MotionEvent.ACTION_DOWN) {

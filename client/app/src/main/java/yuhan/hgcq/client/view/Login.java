@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.content.DialogInterface;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -24,7 +23,6 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -35,18 +33,17 @@ import yuhan.hgcq.client.model.dto.member.LoginForm;
 import yuhan.hgcq.client.model.dto.member.MemberDTO;
 
 public class Login extends AppCompatActivity {
-
     /* View */
     ImageButton login, join;
     EditText email, pw;
 
-    /* 서버와 통신 */
+    /* http 통신 */
     MemberController mc;
 
-    /* 쿠기 */
+    /* Cookie */
     NetworkClient client;
 
-    /* Toast */
+    /* 메인 스레드 */
     Handler handler = new Handler(Looper.getMainLooper());
 
     /* 뒤로 가기 */
@@ -65,11 +62,12 @@ public class Login extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         getSupportActionBar().setTitle("로그인");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        super.onCreate(savedInstanceState);
 
         EdgeToEdge.enable(this);
+        /* Layout */
         setContentView(R.layout.activity_login);
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
@@ -78,16 +76,13 @@ public class Login extends AppCompatActivity {
             return insets;
         });
 
-        /* 쿠키 */
+        /* 초기화 */
         client = NetworkClient.getInstance(this.getApplicationContext());
 
-        /* 서버와 연결할 Controller 생성 */
         mc = new MemberController(this);
 
-        /* View와 Layout 연결 */
         login = findViewById(R.id.login);
         join = findViewById(R.id.join);
-
         email = findViewById(R.id.id);
         pw = findViewById(R.id.password);
 
@@ -95,7 +90,7 @@ public class Login extends AppCompatActivity {
         Intent groupMainPage = new Intent(this, GroupMain.class);
         Intent joinPage = new Intent(this, Join.class);
 
-        /* 로그인 버튼 눌림 */
+        /* 로그인 */
         login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -116,13 +111,11 @@ public class Login extends AppCompatActivity {
                             handler.post(() -> {
                                 Toast.makeText(Login.this, "로그인 성공", Toast.LENGTH_SHORT).show();
                             });
-                            Log.i("Login", "Success");
                             startActivity(groupMainPage);
                         } else {
                             handler.post(() -> {
                                 Toast.makeText(Login.this, "로그인 실패", Toast.LENGTH_SHORT).show();
                             });
-                            Log.i("Login", "Fail");
                         }
                     }
 
@@ -131,13 +124,12 @@ public class Login extends AppCompatActivity {
                         handler.post(() -> {
                             Toast.makeText(Login.this, "서버와 통신 실패했습니다. 네트워크를 확인해주세요.", Toast.LENGTH_SHORT).show();
                         });
-                        Log.e("Login Error", t.getMessage());
                     }
                 });
             }
         });
 
-        /* 회원 가입 버튼 눌림 */
+        /* 회원 가입 */
         join.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -160,6 +152,7 @@ public class Login extends AppCompatActivity {
                 .show();
     }
 
+    /* 화면 이벤트 처리 */
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
         if (ev.getAction() == MotionEvent.ACTION_DOWN) {

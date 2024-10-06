@@ -13,4 +13,5 @@ public class UploadPhotoForm implements Serializable {
     private Long albumId;
     private List<MultipartFile> files;
     private List<String> creates;
+    private List<String> regions;
 }

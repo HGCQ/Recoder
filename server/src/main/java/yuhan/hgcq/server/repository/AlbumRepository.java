@@ -7,7 +7,9 @@ import org.springframework.stereotype.Repository;
 import yuhan.hgcq.server.domain.Album;
 import yuhan.hgcq.server.domain.Team;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Repository
 @RequiredArgsConstructor
@@ -15,11 +17,6 @@ public class AlbumRepository {
     @PersistenceContext
     private final EntityManager em;
 
-    /**
-     * 앨범 저장
-     *
-     * @param album 앨범
-     */
     public Long save(Album album) {
         if (album.getId() == null) {
             em.persist(album);
@@ -29,11 +26,6 @@ public class AlbumRepository {
         return album.getId();
     }
 
-    /**
-     * 앨범 삭제
-     *
-     * @param id 앨범 id
-     */
     public void delete(Long id) {
         Album find = findOne(id);
         em.remove(find);
@@ -45,51 +37,40 @@ public class AlbumRepository {
                 .executeUpdate();
     }
 
-    /**
-     * 앨범 조회
-     *
-     * @param id 앨범 id
-     * @return 앨범
-     */
     public Album findOne(Long id) {
         return em.find(Album.class, id);
     }
 
-    /**
-     * 그룹에 속한 앨범 리스트 조회
-     *
-     * @param team 그룹
-     * @return 앨범 리스트
-     */
+    public Album findOneByName(Team team, String name) {
+        return em.createQuery("select a from Album a where a.team = :team and a.name = :name", Album.class)
+                .setParameter("team", team)
+                .setParameter("name", name)
+                .getResultList().get(0);
+    }
+
     public List<Album> findAll(Team team) {
-        return em.createQuery("select a from Album a where a.team = :team and a.isDeleted = false order by a.startDate desc", Album.class)
+        return em.createQuery("select a from Album a where a.team = :team and a.isDeleted = false order by a.name", Album.class)
                 .setParameter("team", team)
                 .getResultList();
     }
 
-    /**
-     * 그룹에 속한 앨범 리스트 이름으로 조회
-     *
-     * @param team 그룹
-     * @param name 이름
-     * @return 앨범 리스트
-     */
     public List<Album> findByName(Team team, String name) {
-        return em.createQuery("select a from Album a where a.team = :team and a.isDeleted = false and a.name like :name order by a.startDate desc", Album.class)
+        return em.createQuery("select a from Album a where a.team = :team and a.isDeleted = false and a.name like :name order by a.name", Album.class)
                 .setParameter("team", team)
                 .setParameter("name", "%" + name + "%")
                 .getResultList();
     }
 
-    /**
-     * 휴지통에 속한 앨범 리스트 조회
-     *
-     * @param team 그룹
-     * @return 앨범 리스트
-     */
     public List<Album> findByDeleted(Team team) {
         return em.createQuery("select a from Album a where a.team = :team and a.isDeleted = true order by a.deletedAt", Album.class)
                 .setParameter("team", team)
                 .getResultList();
+    }
+
+    public Set<String> findAlbumName(Team team) {
+        List<String> nameList = em.createQuery("select a.name from Album a where a.team = :team", String.class)
+                .setParameter("team", team)
+                .getResultList();
+        return new HashSet<>(nameList);
     }
 }
