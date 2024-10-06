@@ -3,6 +3,8 @@
     <item
         android:width="25dp"
         android:height="25dp"
-        android:drawable="@drawable/search"/>
+        android:drawable="@drawable/search"
+        android:tint="#808080"/>
+
 
 </layer-list>

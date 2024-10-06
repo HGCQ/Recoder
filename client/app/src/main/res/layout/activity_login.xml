@@ -155,6 +155,7 @@
                 android:layout_gravity="center"
                 android:layout_marginTop="-20dp"
                 android:padding="0dp"
+                android:elevation="10dp"
                 android:textColor="@color/colorRed"
                 android:background="#00000000"
                 android:fontFamily="@font/ibm_semibold"
