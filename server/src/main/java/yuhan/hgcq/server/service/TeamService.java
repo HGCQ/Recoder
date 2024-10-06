@@ -32,7 +32,7 @@ public class TeamService {
     private final ChatRepository cr;
     private final PhotoRepository pr;
 
-    private final static String DIRECTORY_PATH = "D:" + File.separator
+    private final static String DIRECTORY_PATH = File.separator
             + "app" + File.separator
             + "images" + File.separator
             + "team" + File.separator;

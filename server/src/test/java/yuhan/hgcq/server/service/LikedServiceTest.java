@@ -72,8 +72,8 @@ class LikedServiceTest {
         t1Id = ts.createTeam(t1);
         t2Id = ts.createTeam(t2);
 
-        Album a1 = new Album(t1,  "a1");
-        Album a2 = new Album(t1,  "a2");
+        Album a1 = new Album(t1, "a1");
+        Album a2 = new Album(t1, "a2");
 
         try {
             a1Id = as.create(fm1, a1);
@@ -82,8 +82,8 @@ class LikedServiceTest {
             fail();
         }
 
-        Photo p1 = new Photo(a1, "p1", "/t1/a1/p1", LocalDateTime.now());
-        Photo p2 = new Photo(a1, "p2", "/t1/a1/p2", LocalDateTime.now());
+        Photo p1 = new Photo(a1, "p1", "/t1/a1/p1", "region", LocalDateTime.now());
+        Photo p2 = new Photo(a1, "p2", "/t1/a1/p2", "region", LocalDateTime.now());
 
         p1Id = ps.savePhoto(p1);
         p2Id = ps.savePhoto(p2);
@@ -119,7 +119,7 @@ class LikedServiceTest {
         find = ls.searchOne(m1, p1);
         assertThat(find.getIsLiked()).isFalse();
     }
-    
+
     @Test
     @DisplayName("좋아요한 사진 리스트")
     void photoList() {
