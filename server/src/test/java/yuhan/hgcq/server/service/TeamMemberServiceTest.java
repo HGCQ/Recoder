@@ -295,8 +295,8 @@ class TeamMemberServiceTest {
             fail();
         }
 
-        List<Team> byt = tms.searchTeamList(m2, "t");
-        List<Team> by2 = tms.searchTeamList(m2, "2");
+        List<Team> byt = tms.searchTeamList(m2);
+        List<Team> by2 = tms.searchTeamList(m2);
 
         assertThat(byt).hasSize(2).contains(t1, t2);
         assertThat(by2).hasSize(1).contains(t2);

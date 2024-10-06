@@ -80,12 +80,12 @@ class PhotoServiceTest {
             fail();
         }
     }
-    
+
     @Test
     @DisplayName("사진 저장")
     void savePhoto() {
         Album a1 = as.searchOne(a1Id);
-        Photo p1 = new Photo(a1, "p1", "/t1/a1/p1", LocalDateTime.now());
+        Photo p1 = new Photo(a1, "p1", "/t1/a1/p1", "region", LocalDateTime.now());
 
         Long saveId = ps.savePhoto(p1);
         Photo find = ps.searchOne(saveId);
@@ -97,7 +97,7 @@ class PhotoServiceTest {
     @DisplayName("사진 삭제")
     void deletePhoto() {
         Album a1 = as.searchOne(a1Id);
-        Photo p1 = new Photo(a1, "p1", "/t1/a1/p1", LocalDateTime.now());
+        Photo p1 = new Photo(a1, "p1", "/t1/a1/p1", "region", LocalDateTime.now());
 
         Long saveId = ps.savePhoto(p1);
         Photo find = ps.searchOne(saveId);
@@ -112,7 +112,7 @@ class PhotoServiceTest {
     @DisplayName("사진 삭제 취소")
     void cancelDeletePhoto() {
         Album a1 = as.searchOne(a1Id);
-        Photo p1 = new Photo(a1, "p1", "/t1/a1/p1", LocalDateTime.now());
+        Photo p1 = new Photo(a1, "p1", "/t1/a1/p1", "region", LocalDateTime.now());
 
         Long saveId = ps.savePhoto(p1);
         Photo find = ps.searchOne(saveId);
@@ -125,12 +125,12 @@ class PhotoServiceTest {
 
         assertThat(find.getIsDeleted()).isFalse();
     }
-    
+
     @Test
     @DisplayName("휴지통 사진 삭제")
     void trash() {
         Album a1 = as.searchOne(a1Id);
-        Photo p1 = new Photo(a1, "p1", "/t1/a1/p1", LocalDateTime.of(2024, 8, 1, 1, 1, 1));
+        Photo p1 = new Photo(a1, "p1", "/t1/a1/p1", "region", LocalDateTime.of(2024, 8, 1, 1, 1, 1));
 
         Long saveId = ps.savePhoto(p1);
         Photo find = ps.searchOne(saveId);
@@ -144,26 +144,26 @@ class PhotoServiceTest {
 
         assertThrows(IllegalArgumentException.class, () -> ps.searchOne(saveId));
     }
-    
+
     @Test
     @DisplayName("경로로 사진 검색")
     void searchOneByPath() {
         Album a1 = as.searchOne(a1Id);
-        Photo p1 = new Photo(a1, "p1", "/t1/a1/p1", LocalDateTime.of(2024, 8, 1, 1, 1, 1));
+        Photo p1 = new Photo(a1, "p1", "/t1/a1/p1", "region", LocalDateTime.of(2024, 8, 1, 1, 1, 1));
 
         Long saveId = ps.savePhoto(p1);
         Photo find = ps.searchOne("/t1/a1/p1");
 
         assertThat(find).isEqualTo(p1);
     }
-    
+
     @Test
     @DisplayName("앨범 이동")
     void move() {
         Album a1 = as.searchOne(a1Id);
         Album a2 = as.searchOne(a2Id);
 
-        Photo p1 = new Photo(a1, "p1", "/t1/a1/p1", LocalDateTime.of(2024, 8, 1, 1, 1, 1));
+        Photo p1 = new Photo(a1, "p1", "/t1/a1/p1", "region", LocalDateTime.of(2024, 8, 1, 1, 1, 1));
         Long saveId = ps.savePhoto(p1);
 
         List<Photo> photoList = new ArrayList<>();

@@ -11,6 +11,9 @@ public class PhotoConfig implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/images/**")
-                .addResourceLocations("file:///D:/app/images/");
+                .addResourceLocations("/app/images/");
+
+        registry.addResourceHandler("/temp/**")
+                .addResourceLocations("/app/temp/");
     }
 }
