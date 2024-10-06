@@ -7,6 +7,9 @@ import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -37,8 +40,10 @@ import yuhan.hgcq.client.R;
 import yuhan.hgcq.client.adapter.FollowerAdapter;
 import yuhan.hgcq.client.adapter.FollowingAdapter;
 import yuhan.hgcq.client.controller.FollowController;
+import yuhan.hgcq.client.model.dto.follow.FollowDTO;
 import yuhan.hgcq.client.model.dto.follow.Follower;
 import yuhan.hgcq.client.model.dto.member.MemberDTO;
+import yuhan.hgcq.client.model.dto.team.TeamDTO;
 
 public class FriendList extends AppCompatActivity {
     /* View */
@@ -107,9 +112,60 @@ public class FriendList extends AppCompatActivity {
 
         /* 초기 설정 */
         fc.followingList(new Callback<List<MemberDTO>>() {
+
             @Override
             public void onResponse(Call<List<MemberDTO>> call, Response<List<MemberDTO>> response) {
                 if (response.isSuccessful()) {
+                    searchText.addTextChangedListener(new TextWatcher() {
+                        @Override
+                        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                        }
+
+                        @Override
+                        public void onTextChanged(CharSequence s, int start, int before, int count) {
+                            String text=s.toString();
+                            fc.searchFollowingByName("%" + text + "%", new Callback<List<MemberDTO>>() {
+                                @Override
+                                public void onResponse(Call<List<MemberDTO>> call, Response<List<MemberDTO>> response) {
+                                    if (response.isSuccessful()){
+                                        List<MemberDTO> following=response.body();
+                                        if(following!=null){
+                                            handler.post(()->{
+                                                if(following.isEmpty()){
+                                                    empty.setVisibility(View.VISIBLE);
+                                                }else{
+                                                    empty.setVisibility(View.INVISIBLE);
+                                                }
+                                            });
+                                            handler.post(() -> {
+                                                fga.updateList(following);
+                                            });
+
+                                        }else{
+                                            Log.i("Found Private Follower By Name", "Fail");
+                                        }
+
+                                    }else{
+                                        Log.e("Search Error", "Failed to fetch Follower: " + response.message());
+                                    }
+                                }
+
+                                @Override
+                                public void onFailure(Call<List<MemberDTO>> call, Throwable t) {
+                                    Log.e("Search Error", "Request failed: " + t.getMessage());
+                                    handler.post(() -> {
+                                        Toast.makeText(FriendList.this, "팔로잉 검색에 실패했습니다.", Toast.LENGTH_SHORT).show();
+                                    });
+                                }
+                            });
+                        }
+
+                        @Override
+                        public void afterTextChanged(Editable s) {
+
+                        }
+                    });
                     List<MemberDTO> followingList = response.body();
                     if (followingList.isEmpty()) {
                         handler.post(() -> {
@@ -139,6 +195,59 @@ public class FriendList extends AppCompatActivity {
         follower.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                searchText.addTextChangedListener(new TextWatcher() {
+
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+                        String text=s.toString();
+
+                        fc.searchFollowerByName("%" + text + "%", new Callback<Follower>() {
+                            @Override
+                            public void onResponse(Call<Follower> call, Response<Follower> response) {
+                                if (response.isSuccessful()){
+                                    List<MemberDTO> followers=response.body().getFollowerList();
+                                    if(followers!=null){
+                                        if(followers.isEmpty()){
+                                            handler.post(()->{
+                                               empty.setVisibility(View.VISIBLE);
+                                            });
+                                        }else{
+                                            handler.post(()->{
+                                               empty.setVisibility(View.INVISIBLE);
+                                            });
+                                        }
+                                        handler.post(() -> {
+                                            fra.updateList(followers);
+                                        });
+                                    }else{
+                                        Log.i("Found Private Follower By Name", "Fail");
+                                    }
+
+                                }else{
+                                    Log.e("Search Error", "Failed to fetch Follower: " + response.message());
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call<Follower> call, Throwable t) {
+                                Log.e("Search Error", "Request failed: " + t.getMessage());
+                                handler.post(() -> {
+                                    Toast.makeText(FriendList.this, "팔로워 검색에 실패했습니다.", Toast.LENGTH_SHORT).show();
+                                });
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable s) {
+
+                    }
+                });
                 fc.followerList(new Callback<Follower>() {
                     @Override
                     public void onResponse(Call<Follower> call, Response<Follower> response) {
@@ -173,12 +282,16 @@ public class FriendList extends AppCompatActivity {
                     }
                 });
             }
+
         });
+
 
         /* 팔로잉 */
         following.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View v) {
+
                 fc.followingList(new Callback<List<MemberDTO>>() {
                     @Override
                     public void onResponse(Call<List<MemberDTO>> call, Response<List<MemberDTO>> response) {
