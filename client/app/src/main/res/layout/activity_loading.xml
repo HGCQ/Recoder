@@ -21,6 +21,7 @@
         android:id="@+id/loading"
         android:layout_width="440dp"
         android:layout_height="230dp"
+        android:elevation="30dp"
         android:layout_gravity="center"
         app:srcCompat="@drawable/loading" />
 
