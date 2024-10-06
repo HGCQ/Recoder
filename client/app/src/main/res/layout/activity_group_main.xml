@@ -20,7 +20,7 @@
             android:layout_marginStart="20dp"
             android:layout_marginEnd="20dp"
             android:gravity="center"
-            android:padding="10dp"
+            android:elevation="10dp"
             app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
             app:spanCount="2" />
     </LinearLayout>
@@ -51,15 +51,16 @@
 
     <EditText
         android:id="@+id/searchText"
-        android:hint="앨범 이름, 장소..."
-        android:gravity="center"
+        android:hint=" 그룹 이름, 장소..."
+        android:gravity="center_vertical"
         android:paddingTop="5dp"
         android:textSize="15sp"
+        android:textColor="@color/black"
         android:drawableLeft="@drawable/sizesearch"
         android:layout_width="270dp"
         android:layout_height="35dp"
         android:layout_marginTop="60dp"
-        android:background="@drawable/text"
+        android:background="@drawable/edittext"
         android:fontFamily="@font/ibm_regular"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.48"
