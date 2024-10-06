@@ -6,6 +6,9 @@ import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -34,6 +37,7 @@ import retrofit2.Response;
 import yuhan.hgcq.client.R;
 import yuhan.hgcq.client.adapter.TeamAdapter;
 import yuhan.hgcq.client.controller.TeamController;
+import yuhan.hgcq.client.model.dto.album.AlbumDTO;
 import yuhan.hgcq.client.model.dto.member.MemberDTO;
 import yuhan.hgcq.client.model.dto.team.TeamDTO;
 
@@ -164,6 +168,58 @@ public class GroupMain extends AppCompatActivity {
             public void onClick(View v) {
                 createGroupPage.putExtra("loginMember", loginMember);
                 startActivity(createGroupPage);
+            }
+        });
+
+        searchText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                String text=s.toString();
+                tc.searchTeam("%" + text + "%", new Callback<List<TeamDTO>>() {
+                    @Override
+                    public void onResponse(Call<List<TeamDTO>> call, Response<List<TeamDTO>> response) {
+
+                       if (response.isSuccessful()){
+                           List<TeamDTO> teamList = response.body();
+
+                        if(teamList!=null){
+                            if(teamList.isEmpty()){
+                                handler.post(()->{
+                                    empty.setVisibility(View.VISIBLE);
+                                });
+                            }else{
+                                handler.post(()->{
+                                   empty.setVisibility(View.INVISIBLE);
+                                });
+                            }
+                            handler.post(() -> {
+                                ta.updateList(teamList);
+                            });
+                        }else{
+                            Log.i("Found Private Group By Name", "Fail");
+                        }
+                       }else{
+                           Log.e("Search Error", "Failed to fetch Groups: " + response.message());
+                       }
+                    }
+                    @Override
+                    public void onFailure(Call<List<TeamDTO>> call, Throwable t) {
+                        Log.e("Search Error", "Request failed: " + t.getMessage());
+                        handler.post(() -> {
+                            Toast.makeText(GroupMain.this, "그룹 검색에 실패했습니다.", Toast.LENGTH_SHORT).show();
+                        });
+                    }
+                });
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
             }
         });
 

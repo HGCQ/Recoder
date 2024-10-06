@@ -23,6 +23,7 @@ import yuhan.hgcq.client.R;
 import yuhan.hgcq.client.controller.FollowController;
 import yuhan.hgcq.client.model.dto.follow.FollowDTO;
 import yuhan.hgcq.client.model.dto.member.MemberDTO;
+import yuhan.hgcq.client.model.dto.team.TeamDTO;
 
 public class FollowerAdapter extends RecyclerView.Adapter<FollowerAdapter.FollowerViewHolder> {
 
@@ -163,5 +164,10 @@ public class FollowerAdapter extends RecyclerView.Adapter<FollowerAdapter.Follow
     @Override
     public int getItemCount() {
         return followerList.size();
+    }
+    public void updateList(List<MemberDTO> newList) {
+        followerList.clear();
+        followerList.addAll(newList);
+        notifyDataSetChanged();
     }
 }

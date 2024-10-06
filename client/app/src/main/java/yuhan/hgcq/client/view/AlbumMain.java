@@ -15,6 +15,9 @@ import android.os.Handler;
 import android.os.Looper;
 import android.provider.MediaStore;
 import android.provider.Settings;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -77,6 +80,7 @@ public class AlbumMain extends AppCompatActivity {
     /* 받아올 값 */
     private boolean isPrivate;
     TeamDTO teamDTO;
+    AlbumDTO albumDTO;
     MemberDTO loginMember;
 
     /* http 통신 */
@@ -179,13 +183,17 @@ public class AlbumMain extends AppCompatActivity {
 
         /* 개인 */
         if (isPrivate) {
+
+
             ar.searchAll(new Callback<List<AlbumDTO>>() {
                 @Override
                 public void onSuccess(List<AlbumDTO> result) {
-                    if (result != null) {
-                        if (result.isEmpty()) {
+                    List<AlbumDTO> albumList = result;
+                    if (albumList != null) {
+                        if (albumList.isEmpty()) {
                             handler.post(() -> {
                                 empty.setVisibility(View.VISIBLE);
+                                aa.updateList(result);
 
                             });
                         } else {
@@ -216,6 +224,54 @@ public class AlbumMain extends AppCompatActivity {
                                 startActivity(galleryPage);
                             }
                         });
+                        searchText.addTextChangedListener(new TextWatcher() {
+
+                            @Override
+                            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                            }
+
+                            @Override
+                            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                                String text = s.toString();
+                                ar.searchByName("%" + text + "%", new Callback<List<AlbumDTO>>() {
+                                    @Override
+                                    public void onSuccess(List<AlbumDTO> result) {
+                                        List<AlbumDTO> albumList = result;
+
+                                        // Check if album list is not null
+                                        if (albumList != null) {
+                                            // Update the empty view based on whether the album list is empty or not
+                                            if (albumList.isEmpty()) {
+                                                handler.post(() -> {
+                                                    empty.setVisibility(View.VISIBLE); // Show empty if no albums found
+                                                });
+                                            } else {
+                                                handler.post(() -> {
+                                                    empty.setVisibility(View.INVISIBLE); // Hide empty if albums are found
+                                                });
+                                            }
+
+                                            // Update the adapter with the new album list
+                                            handler.post(() -> {
+                                                aa.updateList(albumList);
+                                            });
+                                        }
+
+
+
+                                    }
+                                    @Override
+                                    public void onError(Exception e) {
+                                    }
+                                });
+                            }
+
+                            @Override
+                            public void afterTextChanged(Editable s) {
+
+                            }
+                        });
                     } else {
                         /* Toast 메시지 */
                     }
@@ -231,6 +287,68 @@ public class AlbumMain extends AppCompatActivity {
         else {
             if (teamDTO != null) {
                 Long teamId = teamDTO.getTeamId();
+
+                searchText.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                        // No action needed here
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+                        // Get the updated text every time the text changes
+                        String text = s.toString();
+
+                        // Perform the search in real-time whenever the user types
+                        ac.searchAlbumByName(teamId, "%" + text + "%", new retrofit2.Callback<List<AlbumDTO>>() {
+                            @Override
+                            public void onResponse(Call<List<AlbumDTO>> call, Response<List<AlbumDTO>> response) {
+                                if (response.isSuccessful()) {
+                                    List<AlbumDTO> albumList = response.body();
+
+                                    // Check if album list is not null
+                                    if (albumList != null) {
+                                        // Update the empty view based on whether the album list is empty or not
+                                        if (albumList.isEmpty()) {
+                                            handler.post(() -> {
+                                                empty.setVisibility(View.VISIBLE); // Show empty if no albums found
+                                            });
+                                        } else {
+                                            handler.post(() -> {
+                                                empty.setVisibility(View.INVISIBLE); // Hide empty if albums are found
+                                            });
+                                        }
+
+                                        // Update the adapter with the new album list
+                                        handler.post(() -> {
+                                            aa.updateList(albumList);
+                                        });
+                                    } else {
+                                        Log.i("Found Private Album By Name", "Fail");
+                                    }
+                                } else {
+                                    // Handle unsuccessful response
+                                    Log.e("Search Error", "Failed to fetch albums: " + response.message());
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call<List<AlbumDTO>> call, Throwable t) {
+                                // Handle network or request failure
+                                Log.e("Search Error", "Request failed: " + t.getMessage());
+                                handler.post(() -> {
+                                    Toast.makeText(AlbumMain.this, "앨범 검색에 실패했습니다.", Toast.LENGTH_SHORT).show();
+                                });
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable s) {
+                        // You can perform any additional actions after text changes if necessary
+                    }
+                });
+
                 ac.albumList(teamId, new retrofit2.Callback<List<AlbumDTO>>() {
                     @Override
                     public void onResponse(Call<List<AlbumDTO>> call, Response<List<AlbumDTO>> response) {

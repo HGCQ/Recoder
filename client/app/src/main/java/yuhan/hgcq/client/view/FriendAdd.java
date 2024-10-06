@@ -7,6 +7,8 @@ import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -118,6 +120,51 @@ public class FriendAdd extends AppCompatActivity {
                     fa = new FollowerAdapter(FriendAdd.this, memberList, body.getFollowingList());
                     handler.post(() -> {
                         memberListView.setAdapter(fa);
+                    });
+                    searchText.addTextChangedListener(new TextWatcher() {
+                        @Override
+                        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                        }
+
+                        @Override
+                        public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                            String text=s.toString();
+
+                            mc.memberListByName("%" + text + "%", new Callback<Members>() {
+                                @Override
+                                public void onResponse(Call<Members> call, Response<Members> response) {
+                                    if(response.isSuccessful()){
+                                        List<MemberDTO> memberList=response.body().getMemberList();
+                                        if(memberList!=null){
+                                            if(memberList.isEmpty()){
+                                                handler.post(()->{
+                                                   empty.setVisibility(View.VISIBLE);
+                                                });
+                                            }else{
+                                                handler.post(()->{
+                                                   empty.setVisibility(View.INVISIBLE);
+                                                });
+                                            }
+                                            handler.post(()->{
+                                               fa.updateList(memberList);
+                                            });
+                                        }
+                                    }
+                                }
+
+                                @Override
+                                public void onFailure(Call<Members> call, Throwable t) {
+
+                                }
+                            });
+                        }
+
+                        @Override
+                        public void afterTextChanged(Editable s) {
+
+                        }
                     });
                 } else {
                     /* Toast 메시지 */
