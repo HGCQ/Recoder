@@ -3,4 +3,5 @@
         android:width="30dp"
         android:height="25dp"
         android:drawable="@drawable/trash2" />
+
 </layer-list>

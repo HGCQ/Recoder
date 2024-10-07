@@ -6,7 +6,6 @@ import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -38,7 +37,6 @@ import yuhan.hgcq.client.model.dto.member.MemberDTO;
 import yuhan.hgcq.client.model.dto.photo.PhotoDTO;
 
 public class Like extends AppCompatActivity {
-
     /* View */
     TextView empty;
     RecyclerView likeListView;
@@ -47,27 +45,26 @@ public class Like extends AppCompatActivity {
     /* Adapter */
     LikeAdapter la;
 
-    /* 개인, 공유 확인 */
-    boolean isPrivate;
-
     /* 받아올 값 */
+    boolean isPrivate;
     MemberDTO loginMember;
 
-    /* 서버와 통신 */
+    /* http 통신 */
     LikedController lc;
 
-    /* 로컬 DB */
+    /* Room DB */
     PhotoRepository pr;
 
-    /* Toast */
+    /* 메인 스레드 */
     Handler handler = new Handler(Looper.getMainLooper());
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        getSupportActionBar().setTitle("즐겨찾기");
         super.onCreate(savedInstanceState);
+        getSupportActionBar().setTitle("즐겨찾기");
 
         EdgeToEdge.enable(this);
+        /* Layout */
         setContentView(R.layout.activity_like);
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
@@ -76,17 +73,13 @@ public class Like extends AppCompatActivity {
             return insets;
         });
 
-        /* 서버와 연결할 Controller 생성 */
+        /* 초기화 */
         lc = new LikedController(this);
 
-        /* 로컬 DB 연결할 Repository 생성 */
         pr = new PhotoRepository(this);
 
-        /* View와 Layout 연결 */
         empty = findViewById(R.id.empty);
-
         likeListView = findViewById(R.id.likeList);
-
         navi = findViewById(R.id.bottom_navigation_view);
 
         /* 관련된 페이지 */
@@ -97,16 +90,16 @@ public class Like extends AppCompatActivity {
         Intent myPage = new Intent(this, MyPage.class);
         Intent photoPage = new Intent(this, Photo.class);
 
-        Intent getIntent = getIntent();
-        /* 개인, 공유 확인 */
-        isPrivate = getIntent().getBooleanExtra("isPrivate", false);
-
         /* 받아 올 값 */
+        Intent getIntent = getIntent();
+        isPrivate = getIntent().getBooleanExtra("isPrivate", false);
         loginMember = (MemberDTO) getIntent.getSerializableExtra("loginMember");
 
-        /* 개인 초기 설정 */
+        /* 초기 설정 */
+
+        /* 개인 */
         if (isPrivate) {
-            getSupportActionBar().setTitle("[개인] 즐겨찾는 항목");
+            getSupportActionBar().setTitle("[개인] 좋아요");
             pr.searchByLike(new Callback<List<PhotoDTO>>() {
                 @Override
                 public void onSuccess(List<PhotoDTO> result) {
@@ -133,20 +126,17 @@ public class Like extends AppCompatActivity {
                             startActivity(photoPage);
                         }
                     });
-                    Log.i("Found Private LikeList", "Success");
                 }
 
                 @Override
                 public void onError(Exception e) {
-                    Log.e("Found Private LikeList", e.getMessage());
+                    /* Toast 메시지 */
                 }
             });
-
         }
-
-        /* 공유 초기 설정 */
+        /* 공유 */
         else {
-            getSupportActionBar().setTitle("[공유] 즐겨찾는 항목");
+            getSupportActionBar().setTitle("[공유] 좋아요");
             lc.likedList(new retrofit2.Callback<List<PhotoDTO>>() {
                 @Override
                 public void onResponse(Call<List<PhotoDTO>> call, Response<List<PhotoDTO>> response) {
@@ -174,20 +164,19 @@ public class Like extends AppCompatActivity {
                                 startActivity(photoPage);
                             }
                         });
-                        Log.i("Found Shared LikeList", "Success");
                     } else {
-                        Log.i("Found Shared LikeList", "Fail");
+                        /* Toast 메시지 */
                     }
                 }
 
                 @Override
                 public void onFailure(Call<List<PhotoDTO>> call, Throwable t) {
-                    Log.e("Found Shared LikeList Error", t.getMessage());
+                    /* Toast 메시지 */
                 }
             });
         }
 
-        /* 내비게이션 바 */
+        /* 네비게이션 */
         navi.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
@@ -237,6 +226,7 @@ public class Like extends AppCompatActivity {
         });
     }
 
+    /* 화면 이벤트 처리 */
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
         if (ev.getAction() == MotionEvent.ACTION_DOWN) {

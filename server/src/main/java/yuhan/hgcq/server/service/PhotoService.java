@@ -18,11 +18,14 @@ import yuhan.hgcq.server.repository.TeamRepository;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @Transactional(readOnly = true)
@@ -36,7 +39,7 @@ public class PhotoService {
     private final LikedRepository lr;
 
     private final static int DELETE_DAY = 30;
-    private final static String DIRECTORY_PATH = "D:" + File.separator
+    private final static String DIRECTORY_PATH = File.separator
             + "app" + File.separator
             + "images" + File.separator;
 
@@ -54,6 +57,28 @@ public class PhotoService {
         Long saveId = pr.save(photo);
         log.info("Save Photo : {}", photo);
         return saveId;
+    }
+
+    @Transactional
+    public void savePhoto(Album album, String path, String region, String create) throws IOException {
+        Path tempPath = Paths.get(path);
+        Long albumId = album.getId();
+
+        if (!Files.exists(tempPath)) {
+            throw new IOException("Temp file does not exist");
+        }
+
+        String dirPath = DIRECTORY_PATH + albumId + File.separator;
+        String name = tempPath.getFileName().toString();
+        Path newPath = Paths.get(dirPath + name);
+
+        Files.move(tempPath, newPath, StandardCopyOption.REPLACE_EXISTING);
+
+        String imagePath = "/images/" + albumId + "/" + name;
+        Photo p = new Photo(album, name, imagePath, region, LocalDateTime.parse(create));
+
+        pr.save(p);
+        log.info("Save Photo : {}", p);
     }
 
     /**
@@ -238,7 +263,7 @@ public class PhotoService {
         Long teamId = form.getTeamId();
         Team ft = tr.findOne(teamId);
 
-        List<Album> albumList = ar.findAll(ft);
+        Set<String> albumNames = ar.findAlbumName(ft);
         List<MultipartFile> files = form.getFiles();
         List<String> creates = form.getCreates();
         List<String> regions = form.getRegions();
@@ -246,40 +271,122 @@ public class PhotoService {
         int size = files.size();
 
         for (int i = 0; i < size; i++) {
+            String region = regions.get(i);
+            Album fa = null;
 
-
-            for (Album album : albumList) {
-                List<String> nameList = pr.findNameAll(album);
-
-                if (true) {
-                    Long albumId = album.getId();
-
-                    try {
-                        String newPath = DIRECTORY_PATH + albumId + File.separator;
-                        File directory = new File(newPath);
-
-                        if (!directory.exists()) {
-                            directory.mkdirs();
-                        }
-
-                        MultipartFile file = files.get(i);
-                        String name = file.getOriginalFilename();
-                        if (nameList.contains(name)) {
-                            continue;
-                        }
-                        Path path = Paths.get(newPath + name);
-                        file.transferTo(path);
-                        String imagePath = "/images/" + albumId + "/" + name;
-
-//                        Photo p = new Photo();
-//                        pr.save(p);
-//
-//                        log.info("AutoSave Photo : {}", p);
-                    } catch (IOException e) {
-                        log.error("AutoSave Photo Error");
-                        throw new IOException();
-                    }
+            if (region.equals("null")) {
+                if (albumNames.contains("위치 정보 없음")) {
+                    fa = ar.findOneByName(ft, "위치 정보 없음");
+                } else {
+                    Album album = new Album(ft, "위치 정보 없음");
+                    Long saveId = ar.save(album);
+                    log.info("Save Album : {}", album);
+                    fa = ar.findOne(saveId);
+                    albumNames.add(fa.getName());
                 }
+            } else if (albumNames.contains(region)) {
+                fa = ar.findOneByName(ft, region);
+            } else {
+                Album album = new Album(ft, region);
+                Long saveId = ar.save(album);
+                log.info("Save Album : {}", album);
+                fa = ar.findOne(saveId);
+                albumNames.add(fa.getName());
+            }
+
+            if (fa != null) {
+                try {
+                    List<String> nameList = pr.findNameAll(fa);
+                    Long albumId = fa.getId();
+
+                    String newPath = DIRECTORY_PATH + albumId + File.separator;
+                    File directory = new File(newPath);
+
+                    if (!directory.exists()) {
+                        directory.mkdirs();
+                    }
+
+                    MultipartFile file = files.get(i);
+                    String name = file.getOriginalFilename();
+
+                    if (nameList.contains(name)) {
+                        continue;
+                    }
+
+                    Path path = Paths.get(newPath + name);
+                    file.transferTo(path);
+                    String imagePath = "/images/" + albumId + "/" + name;
+
+                    Photo p = new Photo(fa, name, imagePath, region, LocalDateTime.parse(creates.get(i)));
+                    pr.save(p);
+
+                    log.info("AutoSave Photo : {}", p);
+                } catch (IOException e) {
+                    log.error("AutoSave Photo Error");
+                    throw new IOException();
+                }
+            }
+        }
+    }
+
+    @Transactional
+    public void autoSave(Team team, String path, String region, String create) throws IOException {
+        Set<String> albumNames = ar.findAlbumName(team);
+
+        Album fa = null;
+
+        if (region.equals("null")) {
+            if (albumNames.contains("위치 정보 없음")) {
+                fa = ar.findOneByName(team, "위치 정보 없음");
+            } else {
+                Album album = new Album(team, "위치 정보 없음");
+                Long saveId = ar.save(album);
+                log.info("Save Album : {}", album);
+                fa = ar.findOne(saveId);
+                albumNames.add(fa.getName());
+            }
+        } else if (albumNames.contains(region)) {
+            fa = ar.findOneByName(team, region);
+        } else {
+            Album album = new Album(team, region);
+            Long saveId = ar.save(album);
+            log.info("Save Album : {}", album);
+            fa = ar.findOne(saveId);
+            albumNames.add(fa.getName());
+        }
+
+        if (fa != null) {
+            try {
+                List<String> nameList = pr.findNameAll(fa);
+                Path tempPath = Paths.get(path);
+                Long albumId = fa.getId();
+
+                if (!Files.exists(tempPath)) {
+                    throw new IOException("Temp file does not exist");
+                }
+
+                String dirPath = DIRECTORY_PATH + albumId + File.separator;
+                String name = tempPath.getFileName().toString();
+                Path newPath = Paths.get(dirPath + name);
+
+                File dir = new File(dirPath);
+
+                if (!dir.exists()) {
+                    dir.mkdirs();
+                }
+
+                if (nameList.contains(name)) {
+                    return;
+                }
+
+                Files.move(tempPath, newPath, StandardCopyOption.REPLACE_EXISTING);
+
+                String imagePath = "/images/" + albumId + "/" + name;
+                Photo p = new Photo(fa, name, imagePath, region, LocalDateTime.parse(create));
+
+                pr.save(p);
+            } catch (IOException e) {
+                throw new IOException(e.getMessage());
             }
         }
     }

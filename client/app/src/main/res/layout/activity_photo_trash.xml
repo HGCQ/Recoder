@@ -23,6 +23,7 @@
             android:layout_marginEnd="-2dp"
             app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
             app:spanCount="4" />
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="75dp"
@@ -33,7 +34,9 @@
             android:hint="30일이 지나면 항목이 영구적으로 삭제됩니다."
             android:textSize="13dp"
             android:textStyle="bold"/>
+
     </LinearLayout>
+
     <TextView
         android:id="@+id/empty"
         android:layout_width="201dp"
@@ -44,7 +47,7 @@
         android:textSize="18dp"
         android:textStyle="bold"
         android:visibility="invisible"
-        android:fontFamily="@font/notosans_medium"
+        android:fontFamily="@font/ibm_regular"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
@@ -61,21 +64,24 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0" />-->
 
-    <androidx.appcompat.widget.AppCompatButton
+    <android.widget.Button
         android:id="@+id/recover"
-        android:layout_width="100dp"
-        android:layout_height="27dp"
+        android:layout_width="40dp"
+        android:layout_height="30dp"
         android:padding="2dp"
-        android:layout_marginTop="12dp"
-        android:background="@drawable/button2"
+        android:layout_marginTop="30dp"
+        android:background="@drawable/select"
         android:textStyle="bold"
-        android:drawableLeft="@drawable/sizerecover"
+        android:gravity="center_vertical"
+        android:fontFamily="@font/ibm_regular"
+        android:drawableTop="@drawable/sizerecover"
         android:onClick="onClick_setting_costume_save"
         android:scaleType="fitCenter"
-        android:text="복구"
+        android:text=" 복구"
+        android:textSize="13sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.962"
+        app:layout_constraintHorizontal_bias="0.98"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.018" />

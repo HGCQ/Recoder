@@ -5,9 +5,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -41,8 +38,9 @@ import yuhan.hgcq.client.model.dto.chat.ChatDTO;
 import yuhan.hgcq.client.model.dto.member.MemberDTO;
 import yuhan.hgcq.client.model.dto.team.TeamDTO;
 
-public class Chat extends AppCompatActivity {
+/* 채팅 삭제 로직 추가 예정 */
 
+public class Chat extends AppCompatActivity {
     /* View */
     EditText chatting;
     ImageButton arrow;
@@ -58,7 +56,7 @@ public class Chat extends AppCompatActivity {
     TeamDTO teamDTO;
     AlbumDTO albumDTO;
 
-    /* 서버와 통신 */
+    /* http 통신 */
     ChatController cc;
     ChatWebSocketClient webSocket;
 
@@ -81,11 +79,12 @@ public class Chat extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         getSupportActionBar().setTitle("채팅");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        super.onCreate(savedInstanceState);
 
         EdgeToEdge.enable(this);
+        /* Layout */
         setContentView(R.layout.activity_chat);
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
@@ -94,16 +93,12 @@ public class Chat extends AppCompatActivity {
             return insets;
         });
 
-        /* 서버와 연결할 Controller 생성 */
+        /* 초기화 */
         cc = new ChatController(this);
 
-        /* View와 Layout 연결 */
         chatting = findViewById(R.id.chatting);
-
         arrow = findViewById(R.id.arrow);
-
         chatListView = findViewById(R.id.friendList);
-
         navi = findViewById(R.id.bottom_navigation_view);
 
         /* 관련된 페이지 */
@@ -113,8 +108,8 @@ public class Chat extends AppCompatActivity {
         Intent likePage = new Intent(this, Like.class);
         Intent myPage = new Intent(this, MyPage.class);
 
-        Intent getIntent = getIntent();
         /* 받아 올 값 */
+        Intent getIntent = getIntent();
         albumDTO = (AlbumDTO) getIntent.getSerializableExtra("albumDTO");
         teamDTO = (TeamDTO) getIntent.getSerializableExtra("teamDTO");
         loginMember = (MemberDTO) getIntent.getSerializableExtra("loginMember");
@@ -128,15 +123,12 @@ public class Chat extends AppCompatActivity {
                     ca = new ChatAdapter(loginMember, chatList);
                     chatListView.setAdapter(ca);
                     chatListView.scrollToPosition(ca.getItemCount() - 1);
-                    Log.i("Found ChattingList", "Success");
-                } else {
-                    Log.i("Found ChattingList", "Fail");
                 }
             }
 
             @Override
             public void onFailure(Call<List<ChatDTO>> call, Throwable t) {
-                Log.e("Found ChattingList Error", t.getMessage());
+                /* Toast 메시지 */
             }
         });
 
@@ -145,7 +137,6 @@ public class Chat extends AppCompatActivity {
             webSocket = new ChatWebSocketClient(albumDTO.getAlbumId(), new ChatWebSocketClient.ChatWebSocketCallback() {
                 @Override
                 public void onMessageReceived(ChatDTO chatDTO) {
-                    Log.i("WebSocket", "Received message: " + chatDTO.getMessage());
                     runOnUiThread(() -> {
                         ca.addChat(chatDTO);
                         chatListView.smoothScrollToPosition(ca.getItemCount() - 1);
@@ -156,6 +147,7 @@ public class Chat extends AppCompatActivity {
             webSocket.start();
         }
 
+        /* 보내기 */
         arrow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -171,12 +163,12 @@ public class Chat extends AppCompatActivity {
                     webSocket.sendMessage(chatDTO);
                     ca.addChat(chatDTO);
                     chatListView.smoothScrollToPosition(ca.getItemCount() - 1);
-                    chatting.setText(""); // 입력 필드 비우기
+                    chatting.setText("");
                 }
             }
         });
 
-        /* 내비게이션 바 */
+        /* 네비게이션 */
         navi.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
@@ -240,6 +232,7 @@ public class Chat extends AppCompatActivity {
                 .show();
     }
 
+    /* 화면 이벤트 처리 */
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
         if (ev.getAction() == MotionEvent.ACTION_DOWN) {

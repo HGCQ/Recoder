@@ -56,7 +56,7 @@ public class AlbumTrashAdapter extends RecyclerView.Adapter<AlbumTrashAdapter.Al
             super(view);
 
             title = view.findViewById(R.id.title);
-            albumDelete = view.findViewById(R.id.albumDelete);
+            albumDelete = view.findViewById(R.id.albumdelete);
 
             view.setOnClickListener(new View.OnClickListener() {
                 @Override

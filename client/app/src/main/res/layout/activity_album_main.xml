@@ -20,21 +20,23 @@
       app:layout_constraintVertical_bias="0.0" >
   </FrameLayout>
 -->
+
   <LinearLayout
       android:layout_width="match_parent"
       android:layout_height="match_parent"
       android:background="#ffffff"
-      tools:ignore="Orientation">
+      tools:ignore="Orientation"
+      tools:layout_editor_absoluteX="0dp"
+      tools:layout_editor_absoluteY="0dp">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/albumList"
-        android:background="#ffffff"
         android:layout_width="match_parent"
         android:layout_height="470dp"
-        android:layout_marginTop="170dp"
         android:layout_marginStart="20dp"
+        android:layout_marginTop="170dp"
+        android:background="#ffffff"
         android:gravity="center"
-        android:padding="0dp"
         app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
         app:spanCount="2" />
 
@@ -42,11 +44,12 @@
         android:id="@+id/albumplus"
         android:layout_width="50dp"
         android:layout_height="45dp"
-        android:layout_marginTop="545dp"
         android:layout_marginStart="-230dp"
+        android:layout_marginTop="545dp"
         android:background="#00000000"
         android:scaleType="fitCenter"
         android:src="@drawable/plusicon"
+        android:elevation="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.501"
         app:layout_constraintStart_toStartOf="parent"
@@ -68,11 +71,11 @@
       android:id="@+id/empty"
       android:layout_width="200dp"
       android:layout_height="50dp"
-      android:layout_marginTop="430dp"
+      android:layout_marginTop="380dp"
       android:gravity="center"
       android:text="비어있음"
       android:textSize="18dp"
-      android:fontFamily="@font/notosans_medium"
+      android:fontFamily="@font/ibm_regular"
       android:visibility="invisible"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintHorizontal_bias="0.497"
@@ -81,53 +84,45 @@
 
   <EditText
       android:id="@+id/searchText"
-      android:hint="앨범 이름을 입력하세요."
-      android:gravity="center"
-      android:padding="0dp"
-      android:layout_width="234dp"
+      android:hint="앨범 이름, 장소..."
+      android:gravity="center_vertical"
+      android:drawableLeft="@drawable/sizesearch"
+      android:layout_width="270dp"
       android:layout_height="35dp"
       android:layout_marginTop="60dp"
-      android:background="@drawable/text"
-      android:fontFamily="@font/notosans_medium"
+      android:textSize="15sp"
+      android:padding="3dp"
+      android:textColor="@color/black"
+      android:background="@drawable/edittext"
+      android:fontFamily="@font/ibm_regular"
       app:layout_constraintEnd_toEndOf="parent"
-      app:layout_constraintHorizontal_bias="0.3"
+      app:layout_constraintHorizontal_bias="0.48"
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintTop_toTopOf="parent" />
 
-  <ImageButton
-      android:id="@+id/search"
-      android:layout_width="42dp"
-      android:layout_height="35dp"
-      android:layout_marginTop="60dp"
-      android:background="@drawable/text"
-      android:scaleType="fitCenter"
-      android:src="@drawable/search"
-      app:layout_constraintEnd_toEndOf="parent"
-      app:layout_constraintHorizontal_bias="0.77"
-      app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toTopOf="parent"
-      app:tint="#234567" />
-
-  <androidx.appcompat.widget.AppCompatButton
+  <android.widget.Button
       android:id="@+id/auto"
-      android:layout_width="200dp"
+      android:layout_width="170dp"
       android:layout_height="32dp"
       android:layout_marginTop="120dp"
       android:background="@drawable/edittext"
       android:drawableLeft="@drawable/sizephotoplus"
+      android:fontFamily="@font/ibm_regular"
       android:scaleType="fitCenter"
       android:padding="2dp"
-      android:text="자동 정렬"
-      android:elevation="5dp"
+      android:text=" 자동 정렬"
+      android:textSize="13sp"
+      android:gravity="center_vertical"
+      android:elevation="10dp"
       android:textStyle="bold"
       app:layout_constraintEnd_toEndOf="parent"
-      app:layout_constraintHorizontal_bias="0.98"
+      app:layout_constraintHorizontal_bias="0.88"
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintTop_toTopOf="parent" />
 
-  <androidx.appcompat.widget.AppCompatButton
+  <android.widget.Button
       android:id="@+id/albumTrash"
-      android:layout_width="200dp"
+      android:layout_width="170dp"
       android:layout_height="32dp"
       android:layout_marginTop="120dp"
       android:background="@drawable/edittext"
@@ -135,10 +130,13 @@
       android:scaleType="fitCenter"
       android:padding="2dp"
       android:text="앨범 휴지통"
-      android:elevation="5dp"
+      android:fontFamily="@font/ibm_regular"
+      android:textSize="13sp"
+      android:elevation="10dp"
       android:textStyle="bold"
+      android:gravity="center_vertical"
       app:layout_constraintEnd_toEndOf="parent"
-      app:layout_constraintHorizontal_bias="0.02"
+      app:layout_constraintHorizontal_bias="0.085"
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintTop_toTopOf="parent" />
 

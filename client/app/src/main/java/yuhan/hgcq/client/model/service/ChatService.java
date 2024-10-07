@@ -12,13 +12,6 @@ import yuhan.hgcq.client.model.dto.chat.ChatDTO;
 import yuhan.hgcq.client.model.dto.chat.CreateChatForm;
 
 public interface ChatService {
-
-    @POST("/chat/add")
-    Call<ResponseBody> addChat(@Body CreateChatForm createChatForm);
-
-    @POST("/chat/delete")
-    Call<ResponseBody> deleteChat(@Body ChatDTO chatDTO);
-
     @GET("/chat/list/albumId")
     Call<List<ChatDTO>> chatList(@Query("albumId") Long albumId);
 }

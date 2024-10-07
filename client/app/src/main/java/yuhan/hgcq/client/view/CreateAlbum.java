@@ -6,7 +6,6 @@ import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -14,8 +13,6 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.content.DialogInterface;
-import android.widget.ImageButton;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -23,19 +20,10 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
-import androidx.core.util.Pair;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.google.android.material.datepicker.CalendarConstraints;
-import com.google.android.material.datepicker.DateValidatorPointForward;
-import com.google.android.material.datepicker.MaterialDatePicker;
-import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
-
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.util.Date;
-import java.util.Locale;
+import java.time.LocalDateTime;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -50,30 +38,23 @@ import yuhan.hgcq.client.model.dto.member.MemberDTO;
 import yuhan.hgcq.client.model.dto.team.TeamDTO;
 
 public class CreateAlbum extends AppCompatActivity {
-
     /* View */
     Button save;
     EditText createAlbumName;
-    TextView startDate1,endDate1;
-    ImageButton calendar;
-
-    /* 개인, 공유 확인 */
-    boolean isPrivate;
 
     /* 받아올 값 */
+    boolean isPrivate;
     MemberDTO loginMember;
     TeamDTO teamDTO;
 
-    /* 서버와 통신 */
+    /* http 통신 */
     AlbumController ac;
 
-    /* 로컬 DB */
+    /* Room DB */
     AlbumRepository ar;
 
-    /* Toast */
+    /* 메인 스레드 */
     Handler handler = new Handler(Looper.getMainLooper());
-
-    /* Request Code */
 
     /* 뒤로 가기 */
     @Override
@@ -87,8 +68,6 @@ public class CreateAlbum extends AppCompatActivity {
                     albumMainPage.putExtra("teamDTO", teamDTO);
                 }
                 albumMainPage.putExtra("loginMember", loginMember);
-
-
                 startActivity(albumMainPage);
                 finish();
                 return true;
@@ -99,11 +78,12 @@ public class CreateAlbum extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         getSupportActionBar().setTitle("앨범 생성");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        super.onCreate(savedInstanceState);
 
         EdgeToEdge.enable(this);
+        /* Layout */
         setContentView(R.layout.activity_create_album);
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
@@ -112,83 +92,42 @@ public class CreateAlbum extends AppCompatActivity {
             return insets;
         });
 
-        /* 서버와 연결할 Controller 생성 */
+        /* 초기화 */
         ac = new AlbumController(this.getApplicationContext());
 
-        /* 로컬 DB 연결할 Repository 생성 */
         ar = new AlbumRepository(this.getApplicationContext());
 
-        /* View와 Layout 연결 */
         save = findViewById(R.id.save);
-
         createAlbumName = findViewById(R.id.AlbumText);
-        startDate1 = findViewById(R.id.startDate);
-        endDate1 = findViewById(R.id.endDate);
-        calendar=findViewById(R.id.date);
 
         /* 관련된 페이지 */
         Intent albumMainPage = new Intent(this, AlbumMain.class);
 
-        Intent getIntent = getIntent();
-        /* 개인, 공유 확인 */
-        isPrivate = getIntent.getBooleanExtra("isPrivate", false);
-
         /* 받아올 값 */
+        Intent getIntent = getIntent();
+        isPrivate = getIntent.getBooleanExtra("isPrivate", false);
         teamDTO = (TeamDTO) getIntent.getSerializableExtra("teamDTO");
         loginMember = (MemberDTO) getIntent.getSerializableExtra("loginMember");
 
+        /* 제목 */
         if (isPrivate) {
             getSupportActionBar().setTitle("[개인] 앨범 생성");
         } else if (teamDTO != null) {
             getSupportActionBar().setTitle("[공유] 앨범 생성");
         }
-        calendar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                MaterialDatePicker.Builder<Pair<Long, Long>> builder = MaterialDatePicker.Builder.dateRangePicker();
-                builder.setTitleText("기간 선택");
-                CalendarConstraints.Builder constraintsBuilder = new CalendarConstraints.Builder();
 
-                builder.setCalendarConstraints(constraintsBuilder.build());
-
-                final MaterialDatePicker<Pair<Long, Long>> datePicker = builder.build();
-                datePicker.show(getSupportFragmentManager(), "DATE_PICKER");
-                datePicker.addOnPositiveButtonClickListener(new MaterialPickerOnPositiveButtonClickListener<Pair<Long, Long>>() {
-                    @Override
-                    public void onPositiveButtonClick(Pair<Long, Long> selection) {
-                        // Handle date range selection
-                        Long startDate = selection.first;
-                        Long endDate = selection.second;
-
-                        // You can now work with the start and end dates
-                        // Convert the timestamps into a readable format if needed
-                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-                        String start = sdf.format(new Date(startDate));
-                        String end = sdf.format(new Date(endDate));
-                        handler.post(()->{
-                            startDate1.setText(start);
-                            endDate1.setText(end);
-                        });
-                        Log.d("DATE_RANGE", "Start Date: " + start + " End Date: " + end);
-                    }
-                });
-            }
-        });
-
-        /* 생성 버튼 눌림 */
+        /* 생성 */
         save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String albumName = createAlbumName.getText().toString();
-                String editStartDate = startDate1.getText().toString();
-                String editEndDate = endDate1.getText().toString();
 
                 /* 개인 */
                 if (isPrivate) {
                     onClick_setting_costume_save("앨범을 생성하시겠습니까?", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            Album album = Album.create((LocalDate.parse(editStartDate)).atStartOfDay(), (LocalDate.parse(editEndDate)).atStartOfDay(), albumName);
+                            Album album = Album.create(LocalDateTime.now(), LocalDateTime.now(), albumName);
                             ar.create(album, new Callback<Boolean>() {
                                 @Override
                                 public void onSuccess(Boolean result) {
@@ -196,7 +135,6 @@ public class CreateAlbum extends AppCompatActivity {
                                         handler.post(() -> {
                                             Toast.makeText(CreateAlbum.this, "앨범을 생성했습니다.", Toast.LENGTH_SHORT).show();
                                         });
-                                        Log.i("Private Album Create", "Success");
                                         albumMainPage.putExtra("isPrivate", true);
                                         albumMainPage.putExtra("loginMember", loginMember);
                                         startActivity(albumMainPage);
@@ -204,7 +142,6 @@ public class CreateAlbum extends AppCompatActivity {
                                         handler.post(() -> {
                                             Toast.makeText(CreateAlbum.this, "앨범을 생성하는 데 실패했습니다.", Toast.LENGTH_SHORT).show();
                                         });
-                                        Log.i("Private Album Create", "Fail");
                                     }
                                 }
 
@@ -213,7 +150,6 @@ public class CreateAlbum extends AppCompatActivity {
                                     handler.post(() -> {
                                         Toast.makeText(CreateAlbum.this, "앨범을 생성하는 데 실패했습니다.", Toast.LENGTH_SHORT).show();
                                     });
-                                    Log.e("Private Album Create", "Error");
                                 }
                             });
                         }
@@ -224,7 +160,6 @@ public class CreateAlbum extends AppCompatActivity {
                         }
                     });
                 }
-                /* 공유 */
                 /* 공유 */
                 else {
                     onClick_setting_costume_save("앨범을 생성하시겠습니까?", new DialogInterface.OnClickListener() {
@@ -241,7 +176,6 @@ public class CreateAlbum extends AppCompatActivity {
                                             handler.post(() -> {
                                                 Toast.makeText(CreateAlbum.this, "앨범을 생성했습니다.", Toast.LENGTH_SHORT).show();
                                             });
-                                            Log.i("Shared Album Create", "Success");
                                             albumMainPage.putExtra("teamDTO", teamDTO);
                                             albumMainPage.putExtra("loginMember", loginMember);
                                             startActivity(albumMainPage);
@@ -249,7 +183,6 @@ public class CreateAlbum extends AppCompatActivity {
                                             handler.post(() -> {
                                                 Toast.makeText(CreateAlbum.this, "앨범을 생성하는 데 실패했습니다.", Toast.LENGTH_SHORT).show();
                                             });
-                                            Log.i("Shared Album Create", "Fail");
                                         }
                                     }
 
@@ -258,11 +191,8 @@ public class CreateAlbum extends AppCompatActivity {
                                         handler.post(() -> {
                                             Toast.makeText(CreateAlbum.this, "앨범을 생성하는 데 실패했습니다.", Toast.LENGTH_SHORT).show();
                                         });
-                                        Log.e("Shared Album Create", "Error");
                                     }
                                 });
-                            } else {
-                                Log.e("Intent Error", "teamDTO is Null");
                             }
                         }
                     }, new DialogInterface.OnClickListener() {
@@ -289,6 +219,7 @@ public class CreateAlbum extends AppCompatActivity {
                 .show();
     }
 
+    /* 화면 이벤트 처리 */
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
         if (ev.getAction() == MotionEvent.ACTION_DOWN) {
