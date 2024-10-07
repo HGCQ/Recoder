@@ -9,9 +9,9 @@ spring:
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    username: hgcq
-    password: yuhan12
-    url: jdbc:mysql://mysql:3306/recoder
+    username: ${MYSQL_USER}
+    password: ${MYSQL_PASSWORD}
+    url: ${MYSQL_URL}
 
   jpa:
     hibernate:
@@ -43,8 +43,6 @@ spring:
 logging:
   level:
     root: info
-    org.springframework.web: debug
-    org.springframework.web.servlet: debug
 
   file:
     name: recoder.log
