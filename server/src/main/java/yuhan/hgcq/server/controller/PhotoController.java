@@ -62,29 +62,30 @@ public class PhotoController {
 
                             if (fa != null) {
                                 try {
-                                    List<MultipartFile> files = form.getFiles();
-                                    List<String> paths = new ArrayList<>();
-
-                                    for (MultipartFile file : files) {
-                                        try {
-                                            String tempPath = FileStorageUtil.saveFile(file);
-                                            paths.add(tempPath);
-                                        } catch (IOException e) {
-                                            for (String path : paths) {
-                                                FileStorageUtil.deleteFile(path);
-                                            }
-                                        }
-                                    }
-
-                                    PhotoUploadMessage message = new PhotoUploadMessage(
-                                            fa.getId(),
-                                            findMember.getId(),
-                                            paths,
-                                            form.getCreates(),
-                                            form.getRegions()
-                                    );
-
-                                    up.sendUploadPhotoMessage(message);
+//                                    List<MultipartFile> files = form.getFiles();
+//                                    List<String> paths = new ArrayList<>();
+//
+//                                    for (MultipartFile file : files) {
+//                                        try {
+//                                            String tempPath = FileStorageUtil.saveFile(file);
+//                                            paths.add(tempPath);
+//                                        } catch (IOException e) {
+//                                            for (String path : paths) {
+//                                                FileStorageUtil.deleteFile(path);
+//                                            }
+//                                        }
+//                                    }
+//
+//                                    PhotoUploadMessage message = new PhotoUploadMessage(
+//                                            fa.getId(),
+//                                            findMember.getId(),
+//                                            paths,
+//                                            form.getCreates(),
+//                                            form.getRegions()
+//                                    );
+//
+//                                    up.sendUploadPhotoMessage(message);
+                                    ps.savePhoto(form);
                                     return ResponseEntity.status(HttpStatus.CREATED).body("Upload Photo Success");
                                 } catch (IOException e) {
                                     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
@@ -270,29 +271,30 @@ public class PhotoController {
 
                     if (findMember != null) {
                         try {
-                            List<MultipartFile> files = form.getFiles();
-                            List<String> paths = new ArrayList<>();
-
-                            for (MultipartFile file : files) {
-                                try {
-                                    String tempPath = FileStorageUtil.saveFile(file);
-                                    paths.add(tempPath);
-                                } catch (IOException e) {
-                                    for (String path : paths) {
-                                        FileStorageUtil.deleteFile(path);
-                                    }
-                                }
-                            }
-
-                            PhotoAutoSaveMessage message = new PhotoAutoSaveMessage(
-                                    form.getTeamId(),
-                                    findMember.getId(),
-                                    paths,
-                                    form.getCreates(),
-                                    form.getRegions()
-                            );
-
-                            asp.sendAutoSavePhotoMessage(message);
+//                            List<MultipartFile> files = form.getFiles();
+//                            List<String> paths = new ArrayList<>();
+//
+//                            for (MultipartFile file : files) {
+//                                try {
+//                                    String tempPath = FileStorageUtil.saveFile(file);
+//                                    paths.add(tempPath);
+//                                } catch (IOException e) {
+//                                    for (String path : paths) {
+//                                        FileStorageUtil.deleteFile(path);
+//                                    }
+//                                }
+//                            }
+//
+//                            PhotoAutoSaveMessage message = new PhotoAutoSaveMessage(
+//                                    form.getTeamId(),
+//                                    findMember.getId(),
+//                                    paths,
+//                                    form.getCreates(),
+//                                    form.getRegions()
+//                            );
+//
+//                            asp.sendAutoSavePhotoMessage(message);
+                            ps.autoSave(form);
                             return ResponseEntity.status(HttpStatus.OK).body("Autosave Photo Success");
                         } catch (IOException e) {
                             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
