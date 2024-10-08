@@ -443,12 +443,7 @@ public class Gallery extends AppCompatActivity {
 
                     /* 개인 */
                     if (isPrivate) {
-                        /* 권한 요청 */
-                        for (Uri uri : uriList) {
-                            getContentResolver().takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                        }
-
-                        pr.create(albumDTO.getAlbumId(), paths, creates, new Callback<Boolean>() {
+                        pr.create(albumDTO.getAlbumId(), paths, creates, regions, new Callback<Boolean>() {
                             @Override
                             public void onSuccess(Boolean result) {
                                 if (result) {
@@ -524,10 +519,7 @@ public class Gallery extends AppCompatActivity {
                     }
 
                     if (isPrivate) {
-                        /* 권한 요청 */
-                        getContentResolver().takePersistableUriPermission(imageUri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
-
-                        pr.create(albumDTO.getAlbumId(), paths, creates, new Callback<Boolean>() {
+                        pr.create(albumDTO.getAlbumId(), paths, creates, regions, new Callback<Boolean>() {
                             @Override
                             public void onSuccess(Boolean result) {
                                 if (result) {
