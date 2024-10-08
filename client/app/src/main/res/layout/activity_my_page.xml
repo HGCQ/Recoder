@@ -8,15 +8,15 @@
     android:layout_height="match_parent"
     tools:context=".view.AlbumMain">
     <View
-        android:layout_width="417dp"
-        android:layout_height="282dp"
+        android:layout_width="match_parent"
+        android:layout_height="273dp"
         android:background="#F0F8FF"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.498" />
+        app:layout_constraintVertical_bias="0.499" />
 
     <TextView
         android:layout_width="100dp"
@@ -150,16 +150,17 @@
         app:layout_constraintVertical_bias="0.64" />
 
     <android.widget.Button
-        android:id="@+id/secession"
-        android:layout_width="80dp"
-        android:layout_height="35dp"
+        android:id="@+id/logout"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
         android:layout_marginTop="20dp"
-        android:background="@drawable/text"
+        android:background="@drawable/edittext"
         android:fontFamily="@font/ibm_medium"
         android:padding="0dp"
         android:scaleType="fitCenter"
-        android:text="탈퇴하기"
-        android:textColor="@color/colorRed"
+        android:text="로그아웃"
+        android:elevation="20dp"
+        android:textColor="@color/black"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.021"
@@ -167,9 +168,29 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.764" />
 
+
+    <android.widget.Button
+        android:id="@+id/secession"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:layout_marginTop="25dp"
+        android:background="@drawable/text"
+        android:elevation="20dp"
+        android:fontFamily="@font/ibm_semibold"
+        android:padding="0dp"
+        android:scaleType="fitCenter"
+        android:text="탈퇴하기"
+        android:textColor="@color/colorRed"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.83" />
+
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation_view"
-        android:layout_width="410dp"
+        android:layout_width="match_parent"
         android:layout_height="85dp"
         app:itemIconTint="#2196F3"
         app:itemTextColor="@color/black"

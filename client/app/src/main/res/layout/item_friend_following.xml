@@ -6,7 +6,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="horizontal"
     android:background="#ffffff"
-    android:padding="0dp">
+    android:paddingTop="9dp"
+    android:paddingLeft="9dp"
+    android:paddingBottom="9dp">
 
 <LinearLayout
     android:layout_width="match_parent"
@@ -27,10 +29,11 @@
         android:layout_width="80dp"
         android:layout_height="30dp"
         android:layout_marginTop="8dp"
+        android:layout_marginStart="10dp"
         android:fontFamily="@font/ibm_regular"
         android:padding="0dp"
         android:textColor="@color/black"
-        android:text="   name"
+        android:text="name"
         android:textSize="15sp" />
 
     <android.widget.Button
@@ -38,7 +41,7 @@
         android:layout_width="60dp"
         android:layout_height="30dp"
         android:layout_marginTop="8dp"
-        android:layout_marginStart="180dp"
+        android:layout_marginStart="170dp"
         android:background="@drawable/select"
         android:fontFamily="@font/ibm_regular"
         android:onClick="onClick_setting_costume_cancel"

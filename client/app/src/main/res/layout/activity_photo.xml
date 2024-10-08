@@ -18,31 +18,15 @@
 
 <LinearLayout
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-    <ImageButton
-        android:id="@+id/like"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:layout_marginTop="480dp"
-        android:layout_marginStart="330dp"
-        android:background="#00000000"
-        android:scaleType="fitCenter"
-        android:src="@drawable/unlove"
-        android:elevation="5dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.95"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.72"/>
+    android:layout_height="match_parent"
+    tools:ignore="Orientation">
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/viewPager"
-        android:layout_width="400dp"
+        android:layout_width="match_parent"
         android:layout_height="500dp"
         android:layout_marginTop="50dp"
-        android:layout_marginStart="-385dp"
+        android:layout_marginStart="-4dp"
         android:padding="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -50,6 +34,17 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.363"
         app:tint="#234567" />
+
+        <ImageButton
+            android:id="@+id/like"
+            android:layout_width="55dp"
+            android:layout_height="60dp"
+            android:layout_marginTop="480dp"
+            android:layout_marginStart="-70dp"
+            android:background="#00000000"
+            android:scaleType="fitCenter"
+            android:src="@drawable/unlove"
+            android:elevation="5dp"/>
 
     <android.widget.ImageView
         android:id="@+id/albumListView"
@@ -111,26 +106,11 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.408"
         app:spanCount="2" />
-
-    <android.widget.Button
-        android:id="@+id/save"
-        android:layout_width="80dp"
-        android:layout_height="30dp"
-        android:layout_marginTop="465dp"
-        android:layout_marginStart="-75dp"
-        android:elevation="30dp"
-        android:padding="0dp"
-        android:text="이동하기"
-        android:background="@drawable/select"
-        android:fontFamily="@font/ibm_medium"
-        android:scaleType="fitCenter"
-        android:stateListAnimator="@null"
-        android:visibility="invisible" />
 </LinearLayout>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation_view"
-        android:layout_width="410dp"
+        android:layout_width="match_parent"
         android:layout_height="85dp"
         app:itemIconTint="#2196F3"
         app:itemTextColor="@color/black"
@@ -140,18 +120,6 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:menu="@menu/menu_bottom_nav" />
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="45dp"
-        android:background="#D3D3D3"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.806"
-        app:tint="#234567" />
 
     <android.widget.Button
         android:id="@+id/photoDelete"
@@ -173,7 +141,7 @@
         app:layout_constraintHorizontal_bias="0.92"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.868"/>
+        app:layout_constraintVertical_bias="0.85"/>
 
     <android.widget.Button
         android:id="@+id/move"
@@ -192,9 +160,9 @@
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.11"
+        app:layout_constraintHorizontal_bias="0.1"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.868"/>
+        app:layout_constraintVertical_bias="0.85"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
