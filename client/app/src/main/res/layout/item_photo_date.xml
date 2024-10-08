@@ -26,6 +26,7 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/photoList"
         android:layout_width="wrap_content"
+        android:clipToPadding="false"
         android:layout_height="wrap_content"
         app:layout_constrainedHeight="true"
         app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
