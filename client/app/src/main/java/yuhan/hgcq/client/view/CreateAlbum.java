@@ -127,7 +127,7 @@ public class CreateAlbum extends AppCompatActivity {
                     onClick_setting_costume_save("앨범을 생성하시겠습니까?", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            Album album = Album.create(LocalDateTime.now(), LocalDateTime.now(), albumName);
+                            Album album = Album.create(albumName);
                             ar.create(album, new Callback<Boolean>() {
                                 @Override
                                 public void onSuccess(Boolean result) {

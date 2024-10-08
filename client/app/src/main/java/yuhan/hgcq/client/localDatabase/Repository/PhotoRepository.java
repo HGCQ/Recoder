@@ -281,8 +281,8 @@ public class PhotoRepository {
                         dao.save(newPhoto);
                     }
                 }
+                callback.onSuccess(true);
             } catch (Exception e) {
-                // 오류 처리
                 callback.onError(e);
             }
         });
