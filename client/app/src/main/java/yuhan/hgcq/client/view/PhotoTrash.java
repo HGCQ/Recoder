@@ -7,13 +7,12 @@ import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -45,31 +44,28 @@ import yuhan.hgcq.client.model.dto.photo.PhotoDTO;
 import yuhan.hgcq.client.model.dto.team.TeamDTO;
 
 public class PhotoTrash extends AppCompatActivity {
-
     /* View */
     TextView empty;
-    ImageButton recover;
+    Button recover;
     RecyclerView photoTrashListView;
     BottomNavigationView navi;
 
     /* Adapter */
     PhotoTrashAdapter pa;
 
-    /* 개인, 공유 확인 */
-    boolean isPrivate;
-
     /* 받아올 값 */
+    boolean isPrivate;
     MemberDTO loginMember;
     TeamDTO teamDTO;
     AlbumDTO albumDTO;
 
-    /* 서버와 통신 */
+    /* http 통신 */
     PhotoController pc;
 
-    /* 로컬 DB */
+    /* Room DB */
     PhotoRepository pr;
 
-    /* Toast */
+    /* 메인 스레드 */
     Handler handler = new Handler(Looper.getMainLooper());
 
     /* 뒤로 가기 */
@@ -94,11 +90,12 @@ public class PhotoTrash extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         getSupportActionBar().setTitle("사진 휴지통");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        super.onCreate(savedInstanceState);
 
         EdgeToEdge.enable(this);
+        /* Layout */
         setContentView(R.layout.activity_photo_trash);
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
@@ -107,19 +104,14 @@ public class PhotoTrash extends AppCompatActivity {
             return insets;
         });
 
-        /* 서버와 연결할 Controller 생성 */
+        /* 초기화 */
         pc = new PhotoController(this);
 
-        /* 로컬 DB 연결할 Repository 생성 */
         pr = new PhotoRepository(this);
 
-        /* View와 Layout 연결 */
         empty = findViewById(R.id.empty);
-
         recover = findViewById(R.id.recover);
-
         photoTrashListView = findViewById(R.id.photoTrashList);
-
         navi = findViewById(R.id.bottom_navigation_view);
 
         /* 관련된 페이지 */
@@ -129,19 +121,18 @@ public class PhotoTrash extends AppCompatActivity {
         Intent likePage = new Intent(this, Like.class);
         Intent myPage = new Intent(this, MyPage.class);
 
+        /* 받아올 값 */
         Intent getIntent = getIntent();
-        /* 개인, 공유 확인 */
         isPrivate = getIntent.getBooleanExtra("isPrivate", false);
-
-        /* 받아 올 값 */
         loginMember = (MemberDTO) getIntent.getSerializableExtra("loginMember");
         teamDTO = (TeamDTO) getIntent.getSerializableExtra("teamDTO");
         albumDTO = (AlbumDTO) getIntent.getSerializableExtra("albumDTO");
 
+        /* 초기 설정 */
         if (albumDTO != null) {
-            getSupportActionBar().setTitle("[휴지통] " + albumDTO.getName());
-            /* 개인 초기 설정 */
+            /* 개인 */
             if (isPrivate) {
+                getSupportActionBar().setTitle("[개인 휴지통] " + albumDTO.getName());
                 pr.searchTrash(new Callback<List<PhotoDTO>>() {
                     @Override
                     public void onSuccess(List<PhotoDTO> result) {
@@ -150,20 +141,20 @@ public class PhotoTrash extends AppCompatActivity {
                             handler.post(() -> {
                                 photoTrashListView.setAdapter(pa);
                             });
-                            Log.i("Found Private PhotoTrashList", "Success");
                         } else {
-                            Log.i("Found Private PhotoTrashList", "Fail");
+                            /* Toast 메시지 */
                         }
                     }
 
                     @Override
                     public void onError(Exception e) {
-                        Log.e("Found Private PhotoTrashList Error", e.getMessage());
+                        /* Toast 메시지 */
                     }
                 });
             }
-            /* 공유 초기 설정 */
+            /* 공유 */
             else {
+                getSupportActionBar().setTitle("[공유 휴지통] " + albumDTO.getName());
                 pc.photoTrashList(albumDTO.getAlbumId(), new retrofit2.Callback<List<PhotoDTO>>() {
                     @Override
                     public void onResponse(Call<List<PhotoDTO>> call, Response<List<PhotoDTO>> response) {
@@ -173,26 +164,26 @@ public class PhotoTrash extends AppCompatActivity {
                             handler.post(() -> {
                                 photoTrashListView.setAdapter(pa);
                             });
-                            Log.i("Found Shared PhotoTrashList", "Success");
                         } else {
-                            Log.i("Found Shared PhotoTrashList", "Fail");
+                            /* Toast 메시지 */
                         }
                     }
 
                     @Override
                     public void onFailure(Call<List<PhotoDTO>> call, Throwable t) {
-                        Log.e("Found Shared PhotoTrashList Error", t.getMessage());
+                        /* Toast 메시지 */
                     }
                 });
             }
         }
 
-        /* 복구 버튼 눌림 */
+        /* 복구 */
         recover.setOnClickListener(v -> {
             List<Long> selectedItems = pa.getSelectedItems();
             onClick_setting_costume_save("복구하시겠습니까?", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
+                    /* 개인 */
                     if (isPrivate) {
                         pr.deleteCancel(selectedItems, new Callback<Boolean>() {
                             @Override
@@ -207,18 +198,19 @@ public class PhotoTrash extends AppCompatActivity {
                                         Toast.makeText(PhotoTrash.this, "복구했습니다.", Toast.LENGTH_SHORT).show();
                                     });
                                     startActivity(photoTrashPage);
-                                    Log.i("Delete Cancel Private Photo", "Success");
                                 } else {
-                                    Log.i("Delete Cancel Private Photo", "Fail");
+                                    /* Toast 메시지 */
                                 }
                             }
 
                             @Override
                             public void onError(Exception e) {
-                                Log.e("Delete Cancel Private Photo Error", e.getMessage());
+                                /* Toast 메시지 */
                             }
                         });
-                    } else {
+                    }
+                    /* 공유 */
+                    else {
                         pc.cancelDeletePhoto(new DeleteCancelPhotoForm(selectedItems), new retrofit2.Callback<ResponseBody>() {
                             @Override
                             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -232,15 +224,14 @@ public class PhotoTrash extends AppCompatActivity {
                                         Toast.makeText(PhotoTrash.this, "복구했습니다.", Toast.LENGTH_SHORT).show();
                                     });
                                     startActivity(photoTrashPage);
-                                    Log.i("Delete Cancel Shared Photo Error", "Success");
                                 } else {
-                                    Log.i("Delete Cancel Shared Photo Error", "Fail");
+                                    /* Toast 메시지 */
                                 }
                             }
 
                             @Override
                             public void onFailure(Call<ResponseBody> call, Throwable t) {
-                                Log.e("Delete Cancel Shared Photo Error", t.getMessage());
+                                /* Toast 메시지 */
                             }
                         });
                     }
@@ -253,7 +244,7 @@ public class PhotoTrash extends AppCompatActivity {
             });
         });
 
-        /* 내비게이션 바 */
+        /* 네비게이션 */
         navi.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
@@ -303,7 +294,7 @@ public class PhotoTrash extends AppCompatActivity {
         });
     }
 
-    /* Confirm 창 */
+    /* confirm 창 */
     public void onClick_setting_costume_save(String message,
                                              DialogInterface.OnClickListener positive,
                                              DialogInterface.OnClickListener negative) {
@@ -317,6 +308,7 @@ public class PhotoTrash extends AppCompatActivity {
                 .show();
     }
 
+    /* 화면 이벤트 처리 */
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
         if (ev.getAction() == MotionEvent.ACTION_DOWN) {

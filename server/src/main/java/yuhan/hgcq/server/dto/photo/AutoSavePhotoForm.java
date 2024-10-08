@@ -14,4 +14,5 @@ public class AutoSavePhotoForm implements Serializable {
     private Long teamId;
     private List<MultipartFile> files;
     private List<String> creates;
+    private List<String> regions;
 }

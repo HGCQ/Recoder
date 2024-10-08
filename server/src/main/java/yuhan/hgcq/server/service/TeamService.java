@@ -19,13 +19,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
-/**
- * 그룹 기능 요구사항 분석
- * 1. 그룹을 생성한 회원은 그룹 소유자(owner)가 된다.
- * 2. 그룹에 속한 회원 중에서, 관리자 권한이 있는 회원만 그룹을 수정할 수 있다.
- * 3. 그룹 소유자만 그룹을 삭제할 수 있다.
- */
-
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -39,18 +32,20 @@ public class TeamService {
     private final ChatRepository cr;
     private final PhotoRepository pr;
 
-    private final static String DIRECTORY_PATH = "D:" + File.separator
+    private final static String DIRECTORY_PATH = File.separator
             + "app" + File.separator
             + "images" + File.separator
             + "team" + File.separator;
 
     /**
-     * 그룹 생성(테스트 완료)
+     * Create Team
      *
-     * @param team 그룹
+     * @param team team
+     * @return TeamId
+     * @throws IllegalArgumentException Argument is wrong
      */
     @Transactional
-    public Long create(Team team) throws IllegalArgumentException {
+    public Long createTeam(Team team) throws IllegalArgumentException {
         ensureNotNull(team, "Team");
 
         Long saveId = tr.save(team);
@@ -64,14 +59,15 @@ public class TeamService {
     }
 
     /**
-     * 그룹 수정(테스트 완료)
+     * Update team information
      *
-     * @param member 회원
-     * @param team   그룹
-     * @throws AccessException 관리자가 아닐 시
+     * @param member member
+     * @param team   team
+     * @throws AccessException          Not admin
+     * @throws IllegalArgumentException Argument is wrong
      */
     @Transactional
-    public void update(Member member, Team team) throws AccessException, IllegalArgumentException {
+    public void updateTeam(Member member, Team team) throws AccessException, IllegalArgumentException {
         ensureNotNull(member, "Member");
         ensureNotNull(team, "Team");
 
@@ -86,13 +82,14 @@ public class TeamService {
     }
 
     /**
-     * 그룹 삭제(테스트 완료)
+     * Delete team or Exit team
      *
-     * @param member 회원
-     * @param team   그룹
+     * @param member member
+     * @param team   team
+     * @throws IllegalArgumentException Argument is wrong
      */
     @Transactional
-    public void delete(Member member, Team team) throws IllegalArgumentException {
+    public void deleteTeam(Member member, Team team) throws IllegalArgumentException {
         ensureNotNull(member, "Member");
         ensureNotNull(team, "Team");
 
@@ -114,23 +111,33 @@ public class TeamService {
     }
 
     /**
-     * 그룹 검색(테스트 완료)
+     * Find team by teamId
      *
-     * @param id 그룹 id
-     * @return 그룹
+     * @param id teamId
+     * @return Team
+     * @throws IllegalArgumentException Argument is wrong
      */
-    public Team search(Long id) throws IllegalArgumentException {
+    public Team searchOne(Long id) throws IllegalArgumentException {
         Team findTeam = tr.findOne(id);
 
         if (findTeam == null) {
-            throw new IllegalArgumentException("team not found");
+            throw new IllegalArgumentException("Team not found");
         }
 
         return findTeam;
     }
 
+    /**
+     * Upload team image
+     *
+     * @param member member
+     * @param form   Team Image
+     * @throws IOException              Upload error
+     * @throws AccessException          Not Admin
+     * @throws IllegalArgumentException Argument is wrong
+     */
     @Transactional
-    public void upload(Member member, UploadTeamForm form) throws IOException, AccessException, IllegalArgumentException {
+    public void uploadTeamImage(Member member, UploadTeamForm form) throws IOException, AccessException, IllegalArgumentException {
         ensureNotNull(member, "Member");
 
         Long teamId = form.getTeamId();
@@ -158,9 +165,9 @@ public class TeamService {
                 ft.changeImage(imagePath);
                 tr.save(ft);
 
-                log.info("Upload Team : {}", member);
+                log.info("Upload Team Image : {}", imagePath);
             } catch (IOException e) {
-                log.error("IO Error");
+                log.error("Upload Team Image Error");
                 throw new IOException();
             }
         } else {
@@ -168,14 +175,25 @@ public class TeamService {
         }
     }
 
-    /* 매개변수가 null 값인지 확인 */
+    /**
+     * Argument Check if Null
+     *
+     * @param obj  argument
+     * @param name by log
+     */
     private void ensureNotNull(Object obj, String name) {
         if (obj == null) {
             throw new IllegalArgumentException(name + " is null");
         }
     }
 
-    /* 소유자인지 확인 */
+    /**
+     * Check member is owner
+     *
+     * @param member member
+     * @param team   team
+     * @return is owner?
+     */
     private boolean isOwner(Member member, Team team) {
         return team.getOwner().equals(member);
     }

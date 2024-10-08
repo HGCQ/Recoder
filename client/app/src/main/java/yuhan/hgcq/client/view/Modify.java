@@ -33,21 +33,19 @@ import yuhan.hgcq.client.R;
 import yuhan.hgcq.client.controller.MemberController;
 import yuhan.hgcq.client.model.dto.member.MemberDTO;
 import yuhan.hgcq.client.model.dto.member.MemberUpdateForm;
-import yuhan.hgcq.client.model.dto.member.SignupForm;
 
 public class Modify extends AppCompatActivity {
-
     /* View */
     EditText name, pw, pwCheck;
     ImageButton nameCheck, join;
 
-    /* 서버와 통신 */
+    /* http 통신 */
     MemberController mc;
 
     /* 받아올 값 */
     MemberDTO loginMember;
 
-    /* Toast */
+    /* 메인 스레드 */
     Handler handler = new Handler(Looper.getMainLooper());
 
     /* 중복 확인용 */
@@ -75,11 +73,12 @@ public class Modify extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         getSupportActionBar().setTitle("정보 수정");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        super.onCreate(savedInstanceState);
 
         EdgeToEdge.enable(this);
+        /* Layout */
         setContentView(R.layout.activity_modify);
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
@@ -88,14 +87,12 @@ public class Modify extends AppCompatActivity {
             return insets;
         });
 
-        /* 서버와 연결할 Controller 생성 */
+        /* 초기화 */
         mc = new MemberController(this);
 
-        /* View와 Layout 연결 */
         name = findViewById(R.id.name);
         pw = findViewById(R.id.password);
         pwCheck = findViewById(R.id.passwordCheck);
-
         nameCheck = findViewById(R.id.nameCheck);
         join = findViewById(R.id.join);
 
@@ -105,7 +102,7 @@ public class Modify extends AppCompatActivity {
         /* 받아 올 값 */
         loginMember = (MemberDTO) getIntent().getSerializableExtra("loginMember");
 
-        /* 이름 중복 확인 버튼 눌림 */
+        /* 이름 중복 확인 */
         nameCheck.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -142,7 +139,7 @@ public class Modify extends AppCompatActivity {
             }
         });
 
-        /* 정보 수정 버튼 눌림 */
+        /* 정보 수정 */
         join.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -220,6 +217,7 @@ public class Modify extends AppCompatActivity {
             }
         });
     }
+
     /* Confirm 창 */
     public void onClick_setting_costume_save(String message,
                                              DialogInterface.OnClickListener positive,
@@ -234,6 +232,7 @@ public class Modify extends AppCompatActivity {
                 .show();
     }
 
+    /* 화면 이벤트 처리 */
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
         if (ev.getAction() == MotionEvent.ACTION_DOWN) {
@@ -252,5 +251,4 @@ public class Modify extends AppCompatActivity {
         }
         return super.dispatchTouchEvent(ev);
     }
-
 }

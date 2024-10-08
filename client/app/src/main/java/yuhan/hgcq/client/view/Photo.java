@@ -7,11 +7,11 @@ import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
@@ -51,9 +51,9 @@ import yuhan.hgcq.client.model.dto.photo.PhotoDTO;
 import yuhan.hgcq.client.model.dto.team.TeamDTO;
 
 public class Photo extends AppCompatActivity {
-
     /* View */
-    ImageButton like, move, photoDelete;
+    ImageButton like;
+    Button move, photoDelete;
     ViewPager2 photoView;
     BottomNavigationView navi;
     RecyclerView albumListView;
@@ -61,10 +61,8 @@ public class Photo extends AppCompatActivity {
     /* Adapter */
     PhotoAdapter pa;
 
-    /* 개인, 공유 확인 */
-    boolean isPrivate;
-
     /* 받아올 값 */
+    boolean isPrivate;
     boolean isLike;
     MemberDTO loginMember;
     TeamDTO teamDTO;
@@ -72,18 +70,19 @@ public class Photo extends AppCompatActivity {
     PhotoDTO photoDTO;
     int position;
 
+    /* Adapter */
     AlbumAdapter aa;
 
-    /* 서버와 통신 */
+    /* http 통신 */
     PhotoController pc;
     LikedController lc;
     AlbumController ac;
 
-    /* 로컬 DB */
+    /* Room DB */
     PhotoRepository pr;
     AlbumRepository ar;
 
-    /* Toast */
+    /* 메인 스레드 */
     Handler handler = new Handler(Looper.getMainLooper());
 
     /* 뒤로 가기 */
@@ -117,11 +116,12 @@ public class Photo extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         getSupportActionBar().setTitle("Recoder");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        super.onCreate(savedInstanceState);
 
         EdgeToEdge.enable(this);
+        /* Layout */
         setContentView(R.layout.activity_photo);
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
@@ -130,23 +130,19 @@ public class Photo extends AppCompatActivity {
             return insets;
         });
 
-        /* 서버와 연결할 Controller 생성 */
+        /* 초기화 */
         pc = new PhotoController(this);
         lc = new LikedController(this);
         ac = new AlbumController(this);
 
-        /* 로컬 DB 연결할 Repository 생성 */
         pr = new PhotoRepository(this);
         ar = new AlbumRepository(this);
 
-        /* View와 Layout 연결 */
         like = findViewById(R.id.like);
         move = findViewById(R.id.move);
         photoDelete = findViewById(R.id.photoDelete);
-
         photoView = findViewById(R.id.viewPager);
         albumListView = findViewById(R.id.albumList);
-
         navi = findViewById(R.id.bottom_navigation_view);
 
         /* 관련된 페이지 */
@@ -155,13 +151,10 @@ public class Photo extends AppCompatActivity {
         Intent friendListPage = new Intent(this, FriendList.class);
         Intent likePage = new Intent(this, Like.class);
         Intent myPage = new Intent(this, MyPage.class);
-        Intent galleryPage = new Intent(this, Gallery.class);
-
-        Intent getIntent = getIntent();
-        /* 개인, 공유 확인 */
-        isPrivate = getIntent.getBooleanExtra("isPrivate", false);
 
         /* 받아 올 값 */
+        Intent getIntent = getIntent();
+        isPrivate = getIntent.getBooleanExtra("isPrivate", false);
         isLike = getIntent.getBooleanExtra("isLike", false);
         loginMember = (MemberDTO) getIntent.getSerializableExtra("loginMember");
         teamDTO = (TeamDTO) getIntent.getSerializableExtra("teamDTO");
@@ -170,9 +163,12 @@ public class Photo extends AppCompatActivity {
         position = getIntent.getIntExtra("position", 0);
 
         /* 초기 설정 */
+
+        /* 좋아요 */
         if (isLike) {
+            /* 개인 */
             if (isPrivate) {
-                getSupportActionBar().setTitle("개인 좋아요");
+                getSupportActionBar().setTitle("[개인] 좋아요");
                 pr.searchByLike(new yuhan.hgcq.client.localDatabase.callback.Callback<List<PhotoDTO>>() {
                     @Override
                     public void onSuccess(List<PhotoDTO> result) {
@@ -182,19 +178,20 @@ public class Photo extends AppCompatActivity {
                                 photoView.setAdapter(pa);
                                 photoView.setCurrentItem(position, false);
                             });
-                            Log.i("Found Private LikeList", "Success");
                         } else {
-                            Log.i("Found Private LikeList", "Fail");
+                            /* Toast 메시지 */
                         }
                     }
 
                     @Override
                     public void onError(Exception e) {
-                        Log.e("Found Private LikeList Error", e.getMessage());
+                        /* Toast 메시지 */
                     }
                 });
-            } else {
-                getSupportActionBar().setTitle("공유 좋아요");
+            }
+            /* 공유 */
+            else {
+                getSupportActionBar().setTitle("[공유] 좋아요");
                 lc.likedList(new Callback<List<PhotoDTO>>() {
                     @Override
                     public void onResponse(Call<List<PhotoDTO>> call, Response<List<PhotoDTO>> response) {
@@ -205,22 +202,24 @@ public class Photo extends AppCompatActivity {
                                 photoView.setAdapter(pa);
                                 photoView.setCurrentItem(position, false);
                             });
-                            Log.i("Found Shared LikeList", "Success");
                         } else {
-                            Log.i("Found Shared LikeList", "Fail");
+                            /* Toast 메시지 */
                         }
                     }
 
                     @Override
                     public void onFailure(Call<List<PhotoDTO>> call, Throwable t) {
-                        Log.i("Found Shared LikeList Error", t.getMessage());
+                        /* Toast 메시지 */
                     }
                 });
             }
-        } else {
+        }
+        /* 갤러리 */
+        else {
             if (albumDTO != null) {
+                /* 개인 */
                 if (isPrivate) {
-                    getSupportActionBar().setTitle("[개인]");
+                    getSupportActionBar().setTitle("[개인] " + albumDTO.getName());
                     pr.searchByAlbum(albumDTO.getAlbumId(), new yuhan.hgcq.client.localDatabase.callback.Callback<List<PhotoDTO>>() {
                         @Override
                         public void onSuccess(List<PhotoDTO> result) {
@@ -241,19 +240,20 @@ public class Photo extends AppCompatActivity {
                                     photoView.setAdapter(pa);
                                     photoView.setCurrentItem(finalIndex, false);
                                 });
-                                Log.i("Found Private PhotoList", "Success");
                             } else {
-                                Log.i("Found Private PhotoList", "Success");
+                                /* Toast 메시지 */
                             }
                         }
 
                         @Override
                         public void onError(Exception e) {
-                            Log.e("Found Private PhotoList Error", e.getMessage());
+                            /* Toast 메시지 */
                         }
                     });
-                } else {
-                    getSupportActionBar().setTitle("[공유]");
+                }
+                /* 공유 */
+                else {
+                    getSupportActionBar().setTitle("[공유] " + albumDTO.getName());
                     pc.photoList(albumDTO.getAlbumId(), new Callback<List<PhotoDTO>>() {
                         @Override
                         public void onResponse(Call<List<PhotoDTO>> call, Response<List<PhotoDTO>> response) {
@@ -275,15 +275,14 @@ public class Photo extends AppCompatActivity {
                                     photoView.setAdapter(pa);
                                     photoView.setCurrentItem(finalIndex, false);
                                 });
-                                Log.i("Found Shared PhotoList", "Success");
                             } else {
-                                Log.i("Found Shared PhotoList", "Fail");
+                                /* Toast 메시지 */
                             }
                         }
 
                         @Override
                         public void onFailure(Call<List<PhotoDTO>> call, Throwable t) {
-                            Log.e("Found Shared PhotoList Error", t.getMessage());
+                            /* Toast 메시지 */
                         }
                     });
                 }
@@ -325,10 +324,11 @@ public class Photo extends AppCompatActivity {
             }
         });
 
-        /* 좋아요 눌림 */
+        /* 좋아요 */
         like.setOnClickListener(v -> {
             int index = photoView.getCurrentItem();
 
+            /* 개인 */
             if (isPrivate) {
                 List<PhotoDTO> photoList = pa.getPhotoList();
                 PhotoDTO dto = photoList.get(index);
@@ -343,16 +343,15 @@ public class Photo extends AppCompatActivity {
                                         Toast.makeText(Photo.this, "좋아요를 취소했습니다.", Toast.LENGTH_SHORT).show();
                                     });
                                     dto.setLiked(false);
-                                    Log.i("Delete Like Private Photo", "Success");
                                 } else {
-                                    Log.i("Delete Like Private Photo", "Fail");
+                                    /* Toast 메시지 */
                                 }
                             }
                         }
 
                         @Override
                         public void onError(Exception e) {
-                            Log.i("Delete Like Private Photo Error", e.getMessage());
+                            /* Toast 메시지 */
                         }
                     });
                 } else {
@@ -366,20 +365,21 @@ public class Photo extends AppCompatActivity {
                                         Toast.makeText(Photo.this, "좋아요 했습니다.", Toast.LENGTH_SHORT).show();
                                     });
                                     dto.setLiked(true);
-                                    Log.i("Add Like Private Photo", "Success");
                                 } else {
-                                    Log.i("Add Like Private Photo", "Fail");
+                                    /* Toast 메시지 */
                                 }
                             }
                         }
 
                         @Override
                         public void onError(Exception e) {
-                            Log.i("Add Like Private Photo Error", e.getMessage());
+                            /* Toast 메시지 */
                         }
                     });
                 }
-            } else {
+            }
+            /* 공유 */
+            else {
                 List<PhotoDTO> photoList = pa.getPhotoList();
                 PhotoDTO dto = photoList.get(index);
                 if (dto.getLiked()) {
@@ -392,15 +392,14 @@ public class Photo extends AppCompatActivity {
                                     Toast.makeText(Photo.this, "좋아요를 취소했습니다.", Toast.LENGTH_SHORT).show();
                                 });
                                 dto.setLiked(false);
-                                Log.i("Delete Like Shared Photo", "Success");
                             } else {
-                                Log.i("Delete Like Shared Photo", "Fail");
+                                /* Toast 메시지 */
                             }
                         }
 
                         @Override
                         public void onFailure(Call<ResponseBody> call, Throwable t) {
-                            Log.i("Delete Like Shared Photo Error", t.getMessage());
+                            /* Toast 메시지 */
                         }
                     });
                 } else {
@@ -413,28 +412,28 @@ public class Photo extends AppCompatActivity {
                                     Toast.makeText(Photo.this, "좋아요 했습니다.", Toast.LENGTH_SHORT).show();
                                 });
                                 dto.setLiked(true);
-                                Log.i("Add Like Shared Photo", "Success");
                             } else {
-                                Log.i("Add Like Shared Photo", "Fail");
+                                /* Toast 메시지 */
                             }
                         }
 
                         @Override
                         public void onFailure(Call<ResponseBody> call, Throwable t) {
-                            Log.i("Add Like Shared Photo Error", t.getMessage());
+                            /* Toast 메시지 */
                         }
                     });
                 }
             }
         });
 
-        /* 앨범 이동 눌림 */
+        /* 앨범 이동 */
         move.setOnClickListener(v -> {
+            /* 개인 */
             if (isPrivate) {
                 ar.searchAll(new yuhan.hgcq.client.localDatabase.callback.Callback<List<AlbumDTO>>() {
                     @Override
                     public void onSuccess(List<AlbumDTO> result) {
-                        if(result != null) {
+                        if (result != null) {
                             aa = new AlbumAdapter(result, Photo.this, isPrivate);
                             aa.setPhoto();
                             handler.post(() -> {
@@ -479,15 +478,14 @@ public class Photo extends AppCompatActivity {
                                                                 photoView.setCurrentItem(finalNewItemPosition, true);
                                                             });
                                                         }
-                                                        Log.i("앨범 이동 성공", "Success");
                                                     } else {
-                                                        Log.i("앨범 이동 실패", "Fail");
+                                                        /* Toast 메시지 */
                                                     }
                                                 }
 
                                                 @Override
                                                 public void onError(Exception e) {
-                                                    Log.e("앨범 이동 실패", e.getMessage());
+                                                    /* Toast 메시지 */
                                                 }
                                             });
                                         }
@@ -499,18 +497,19 @@ public class Photo extends AppCompatActivity {
                                     });
                                 }
                             });
-                            Log.i("Found Private AlbumList", "Success");
-                        }else{
-                            Log.i("Found Private AlbumList", "Fail");
+                        } else {
+                            /* Toast 메시지 */
                         }
                     }
+
                     @Override
                     public void onError(Exception e) {
-                        Log.e("Found Private AlbumList", e.getMessage());
+                        /* Toast 메시지 */
                     }
                 });
-
-            } else {
+            }
+            /* 공유 */
+            else {
                 if (teamDTO != null) {
                     Long teamId = teamDTO.getTeamId();
                     ac.albumList(teamId, new retrofit2.Callback<List<AlbumDTO>>() {
@@ -562,15 +561,14 @@ public class Photo extends AppCompatActivity {
                                                                     photoView.setCurrentItem(finalNewItemPosition, true);
                                                                 });
                                                             }
-                                                            Log.i("앨범 이동 성공", "Success");
                                                         } else {
-                                                            Log.i("앨범 이동 실패", "Fail");
+                                                            /* Toast 메시지 */
                                                         }
                                                     }
 
                                                     @Override
                                                     public void onFailure(Call<ResponseBody> call, Throwable t) {
-                                                        Log.i("앨범 이동 실패", t.getMessage());
+                                                        /* Toast 메시지 */
                                                     }
                                                 });
                                             }
@@ -583,31 +581,29 @@ public class Photo extends AppCompatActivity {
 
                                     }
                                 });
-                                Log.i("Found Shared AlbumList", "Success");
                             } else {
-                                Log.i("Found Shared AlbumList", "Fail");
+                                /* Toast 메시지 */
                             }
                         }
 
                         @Override
                         public void onFailure(Call<List<AlbumDTO>> call, Throwable t) {
-                            Log.e("Found Shared AlbumList Error", t.getMessage());
+                            /* Toast 메시지 */
                         }
                     });
-                } else {
-                    Log.e("Intent Error", "teamDTO is Null");
                 }
             }
         });
 
 
-        /* 사진 삭제 눌림 */
+        /* 사진 삭제 */
         photoDelete.setOnClickListener(v -> {
             onClick_setting_costume_save("삭제하시겠습니까?", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     int index = photoView.getCurrentItem();
 
+                    /* 개인 */
                     if (isPrivate) {
                         List<PhotoDTO> photoList = pa.getPhotoList();
                         PhotoDTO dto = photoList.get(index);
@@ -634,12 +630,10 @@ public class Photo extends AppCompatActivity {
                                             photoView.setCurrentItem(finalNewItemPosition, true);
                                         });
                                     }
-                                    Log.i("Delete Private Photo", "Success");
                                 } else {
                                     handler.post(() -> {
                                         Toast.makeText(Photo.this, "사진 삭제가 실패했습니다.", Toast.LENGTH_SHORT).show();
                                     });
-                                    Log.i("Delete Private Photo", "Fail");
                                 }
                             }
 
@@ -648,10 +642,11 @@ public class Photo extends AppCompatActivity {
                                 handler.post(() -> {
                                     Toast.makeText(Photo.this, "사진 삭제가 실패했습니다.", Toast.LENGTH_SHORT).show();
                                 });
-                                Log.e("Delete Private Photo Error", e.getMessage());
                             }
                         });
-                    } else {
+                    }
+                    /* 공유 */
+                    else {
                         List<PhotoDTO> photoList = pa.getPhotoList();
                         PhotoDTO dto = photoList.get(index);
                         pc.deletePhoto(dto, new Callback<ResponseBody>() {
@@ -677,12 +672,10 @@ public class Photo extends AppCompatActivity {
                                     handler.post(() -> {
                                         Toast.makeText(Photo.this, "사진을 삭제했습니다.", Toast.LENGTH_SHORT).show();
                                     });
-                                    Log.i("Delete Shared Photo", "Success");
                                 } else {
                                     handler.post(() -> {
                                         Toast.makeText(Photo.this, "사진 삭제가 실패했습니다.", Toast.LENGTH_SHORT).show();
                                     });
-                                    Log.i("Delete Shared Photo", "Fail");
                                 }
                             }
 
@@ -691,7 +684,6 @@ public class Photo extends AppCompatActivity {
                                 handler.post(() -> {
                                     Toast.makeText(Photo.this, "사진 삭제가 실패했습니다.", Toast.LENGTH_SHORT).show();
                                 });
-                                Log.e("Delete Shared Photo Error", t.getMessage());
                             }
                         });
                     }
@@ -704,7 +696,7 @@ public class Photo extends AppCompatActivity {
             });
         });
 
-        /* 내비게이션 바 */
+        /* 네비게이션 */
         navi.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
@@ -767,6 +759,7 @@ public class Photo extends AppCompatActivity {
                 .show();
     }
 
+    /* 화면 이벤트 처리 */
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
         if (ev.getAction() == MotionEvent.ACTION_DOWN) {

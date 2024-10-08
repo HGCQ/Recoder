@@ -49,30 +49,30 @@ class TeamMemberServiceTest {
         m3Id = ms.join(m3);
         m4Id = ms.join(m4);
 
-        Member fm1 = ms.search(m1Id);
-        Member fm2 = ms.search(m2Id);
-        Member fm3 = ms.search(m3Id);
-        Member fm4 = ms.search(m4Id);
+        Member fm1 = ms.searchOne(m1Id);
+        Member fm2 = ms.searchOne(m2Id);
+        Member fm3 = ms.searchOne(m3Id);
+        Member fm4 = ms.searchOne(m4Id);
 
         Team t1 = new Team(fm1, "t1");
         Team t2 = new Team(fm1, "t2");
 
-        t1Id = ts.create(t1);
-        t2Id = ts.create(t2);
+        t1Id = ts.createTeam(t1);
+        t2Id = ts.createTeam(t2);
     }
 
     @Test
     @DisplayName("그룹에 회원 초대")
-    void invite() {
-        Member m1 = ms.search(m1Id);
-        Member m2 = ms.search(m2Id);
+    void inviteMember() {
+        Member m1 = ms.searchOne(m1Id);
+        Member m2 = ms.searchOne(m2Id);
 
-        Team t1 = ts.search(t1Id);
+        Team t1 = ts.searchOne(t1Id);
 
         TeamMember tm1 = new TeamMember(t1, m2);
 
         try {
-            tms.invite(m1, tm1);
+            tms.inviteMember(m1, tm1);
         } catch (AccessException e) {
             fail();
         }
@@ -83,44 +83,44 @@ class TeamMemberServiceTest {
 
     @Test
     @DisplayName("그룹에 회원 초대는 관리자만 할 수 있다")
-    void inviteNotAdmin() {
-        Member m1 = ms.search(m1Id);
-        Member m2 = ms.search(m2Id);
-        Member m3 = ms.search(m3Id);
+    void inviteMemberNotAdmin() {
+        Member m1 = ms.searchOne(m1Id);
+        Member m2 = ms.searchOne(m2Id);
+        Member m3 = ms.searchOne(m3Id);
 
-        Team t1 = ts.search(t1Id);
+        Team t1 = ts.searchOne(t1Id);
 
         TeamMember tm1 = new TeamMember(t1, m2);
 
         try {
-            tms.invite(m1, tm1);
+            tms.inviteMember(m1, tm1);
         } catch (AccessException e) {
             fail();
         }
 
         TeamMember tm2 = new TeamMember(t1, m3);
 
-        assertThrows(AccessException.class, () -> tms.invite(m2, tm2));
+        assertThrows(AccessException.class, () -> tms.inviteMember(m2, tm2));
     }
 
     @Test
     @DisplayName("회원 추방")
-    void expel() {
-        Member m1 = ms.search(m1Id);
-        Member m2 = ms.search(m2Id);
+    void expelMember() {
+        Member m1 = ms.searchOne(m1Id);
+        Member m2 = ms.searchOne(m2Id);
 
-        Team t1 = ts.search(t1Id);
+        Team t1 = ts.searchOne(t1Id);
 
         TeamMember tm1 = new TeamMember(t1, m2);
 
         try {
-            tms.invite(m1, tm1);
+            tms.inviteMember(m1, tm1);
         } catch (AccessException e) {
             fail();
         }
 
         try {
-            tms.expel(m1, tm1);
+            tms.expelMember(m1, tm1);
         } catch (AccessException e) {
             fail();
         }
@@ -131,41 +131,41 @@ class TeamMemberServiceTest {
     
     @Test
     @DisplayName("회원 추방은 관리자만 할 수 있다")
-    void expelNotAdmin() {
-        Member m1 = ms.search(m1Id);
-        Member m2 = ms.search(m2Id);
-        Member m3 = ms.search(m3Id);
+    void expelMemberNotAdmin() {
+        Member m1 = ms.searchOne(m1Id);
+        Member m2 = ms.searchOne(m2Id);
+        Member m3 = ms.searchOne(m3Id);
 
-        Team t1 = ts.search(t1Id);
+        Team t1 = ts.searchOne(t1Id);
 
         TeamMember tm1 = new TeamMember(t1, m2);
         TeamMember tm2 = new TeamMember(t1, m3);
 
         try {
-            tms.invite(m1, tm1);
-            tms.invite(m1, tm2);
+            tms.inviteMember(m1, tm1);
+            tms.inviteMember(m1, tm2);
         } catch (AccessException e) {
             fail();
         }
 
-        assertThrows(AccessException.class, () -> tms.expel(m2, tm2));
+        assertThrows(AccessException.class, () -> tms.expelMember(m2, tm2));
     }
 
     @Test
     @DisplayName("관리자 부여")
     void authAdmin() {
-        Member m1 = ms.search(m1Id);
-        Member m2 = ms.search(m2Id);
-        Member m3 = ms.search(m3Id);
+        Member m1 = ms.searchOne(m1Id);
+        Member m2 = ms.searchOne(m2Id);
+        Member m3 = ms.searchOne(m3Id);
 
-        Team t1 = ts.search(t1Id);
+        Team t1 = ts.searchOne(t1Id);
 
         TeamMember tm1 = new TeamMember(t1, m2);
         TeamMember tm2 = new TeamMember(t1, m3);
 
         try {
-            tms.invite(m1, tm1);
-            tms.invite(m1, tm2);
+            tms.inviteMember(m1, tm1);
+            tms.inviteMember(m1, tm2);
             tms.authorizeAdmin(m1, tm1);
         } catch (AccessException e) {
             fail();
@@ -178,18 +178,18 @@ class TeamMemberServiceTest {
     @Test
     @DisplayName("관리자 권한 부여는 소유자만 할 수 있다")
     void authAdminNotOwner() {
-        Member m1 = ms.search(m1Id);
-        Member m2 = ms.search(m2Id);
-        Member m3 = ms.search(m3Id);
+        Member m1 = ms.searchOne(m1Id);
+        Member m2 = ms.searchOne(m2Id);
+        Member m3 = ms.searchOne(m3Id);
 
-        Team t1 = ts.search(t1Id);
+        Team t1 = ts.searchOne(t1Id);
 
         TeamMember tm1 = new TeamMember(t1, m2);
         TeamMember tm2 = new TeamMember(t1, m3);
 
         try {
-            tms.invite(m1, tm1);
-            tms.invite(m1, tm2);
+            tms.inviteMember(m1, tm1);
+            tms.inviteMember(m1, tm2);
             tms.authorizeAdmin(m1, tm1);
         } catch (AccessException e) {
             fail();
@@ -201,18 +201,18 @@ class TeamMemberServiceTest {
     @Test
     @DisplayName("관리자 박탈")
     void revokeAdmin() {
-        Member m1 = ms.search(m1Id);
-        Member m2 = ms.search(m2Id);
-        Member m3 = ms.search(m3Id);
+        Member m1 = ms.searchOne(m1Id);
+        Member m2 = ms.searchOne(m2Id);
+        Member m3 = ms.searchOne(m3Id);
 
-        Team t1 = ts.search(t1Id);
+        Team t1 = ts.searchOne(t1Id);
 
         TeamMember tm1 = new TeamMember(t1, m2);
         TeamMember tm2 = new TeamMember(t1, m3);
 
         try {
-            tms.invite(m1, tm1);
-            tms.invite(m1, tm2);
+            tms.inviteMember(m1, tm1);
+            tms.inviteMember(m1, tm2);
             tms.authorizeAdmin(m1, tm1);
             tms.revokeAdmin(m1, tm1);
         } catch (AccessException e) {
@@ -226,18 +226,18 @@ class TeamMemberServiceTest {
     @Test
     @DisplayName("관리자 권한 박탈은 소유자만 할 수 있다")
     void revokeAdminNotOwner() {
-        Member m1 = ms.search(m1Id);
-        Member m2 = ms.search(m2Id);
-        Member m3 = ms.search(m3Id);
+        Member m1 = ms.searchOne(m1Id);
+        Member m2 = ms.searchOne(m2Id);
+        Member m3 = ms.searchOne(m3Id);
 
-        Team t1 = ts.search(t1Id);
+        Team t1 = ts.searchOne(t1Id);
 
         TeamMember tm1 = new TeamMember(t1, m2);
         TeamMember tm2 = new TeamMember(t1, m3);
 
         try {
-            tms.invite(m1, tm1);
-            tms.invite(m1, tm2);
+            tms.inviteMember(m1, tm1);
+            tms.inviteMember(m1, tm2);
             tms.authorizeAdmin(m1, tm1);
             tms.authorizeAdmin(m1, tm2);
         } catch (AccessException e) {
@@ -250,21 +250,21 @@ class TeamMemberServiceTest {
     @Test
     @DisplayName("회원이 속한 그룹 리스트")
     void teamList() {
-        Member m1 = ms.search(m1Id);
-        Member m2 = ms.search(m2Id);
-        Member m3 = ms.search(m3Id);
+        Member m1 = ms.searchOne(m1Id);
+        Member m2 = ms.searchOne(m2Id);
+        Member m3 = ms.searchOne(m3Id);
 
-        Team t1 = ts.search(t1Id);
-        Team t2 = ts.search(t2Id);
+        Team t1 = ts.searchOne(t1Id);
+        Team t2 = ts.searchOne(t2Id);
 
         TeamMember tm1 = new TeamMember(t1, m2);
         TeamMember tm2 = new TeamMember(t2, m2);
         TeamMember tm3 = new TeamMember(t1, m3);
 
         try {
-            tms.invite(m1, tm1);
-            tms.invite(m1, tm2);
-            tms.invite(m1, tm3);
+            tms.inviteMember(m1, tm1);
+            tms.inviteMember(m1, tm2);
+            tms.inviteMember(m1, tm3);
         } catch (AccessException e) {
             fail();
         }
@@ -279,24 +279,24 @@ class TeamMemberServiceTest {
     @Test
     @DisplayName("회원이 속한 그룹 이름으로 검색")
     void teamListByName() {
-        Member m1 = ms.search(m1Id);
-        Member m2 = ms.search(m2Id);
+        Member m1 = ms.searchOne(m1Id);
+        Member m2 = ms.searchOne(m2Id);
 
-        Team t1 = ts.search(t1Id);
-        Team t2 = ts.search(t2Id);
+        Team t1 = ts.searchOne(t1Id);
+        Team t2 = ts.searchOne(t2Id);
 
         TeamMember tm1 = new TeamMember(t1, m2);
         TeamMember tm2 = new TeamMember(t2, m2);
 
         try {
-            tms.invite(m1, tm1);
-            tms.invite(m1, tm2);
+            tms.inviteMember(m1, tm1);
+            tms.inviteMember(m1, tm2);
         } catch (AccessException e) {
             fail();
         }
 
-        List<Team> byt = tms.searchTeamList(m2, "t");
-        List<Team> by2 = tms.searchTeamList(m2, "2");
+        List<Team> byt = tms.searchTeamList(m2);
+        List<Team> by2 = tms.searchTeamList(m2);
 
         assertThat(byt).hasSize(2).contains(t1, t2);
         assertThat(by2).hasSize(1).contains(t2);

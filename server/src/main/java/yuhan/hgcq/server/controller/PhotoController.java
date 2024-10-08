@@ -11,6 +11,8 @@ import yuhan.hgcq.server.domain.Member;
 import yuhan.hgcq.server.domain.Photo;
 import yuhan.hgcq.server.dto.member.MemberDTO;
 import yuhan.hgcq.server.dto.photo.*;
+import yuhan.hgcq.server.kafka.producer.PhotoAutoSaveProducer;
+import yuhan.hgcq.server.kafka.producer.PhotoUploadProducer;
 import yuhan.hgcq.server.service.AlbumService;
 import yuhan.hgcq.server.service.LikedService;
 import yuhan.hgcq.server.service.MemberService;
@@ -29,13 +31,15 @@ public class PhotoController {
     private final AlbumService as;
     private final PhotoService ps;
     private final LikedService ls;
+    private final PhotoUploadProducer up;
+    private final PhotoAutoSaveProducer asp;
 
     /**
-     * 사진 업로드
+     * Upload photo
      *
-     * @param form    사진 업로드 폼
-     * @param request 요청
-     * @return 성공 시 201 상태 코드, 업로드 실패 시 서버 오류면 500번 상태 코드 아니라면 404 상태 코드, 세션 없을 시 401 상태 코드
+     * @param form    upload form
+     * @param request request
+     * @return status code
      */
     @PostMapping("/upload")
     public ResponseEntity<?> uploadPhotos(@ModelAttribute UploadPhotoForm form, HttpServletRequest request) {
@@ -46,28 +50,51 @@ public class PhotoController {
 
             if (loginMember != null) {
                 try {
-                    Member findMember = ms.search(loginMember.getMemberId());
+                    Member findMember = ms.searchOne(loginMember.getMemberId());
 
                     if (findMember != null) {
                         try {
-                            Album fa = as.search(form.getAlbumId());
+                            Album fa = as.searchOne(form.getAlbumId());
 
                             if (fa != null) {
                                 try {
-                                    ps.save(form);
+//                                    List<MultipartFile> files = form.getFiles();
+//                                    List<String> paths = new ArrayList<>();
+//
+//                                    for (MultipartFile file : files) {
+//                                        try {
+//                                            String tempPath = FileStorageUtil.saveFile(file);
+//                                            paths.add(tempPath);
+//                                        } catch (IOException e) {
+//                                            for (String path : paths) {
+//                                                FileStorageUtil.deleteFile(path);
+//                                            }
+//                                        }
+//                                    }
+//
+//                                    PhotoUploadMessage message = new PhotoUploadMessage(
+//                                            fa.getId(),
+//                                            findMember.getId(),
+//                                            paths,
+//                                            form.getCreates(),
+//                                            form.getRegions()
+//                                    );
+//
+//                                    up.sendUploadPhotoMessage(message);
+                                    ps.savePhoto(form);
                                     return ResponseEntity.status(HttpStatus.CREATED).body("Upload Photo Success");
                                 } catch (IOException e) {
-                                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Photo Uploading Error");
+                                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
                                 } catch (IllegalArgumentException e) {
-                                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Upload Photo Fail");
+                                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
                                 }
                             }
                         } catch (IllegalArgumentException e) {
-                            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found Album Fail");
+                            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
                         }
                     }
                 } catch (IllegalArgumentException e) {
-                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found Member Fail");
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
                 }
             }
         }
@@ -76,11 +103,11 @@ public class PhotoController {
     }
 
     /**
-     * 사진 삭제
+     * Delete photo
      *
-     * @param photoDTO 사진 DTO
-     * @param request  요청
-     * @return 성공 시 200 상태 코드, 실패 시 404 상태 코드, 세션 없을 시 401 상태 코드
+     * @param photoDTO photo dto
+     * @param request  request
+     * @return status code
      */
     @PostMapping("/delete")
     public ResponseEntity<?> deletePhoto(@RequestBody PhotoDTO photoDTO, HttpServletRequest request) {
@@ -91,26 +118,26 @@ public class PhotoController {
 
             if (loginMember != null) {
                 try {
-                    Member findMember = ms.search(loginMember.getMemberId());
+                    Member findMember = ms.searchOne(loginMember.getMemberId());
 
                     if (findMember != null) {
                         try {
-                            Photo fp = ps.search(photoDTO.getPhotoId());
+                            Photo fp = ps.searchOne(photoDTO.getPhotoId());
 
                             if (fp != null) {
                                 try {
-                                    ps.delete(fp);
+                                    ps.deletePhoto(fp);
                                     return ResponseEntity.status(HttpStatus.OK).body("Delete Photo Success");
                                 } catch (IllegalArgumentException e) {
-                                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Delete Photo Fail");
+                                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
                                 }
                             }
                         } catch (IllegalArgumentException e) {
-                            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found Photo Fail");
+                            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
                         }
                     }
                 } catch (IllegalArgumentException e) {
-                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found Member Fail");
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
                 }
             }
         }
@@ -119,11 +146,11 @@ public class PhotoController {
     }
 
     /**
-     * 사진 삭제 취소
+     * Delete photo cancel
      *
-     * @param form 사진 id 리스트
-     * @param request  요청
-     * @return 성공 시 200 상태 코드, 실패 시 404 상태 코드, 세션 없을 시 401 상태 코드
+     * @param form    delete photo cancel form
+     * @param request request
+     * @return status code
      */
     @PostMapping("/delete/cancel")
     public ResponseEntity<?> cancelDeletePhoto(@RequestBody DeleteCancelPhotoForm form, HttpServletRequest request) {
@@ -134,30 +161,30 @@ public class PhotoController {
 
             if (loginMember != null) {
                 try {
-                    Member findMember = ms.search(loginMember.getMemberId());
+                    Member findMember = ms.searchOne(loginMember.getMemberId());
 
                     if (findMember != null) {
                         try {
                             List<Long> photoIds = form.getPhotoIds();
 
                             for (Long photoId : photoIds) {
-                                Photo fp = ps.search(photoId);
+                                Photo fp = ps.searchOne(photoId);
 
                                 if (fp != null) {
                                     try {
-                                        ps.deleteCancel(fp);
+                                        ps.deleteCancelPhoto(fp);
                                     } catch (IllegalArgumentException e) {
-                                        return ResponseEntity.status(HttpStatus.OK).body("Delete Cancel Photo Fail");
+                                        return ResponseEntity.status(HttpStatus.OK).body(e.getMessage());
                                     }
                                 }
                             }
                             return ResponseEntity.status(HttpStatus.OK).body("Delete Cancel Photo Success");
                         } catch (IllegalArgumentException e) {
-                            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found Photo Fail");
+                            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
                         }
                     }
                 } catch (IllegalArgumentException e) {
-                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found Member Fail");
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
                 }
             }
         }
@@ -166,11 +193,11 @@ public class PhotoController {
     }
 
     /**
-     * 앨범 이동
+     * Move photo
      *
-     * @param form    앨범 이동 폼
-     * @param request 요청
-     * @return 성공 시 200 상태 코드, 실패 시 404 상태 코드, 세션 없을 시 401 상태 코드
+     * @param form    move form
+     * @param request request
+     * @return status code
      */
     @PostMapping("/move")
     public ResponseEntity<?> movePhoto(@RequestBody MovePhotoForm form, HttpServletRequest request) {
@@ -181,11 +208,11 @@ public class PhotoController {
 
             if (loginMember != null) {
                 try {
-                    Member findMember = ms.search(loginMember.getMemberId());
+                    Member findMember = ms.searchOne(loginMember.getMemberId());
 
                     if (findMember != null) {
                         try {
-                            Album fa = as.search(form.getNewAlbumId());
+                            Album fa = as.searchOne(form.getNewAlbumId());
 
                             if (fa != null) {
                                 List<PhotoDTO> photos = form.getPhotos();
@@ -193,10 +220,10 @@ public class PhotoController {
 
                                 for (PhotoDTO photoDTO : photos) {
                                     try {
-                                        Photo fp = ps.search(photoDTO.getPhotoId());
+                                        Photo fp = ps.searchOne(photoDTO.getPhotoId());
                                         photoList.add(fp);
                                     } catch (IllegalArgumentException e) {
-                                        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found Photo Fail");
+                                        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
                                     }
                                 }
 
@@ -204,15 +231,17 @@ public class PhotoController {
                                     ps.move(fa, photoList);
                                     return ResponseEntity.status(HttpStatus.OK).body("Move Photo Success");
                                 } catch (IllegalArgumentException e) {
-                                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Move Photo Fail");
+                                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+                                } catch (IOException e) {
+                                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
                                 }
                             }
                         } catch (IllegalArgumentException e) {
-                            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found Album Fail");
+                            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
                         }
                     }
                 } catch (IllegalArgumentException e) {
-                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found Member Fail");
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
                 }
             }
         }
@@ -221,11 +250,11 @@ public class PhotoController {
     }
 
     /**
-     * 사진 앨범에 자동 저장
+     * Auto save photoList
      *
-     * @param form    사진 자동 저장 폼
-     * @param request 요청
-     * @return 성공 시 201 상태 코드, 업로드 실패 시 서버 오류면 500번 상태 코드 아니라면 404 상태 코드, 세션 없을 시 401 상태 코드
+     * @param form    photoList form
+     * @param request request
+     * @return status code
      */
     @PostMapping("/autosave")
     public ResponseEntity<?> autosavePhoto(@ModelAttribute AutoSavePhotoForm form, HttpServletRequest request) {
@@ -236,20 +265,43 @@ public class PhotoController {
 
             if (loginMember != null) {
                 try {
-                    Member findMember = ms.search(loginMember.getMemberId());
+                    Member findMember = ms.searchOne(loginMember.getMemberId());
 
                     if (findMember != null) {
                         try {
+//                            List<MultipartFile> files = form.getFiles();
+//                            List<String> paths = new ArrayList<>();
+//
+//                            for (MultipartFile file : files) {
+//                                try {
+//                                    String tempPath = FileStorageUtil.saveFile(file);
+//                                    paths.add(tempPath);
+//                                } catch (IOException e) {
+//                                    for (String path : paths) {
+//                                        FileStorageUtil.deleteFile(path);
+//                                    }
+//                                }
+//                            }
+//
+//                            PhotoAutoSaveMessage message = new PhotoAutoSaveMessage(
+//                                    form.getTeamId(),
+//                                    findMember.getId(),
+//                                    paths,
+//                                    form.getCreates(),
+//                                    form.getRegions()
+//                            );
+//
+//                            asp.sendAutoSavePhotoMessage(message);
                             ps.autoSave(form);
                             return ResponseEntity.status(HttpStatus.OK).body("Autosave Photo Success");
                         } catch (IOException e) {
-                            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Autosave Photo Error");
+                            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
                         } catch (IllegalArgumentException e) {
-                            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Autosave Photo Fail");
+                            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
                         }
                     }
                 } catch (IllegalArgumentException e) {
-                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found Member Fail");
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
                 }
             }
         }
@@ -258,11 +310,11 @@ public class PhotoController {
     }
 
     /**
-     * 갤러리 맵
+     * Find gallery
      *
-     * @param albumId 앨범 id
-     * @param request 요청
-     * @return 성공 시 200 상태 코드와 갤러리 맵, 실패 시 404 상태 코드, 세션 없을 시 401 상태 코드
+     * @param albumId albumId
+     * @param request request
+     * @return status code, gallery
      */
     @GetMapping("/gallery/albumId")
     public ResponseEntity<?> gallery(@RequestParam("albumId") Long albumId, HttpServletRequest request) {
@@ -273,11 +325,11 @@ public class PhotoController {
 
             if (loginMember != null) {
                 try {
-                    Member findMember = ms.search(loginMember.getMemberId());
+                    Member findMember = ms.searchOne(loginMember.getMemberId());
 
                     if (findMember != null) {
                         try {
-                            Album fa = as.search(albumId);
+                            Album fa = as.searchOne(albumId);
 
                             if (fa != null) {
                                 try {
@@ -299,15 +351,15 @@ public class PhotoController {
 
                                     return ResponseEntity.status(HttpStatus.OK).body(gallery);
                                 } catch (IllegalArgumentException e) {
-                                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found PhotoList Fail");
+                                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
                                 }
                             }
                         } catch (IllegalArgumentException e) {
-                            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found Album Fail");
+                            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
                         }
                     }
                 } catch (IllegalArgumentException e) {
-                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found Member Fail");
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
                 }
             }
         }
@@ -316,11 +368,11 @@ public class PhotoController {
     }
 
     /**
-     * 사진 리스트
+     * Find photoList
      *
-     * @param albumId 앨범 id
-     * @param request 요청
-     * @return 성공 시 200 상태 코드와 사진 리스트, 실패 시 404 상태 코드, 세션 없을 시 401 상태 코드
+     * @param albumId albumId
+     * @param request request
+     * @return status code, photoList
      */
     @GetMapping("/list/albumId")
     public ResponseEntity<?> listPhoto(@RequestParam("albumId") Long albumId, HttpServletRequest request) {
@@ -331,11 +383,11 @@ public class PhotoController {
 
             if (loginMember != null) {
                 try {
-                    Member findMember = ms.search(loginMember.getMemberId());
+                    Member findMember = ms.searchOne(loginMember.getMemberId());
 
                     if (findMember != null) {
                         try {
-                            Album fa = as.search(albumId);
+                            Album fa = as.searchOne(albumId);
 
                             if (fa != null) {
                                 try {
@@ -351,15 +403,15 @@ public class PhotoController {
 
                                     return ResponseEntity.status(HttpStatus.OK).body(photoDTOList);
                                 } catch (IllegalArgumentException e) {
-                                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found PhotoList Fail");
+                                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
                                 }
                             }
                         } catch (IllegalArgumentException e) {
-                            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found Album Fail");
+                            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
                         }
                     }
                 } catch (IllegalArgumentException e) {
-                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found Member Fail");
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
                 }
             }
         }
@@ -368,11 +420,11 @@ public class PhotoController {
     }
 
     /**
-     * 휴지통 리스트
+     * Find photoTrashList
      *
-     * @param albumId 앨범 id
-     * @param request 요청
-     * @return 성공 시 200 상태 코드와 사진 리스트, 실패 시 404 상태 코드, 세션 없을 시 401 상태 코드
+     * @param albumId albumId
+     * @param request request
+     * @return status code, photoTrashList
      */
     @GetMapping("/list/albumId/trash")
     public ResponseEntity<?> listPhotoTrash(@RequestParam("albumId") Long albumId, HttpServletRequest request) {
@@ -383,18 +435,18 @@ public class PhotoController {
 
             if (loginMember != null) {
                 try {
-                    Member findMember = ms.search(loginMember.getMemberId());
+                    Member findMember = ms.searchOne(loginMember.getMemberId());
 
                     if (findMember != null) {
                         try {
-                            Album fa = as.search(albumId);
+                            Album fa = as.searchOne(albumId);
 
                             if (fa != null) {
                                 try {
-                                    List<Photo> trashList = ps.trashList(fa);
+                                    List<Photo> trashList = ps.searchTrashList(fa);
                                     ps.trash(trashList);
 
-                                    List<Photo> trashListAfterClear = ps.trashList(fa);
+                                    List<Photo> trashListAfterClear = ps.searchTrashList(fa);
                                     List<PhotoDTO> photoDTOList = new ArrayList<>();
 
                                     for (Photo photo : trashListAfterClear) {
@@ -404,15 +456,15 @@ public class PhotoController {
 
                                     return ResponseEntity.status(HttpStatus.OK).body(photoDTOList);
                                 } catch (IllegalArgumentException e) {
-                                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found PhotoTrashList Fail");
+                                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
                                 }
                             }
                         } catch (IllegalArgumentException e) {
-                            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found Album Fail");
+                            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
                         }
                     }
                 } catch (IllegalArgumentException e) {
-                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found Member Fail");
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
                 }
             }
         }
@@ -420,17 +472,12 @@ public class PhotoController {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Not Login");
     }
 
-    /**
-     * Photo -> PhotoDTO
-     *
-     * @param photo 사진
-     * @return PhotoDTO
-     */
     private PhotoDTO mapping(Photo photo) {
         PhotoDTO dto = new PhotoDTO();
         dto.setPhotoId(photo.getId());
         dto.setAlbumId(photo.getAlbum().getId());
         dto.setCreated(photo.getCreated().toString());
+        dto.setRegion(photo.getRegion());
         dto.setName(photo.getName());
         dto.setPath(photo.getPath());
         return dto;

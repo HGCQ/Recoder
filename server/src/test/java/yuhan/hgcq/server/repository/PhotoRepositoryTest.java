@@ -65,15 +65,15 @@ class PhotoRepositoryTest {
         tmr.save(tm2);
         tmr.save(tm3);
 
-        Album album = new Album(t1, LocalDate.now(), LocalDate.now(), "a1");
+        Album album = new Album(t1, "a1");
         saveAlbumId = ar.save(album);
     }
-    
+
     @Test
     void save() {
         Album findAlbum = ar.findOne(saveAlbumId);
 
-        Photo p1 = new Photo(findAlbum, "p1", "/test/a1", LocalDateTime.now());
+        Photo p1 = new Photo(findAlbum, "p1", "/test/a1", "region", LocalDateTime.now());
 
         Long saveId = pr.save(p1);
 
@@ -81,12 +81,12 @@ class PhotoRepositoryTest {
 
         assertThat(find).isEqualTo(p1);
     }
-    
+
     @Test
     void delete() {
         Album findAlbum = ar.findOne(saveAlbumId);
 
-        Photo p1 = new Photo(findAlbum, "p1", "/test/a1", LocalDateTime.now());
+        Photo p1 = new Photo(findAlbum, "p1", "/test/a1", "region", LocalDateTime.now());
 
         Long saveId = pr.save(p1);
 
@@ -101,7 +101,7 @@ class PhotoRepositoryTest {
     void findByPath() {
         Album findAlbum = ar.findOne(saveAlbumId);
 
-        Photo p1 = new Photo(findAlbum, "p1", "/test/a1", LocalDateTime.now());
+        Photo p1 = new Photo(findAlbum, "p1", "/test/a1", "region", LocalDateTime.now());
 
         Long saveId = pr.save(p1);
 
@@ -114,10 +114,10 @@ class PhotoRepositoryTest {
     void findAll() {
         Album findAlbum = ar.findOne(saveAlbumId);
 
-        Photo p1 = new Photo(findAlbum, "p1", "/test/a1", LocalDateTime.now());
-        Photo p2 = new Photo(findAlbum, "p2", "/test/a2", LocalDateTime.now());
-        Photo p3 = new Photo(findAlbum, "p3", "/test/a3", LocalDateTime.now());
-        Photo p4 = new Photo(findAlbum, "p4", "/test/a4", LocalDateTime.now());
+        Photo p1 = new Photo(findAlbum, "p1", "/test/a1", "region", LocalDateTime.now());
+        Photo p2 = new Photo(findAlbum, "p2", "/test/a2", "region", LocalDateTime.now());
+        Photo p3 = new Photo(findAlbum, "p3", "/test/a3", "region", LocalDateTime.now());
+        Photo p4 = new Photo(findAlbum, "p4", "/test/a4", "region", LocalDateTime.now());
 
         pr.save(p1);
         pr.save(p2);
@@ -132,9 +132,9 @@ class PhotoRepositoryTest {
     void deleteAll() {
         Album findAlbum = ar.findOne(saveAlbumId);
 
-        Photo p1 = new Photo(findAlbum, "p1", "/test/a1", LocalDateTime.now());
-        Photo p2 = new Photo(findAlbum, "p2", "/test/a2", LocalDateTime.now());
-        Photo p3 = new Photo(findAlbum, "p3", "/test/a3", LocalDateTime.now());
+        Photo p1 = new Photo(findAlbum, "p1", "/test/a1", "region", LocalDateTime.now());
+        Photo p2 = new Photo(findAlbum, "p2", "/test/a2", "region", LocalDateTime.now());
+        Photo p3 = new Photo(findAlbum, "p3", "/test/a3", "region", LocalDateTime.now());
 
         pr.save(p1);
         pr.save(p2);

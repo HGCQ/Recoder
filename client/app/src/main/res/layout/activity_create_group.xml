@@ -102,6 +102,7 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/createGroupList"
             android:layout_width="match_parent"
+            android:clipToPadding="false"
             android:layout_height="380dp"
             android:layout_marginTop="188dp"
             android:gravity="center"

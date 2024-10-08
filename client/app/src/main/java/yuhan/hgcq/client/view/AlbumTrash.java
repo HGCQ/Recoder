@@ -7,13 +7,11 @@ import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,6 +19,7 @@ import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatButton;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -44,9 +43,8 @@ import yuhan.hgcq.client.model.dto.member.MemberDTO;
 import yuhan.hgcq.client.model.dto.team.TeamDTO;
 
 public class AlbumTrash extends AppCompatActivity {
-
     /* View */
-    ImageButton recover;
+    AppCompatButton recover;
     TextView empty;
     RecyclerView albumTrashListView;
     BottomNavigationView navi;
@@ -54,25 +52,19 @@ public class AlbumTrash extends AppCompatActivity {
     /* Adapter */
     AlbumTrashAdapter ata;
 
-    /* 개인, 공유 확인 */
-    boolean isPrivate;
-
     /* 받아올 값 */
+    boolean isPrivate;
     TeamDTO teamDTO;
     MemberDTO loginMember;
-    AlbumDTO albumDTO;
 
-    /* 서버와 통신 */
+    /* http 통신 */
     AlbumController ac;
 
-    /* 로컬 DB */
+    /* Room DB */
     AlbumRepository ar;
 
-    Context context;
-    /* Toast */
+    /* 메인 스레드 */
     Handler handler = new Handler(Looper.getMainLooper());
-
-    /* Request Code */
 
     /* 뒤로 가기 */
     @Override
@@ -84,7 +76,6 @@ public class AlbumTrash extends AppCompatActivity {
                     albumMainPage.putExtra("isPrivate", isPrivate);
                 } else {
                     albumMainPage.putExtra("teamDTO", teamDTO);
-
                 }
                 albumMainPage.putExtra("loginMember", loginMember);
                 startActivity(albumMainPage);
@@ -97,11 +88,12 @@ public class AlbumTrash extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         getSupportActionBar().setTitle("[앨범 휴지통]");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        super.onCreate(savedInstanceState);
 
         EdgeToEdge.enable(this);
+        /* Layout */
         setContentView(R.layout.activity_album_trash);
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
@@ -110,19 +102,14 @@ public class AlbumTrash extends AppCompatActivity {
             return insets;
         });
 
-        /* 서버와 연결할 Controller 생성 */
+        /* 초기화 */
         ac = new AlbumController(this);
 
-        /* 로컬 DB 연결할 Repository 생성 */
         ar = new AlbumRepository(this);
 
-        /* View와 Layout 연결 */
         empty = findViewById(R.id.empty);
-
         albumTrashListView = findViewById(R.id.albumTrashList);
-
         navi = findViewById(R.id.bottom_navigation_view);
-
         recover = findViewById(R.id.recover);
 
         /* 관련된 페이지 */
@@ -132,79 +119,15 @@ public class AlbumTrash extends AppCompatActivity {
         Intent likePage = new Intent(this, Like.class);
         Intent myPage = new Intent(this, MyPage.class);
 
-        Intent getIntent = getIntent();
-        /* 개인, 공유 확인 */
-        isPrivate = getIntent.getBooleanExtra("isPrivate", false);
-
         /* 받아 올 값 */
+        Intent getIntent = getIntent();
+        isPrivate = getIntent.getBooleanExtra("isPrivate", false);
         teamDTO = (TeamDTO) getIntent.getSerializableExtra("teamDTO");
         loginMember = (MemberDTO) getIntent.getSerializableExtra("loginMember");
 
-        recover.setOnClickListener(v -> {
-            List<Long> selectedItems = ata.getSelectedItems();
-            onClick_setting_costume_save("복구하시겠습니까?", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    if (isPrivate) {
-                        ar.deleteCancel(selectedItems, new Callback<Boolean>() {
-                            @Override
-                            public void onSuccess(Boolean result) {
-                                if (result != null) {
-                                    Intent albumTrashPage = new Intent(AlbumTrash.this, AlbumTrash.class);
-                                    albumTrashPage.putExtra("isPrivate", isPrivate);
-                                    albumTrashPage.putExtra("loginMember", loginMember);
-                                    albumTrashPage.putExtra("teamDTO", teamDTO);
-                                    handler.post(() -> {
-                                        Toast.makeText(AlbumTrash.this, "복구했습니다.", Toast.LENGTH_SHORT).show();
-                                    });
-                                    startActivity(albumTrashPage);
-                                    Log.i("Delete Cancel Private Album", "Success");
-                                } else {
-                                    Log.i("Delete Cancel Private Album", "Fail");
-                                }
-                            }
+        /* 초기 설정 */
 
-                            @Override
-                            public void onError(Exception e) {
-                                Log.e("Delete Cancel Private Album Error", e.getMessage());
-                            }
-                        });
-                    } else {
-                        ac.deleteCancelAlbum(new DeleteCancelAlbumForm(selectedItems), new retrofit2.Callback<ResponseBody>() {
-                            @Override
-                            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                                if (response.isSuccessful()) {
-                                    Intent AlbumTrashPage = new Intent(AlbumTrash.this, AlbumTrash.class);
-                                    AlbumTrashPage.putExtra("isPrivate", isPrivate);
-                                    AlbumTrashPage.putExtra("loginMember", loginMember);
-                                    AlbumTrashPage.putExtra("teamDTO", teamDTO);
-                                    handler.post(() -> {
-                                        Toast.makeText(AlbumTrash.this, "복구했습니다.", Toast.LENGTH_SHORT).show();
-                                    });
-                                    startActivity(AlbumTrashPage);
-                                    Log.i("Delete Cancel Shared Album Error", "Success");
-                                } else {
-                                    Log.i("Delete Cancel Shared Album Error", "Fail");
-                                }
-                            }
-
-                            @Override
-                            public void onFailure(Call<ResponseBody> call, Throwable t) {
-                                Log.e("Delete Cancel Shared Album Error", t.getMessage());
-                            }
-                        });
-                    }
-                }
-            }, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    Toast.makeText(AlbumTrash.this, "취소했습니다.", Toast.LENGTH_SHORT).show();
-                }
-            });
-        });
-
-
-        /* 개인 초기 설정 */
+        /* 개인 */
         if (isPrivate) {
             ar.searchTrash(new Callback<List<AlbumDTO>>() {
                 @Override
@@ -223,20 +146,18 @@ public class AlbumTrash extends AppCompatActivity {
                         handler.post(() -> {
                             albumTrashListView.setAdapter(ata);
                         });
-                        Log.i("Found Private AlbumTrashList", "Success");
                     } else {
-                        Log.i("Found Private AlbumTrashList", "Fail");
+                        /* Toast 메시지 */
                     }
                 }
 
                 @Override
                 public void onError(Exception e) {
-                    Log.e("Found Private AlbumTrashList Error", e.getMessage());
+                    /* Toast 메시지 */
                 }
             });
         }
-
-        /* 공유 초기 설정 */
+        /* 공유 */
         else {
             if (teamDTO != null) {
                 Long teamId = teamDTO.getTeamId();
@@ -258,25 +179,85 @@ public class AlbumTrash extends AppCompatActivity {
                             handler.post(() -> {
                                 albumTrashListView.setAdapter(ata);
                             });
-                            Log.i("Found Shared AlbumTrashList", "Success");
                         } else {
-                            Log.i("Found Shared AlbumTrashList", "Fail");
+                            /* Toast 메시지 */
                         }
                     }
 
                     @Override
                     public void onFailure(Call<List<AlbumDTO>> call, Throwable t) {
-                        Log.e("Found Shared AlbumTrashList Error", t.getMessage());
+                        /* Toast 메시지 */
                     }
                 });
-            } else {
-                Log.e("Intent Error", "teamDTO is Null");
             }
         }
 
+        /* 복구 */
+        recover.setOnClickListener(v -> {
+            List<Long> selectedItems = ata.getSelectedItems();
+            onClick_setting_costume_save("복구하시겠습니까?", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    /* 개인 */
+                    if (isPrivate) {
+                        ar.deleteCancel(selectedItems, new Callback<Boolean>() {
+                            @Override
+                            public void onSuccess(Boolean result) {
+                                if (result != null) {
+                                    Intent albumTrashPage = new Intent(AlbumTrash.this, AlbumTrash.class);
+                                    albumTrashPage.putExtra("isPrivate", isPrivate);
+                                    albumTrashPage.putExtra("loginMember", loginMember);
+                                    albumTrashPage.putExtra("teamDTO", teamDTO);
+                                    handler.post(() -> {
+                                        Toast.makeText(AlbumTrash.this, "복구했습니다.", Toast.LENGTH_SHORT).show();
+                                    });
+                                    startActivity(albumTrashPage);
+                                } else {
+                                    /* Toast 메시지 */
+                                }
+                            }
 
+                            @Override
+                            public void onError(Exception e) {
+                                /* Toast 메시지 */
+                            }
+                        });
+                    }
+                    /* 공유 */
+                    else {
+                        ac.deleteCancelAlbum(new DeleteCancelAlbumForm(selectedItems), new retrofit2.Callback<ResponseBody>() {
+                            @Override
+                            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                                if (response.isSuccessful()) {
+                                    Intent AlbumTrashPage = new Intent(AlbumTrash.this, AlbumTrash.class);
+                                    AlbumTrashPage.putExtra("isPrivate", isPrivate);
+                                    AlbumTrashPage.putExtra("loginMember", loginMember);
+                                    AlbumTrashPage.putExtra("teamDTO", teamDTO);
+                                    handler.post(() -> {
+                                        Toast.makeText(AlbumTrash.this, "복구했습니다.", Toast.LENGTH_SHORT).show();
+                                    });
+                                    startActivity(AlbumTrashPage);
+                                } else {
+                                    /* Toast 메시지 */
+                                }
+                            }
 
-        /* 내비게이션 바 */
+                            @Override
+                            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                                /* Toast 메시지 */
+                            }
+                        });
+                    }
+                }
+            }, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    Toast.makeText(AlbumTrash.this, "취소했습니다.", Toast.LENGTH_SHORT).show();
+                }
+            });
+        });
+
+        /* 네비게이션 */
         navi.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
@@ -284,6 +265,7 @@ public class AlbumTrash extends AppCompatActivity {
                 if (itemId == R.id.fragment_home) {
                     if (isPrivate) {
                         albumMainPage.putExtra("isPrivate", true);
+                        albumMainPage.putExtra("loginMember", loginMember);
                         startActivity(albumMainPage);
                     } else {
                         groupMainPage.putExtra("loginMember", loginMember);
@@ -292,9 +274,7 @@ public class AlbumTrash extends AppCompatActivity {
                     return true;
                 } else if (itemId == R.id.fragment_friend) {
                     if (loginMember == null) {
-                        handler.post(()->{
-                            Toast.makeText(AlbumTrash.this, "로그인 후 이용 가능합니다.", Toast.LENGTH_SHORT).show();
-                        });
+                        Toast.makeText(AlbumTrash.this, "로그인 후 이용 가능합니다.", Toast.LENGTH_SHORT).show();
                     } else {
                         if (isPrivate) {
                             friendListPage.putExtra("isPrivate", true);
@@ -306,20 +286,17 @@ public class AlbumTrash extends AppCompatActivity {
                 } else if (itemId == R.id.fragment_like) {
                     if (isPrivate) {
                         likePage.putExtra("isPrivate", true);
-                        startActivity(likePage);
-                    } else {
-                        likePage.putExtra("loginMember", loginMember);
-                        startActivity(likePage);
                     }
+                    likePage.putExtra("loginMember", loginMember);
+                    startActivity(likePage);
                     return true;
                 } else if (itemId == R.id.fragment_setting) {
-                    //마이 페이지로 이동시키기
                     if (loginMember == null) {
-                            handler.post(()->{
-                                Toast.makeText(AlbumTrash.this, "로그인 후 이용 가능합니다.", Toast.LENGTH_SHORT).show();
-
-                            });
+                        Toast.makeText(AlbumTrash.this, "로그인 후 이용 가능합니다.", Toast.LENGTH_SHORT).show();
                     } else {
+                        if (isPrivate) {
+                            myPage.putExtra("isPrivate", true);
+                        }
                         myPage.putExtra("loginMember", loginMember);
                         startActivity(myPage);
                     }
@@ -344,6 +321,7 @@ public class AlbumTrash extends AppCompatActivity {
                 .show();
     }
 
+    /* 화면 이벤트 처리 */
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
         if (ev.getAction() == MotionEvent.ACTION_DOWN) {

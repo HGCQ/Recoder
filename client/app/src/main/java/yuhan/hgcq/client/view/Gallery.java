@@ -1,10 +1,13 @@
 package yuhan.hgcq.client.view;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Rect;
+import android.location.Address;
+import android.location.Geocoder;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -13,14 +16,12 @@ import android.os.Handler;
 import android.os.Looper;
 import android.provider.MediaStore;
 import android.provider.Settings;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,13 +35,18 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.drew.imaging.ImageMetadataReader;
+import com.drew.metadata.Metadata;
+import com.drew.metadata.exif.GpsDirectory;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import java.io.InputStream;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import okhttp3.ResponseBody;
@@ -60,10 +66,9 @@ import yuhan.hgcq.client.model.dto.photo.PhotoDTO;
 import yuhan.hgcq.client.model.dto.team.TeamDTO;
 
 public class Gallery extends AppCompatActivity {
-
     /* View */
     TextView empty, date;
-    ImageButton chat, move, photoPlus, photoTrash;
+    Button chat, move, photoPlus, photoTrash;
     RecyclerView photoListView, albumListView;
     BottomNavigationView navi;
     Button moveOk;
@@ -78,17 +83,17 @@ public class Gallery extends AppCompatActivity {
     AlbumDTO albumDTO;
     MemberDTO loginMember;
 
-    /* 서버와 통신 */
+    /* http 통신 */
     PhotoController pc;
     AlbumController ac;
 
-    /* 로컬 DB */
+    /* Room DB */
     PhotoRepository pr;
 
-    /* Toast */
+    /* 메인 스레드 */
     Handler handler = new Handler(Looper.getMainLooper());
 
-    /* Request Code */
+    /* Intent 요청 코드 */
     private static final int GALLERY = 1000;
     private static final int REQUEST_PERMISSION = 1111;
 
@@ -117,11 +122,12 @@ public class Gallery extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         getSupportActionBar().setTitle("Recoder");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        super.onCreate(savedInstanceState);
 
         EdgeToEdge.enable(this);
+        /* Layout */
         setContentView(R.layout.activity_gallery);
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
@@ -130,31 +136,25 @@ public class Gallery extends AppCompatActivity {
             return insets;
         });
 
-        /* 서버와 연결할 Controller 생성 */
+        /* 초기화 */
         pc = new PhotoController(this);
         ac = new AlbumController(this);
 
-        /* 로컬 DB 연결할 Repository 생성 */
         pr = new PhotoRepository(this);
 
-        /* View와 Layout 연결 */
         empty = findViewById(R.id.empty);
         date = findViewById(R.id.date);
-
         chat = findViewById(R.id.chat);
         move = findViewById(R.id.move);
         photoPlus = findViewById(R.id.photoPlus);
         photoTrash = findViewById(R.id.photoTrash);
         moveOk = findViewById(R.id.moveOk);
-
         photoListView = findViewById(R.id.photoList);
         albumListView = findViewById(R.id.albumList);
-
         navi = findViewById(R.id.bottom_navigation_view);
 
         /* 갤러리 */
-        Intent gallery = new Intent(Intent.ACTION_GET_CONTENT);
-        gallery.setType("image/*");
+        Intent gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         gallery.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
         gallery.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
         gallery.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
@@ -168,15 +168,14 @@ public class Gallery extends AppCompatActivity {
         Intent chatPage = new Intent(this, Chat.class);
         Intent myPage = new Intent(this, MyPage.class);
 
+        /* 받아올 값 */
         Intent getIntent = getIntent();
-        /* 개인, 공유 확인 */
         isPrivate = getIntent.getBooleanExtra("isPrivate", false);
-
-        /* 받아 올 값 */
         teamDTO = (TeamDTO) getIntent.getSerializableExtra("teamDTO");
         albumDTO = (AlbumDTO) getIntent.getSerializableExtra("albumDTO");
         loginMember = (MemberDTO) getIntent.getSerializableExtra("loginMember");
 
+        /* 제목 */
         if (albumDTO != null) {
             if (isPrivate) {
                 getSupportActionBar().setTitle("[개인] " + albumDTO.getName());
@@ -184,11 +183,11 @@ public class Gallery extends AppCompatActivity {
             } else {
                 getSupportActionBar().setTitle("[공유] " + albumDTO.getName());
             }
-            date.setText(albumDTO.getStartDate() + " ~ " + albumDTO.getEndDate());
         }
 
+        /* 초기 설정 */
         if (albumDTO != null) {
-            /* 개인 초기 설정 */
+            /* 개인 */
             if (isPrivate) {
                 pr.gallery(albumDTO.getAlbumId(), new Callback<Map<String, List<PhotoDTO>>>() {
                     @Override
@@ -198,19 +197,18 @@ public class Gallery extends AppCompatActivity {
                             handler.post(() -> {
                                 photoListView.setAdapter(ga);
                             });
-                            Log.i("Found Private Gallery", "Success");
                         } else {
-                            Log.i("Found Private Gallery", "Fail");
+                            /* Toast 메시지 */
                         }
                     }
 
                     @Override
                     public void onError(Exception e) {
-                        Log.e("Found Private Gallery Error", e.getMessage());
+                        /* Toast 메시지 */
                     }
                 });
             }
-            /* 공유 초기 설정 */
+            /* 공유 */
             else {
                 pc.galleryList(albumDTO.getAlbumId(), new retrofit2.Callback<Map<String, List<PhotoDTO>>>() {
                     @Override
@@ -221,40 +219,37 @@ public class Gallery extends AppCompatActivity {
                             handler.post(() -> {
                                 photoListView.setAdapter(ga);
                             });
-                            Log.i("Found Shared Gallery", "Success");
                         } else {
-                            Log.i("Found Shared Gallery", "Fail");
+                            /* Toast 메시지 */
                         }
                     }
 
                     @Override
                     public void onFailure(Call<Map<String, List<PhotoDTO>>> call, Throwable t) {
-                        Log.i("Found Shared Gallery Error", t.getMessage());
+                        /* Toast 메시지 */
                     }
                 });
             }
         }
 
-        /* 사진 추가 눌림 */
+        /* 사진 추가 */
         photoPlus.setOnClickListener(v -> {
-            /* 권한 확인 */
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && !Environment.isExternalStorageManager()) {
-                Intent permission = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
-                permission.addCategory("android.intent.category.DEFAULT");
-                permission.setData(Uri.parse(String.format("package:%s", getApplicationContext().getPackageName())));
-                startActivityForResult(permission, REQUEST_PERMISSION);
-            }
-
+            /* Android 11 이상 */
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                 if (Environment.isExternalStorageManager()) {
                     startActivityForResult(Intent.createChooser(gallery, "사진 선택"), GALLERY);
                 } else {
                     Toast.makeText(Gallery.this, "권한이 없습니다.", Toast.LENGTH_SHORT).show();
+                    Intent permission = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
+                    permission.addCategory("android.intent.category.DEFAULT");
+                    permission.setData(Uri.parse(String.format("package:%s", getApplicationContext().getPackageName())));
+                    startActivityForResult(permission, REQUEST_PERMISSION);
                 }
             }
+            /* Android 11 미만 */
         });
 
-        /* 사진 휴지통 눌림 */
+        /* 사진 휴지통 */
         photoTrash.setOnClickListener(v -> {
             if (isPrivate) {
                 photoTrashPage.putExtra("isPrivate", isPrivate);
@@ -265,11 +260,14 @@ public class Gallery extends AppCompatActivity {
             startActivity(photoTrashPage);
         });
 
-        /* 앨범 이동 눌림 */
+        /* 앨범 이동 */
         move.setOnClickListener(v -> {
-            if(isPrivate){
+            /* 개인 */
+            if (isPrivate) {
 
-            }else{
+            }
+            /* 공유 */
+            else {
                 ga.enableSelectionMode();
                 moveOk.setVisibility(View.VISIBLE);
 
@@ -285,7 +283,6 @@ public class Gallery extends AppCompatActivity {
                                     aa = new AlbumAdapter(albumList, Gallery.this, isPrivate);
                                     handler.post(() -> {
                                         albumListView.setVisibility(View.VISIBLE);
-
                                         albumListView.setAdapter(aa);
                                         aa.notifyDataSetChanged(); // 데이터 변경 알림
                                     });
@@ -311,15 +308,14 @@ public class Gallery extends AppCompatActivity {
                                                                     Toast.makeText(Gallery.this, "앨범 이동 했습니다.", Toast.LENGTH_SHORT).show();
                                                                 });
                                                                 startActivity(galleryPage);
-                                                                Log.i("앨범 이동 성공", "Success");
                                                             } else {
-                                                                Log.i("앨범 이동 실패", "Fail");
+                                                                /* Toast 메시지 */
                                                             }
                                                         }
 
                                                         @Override
                                                         public void onFailure(Call<ResponseBody> call, Throwable t) {
-                                                            Log.e("앨범 이동 실패", t.getMessage());
+                                                            /* Toast 메시지 */
                                                         }
                                                     });
                                                 }
@@ -331,26 +327,23 @@ public class Gallery extends AppCompatActivity {
                                             });
                                         }
                                     });
-                                    Log.i("Found Shared AlbumList", "Success");
                                 } else {
-                                    Log.i("Found Shared AlbumList", "Fail");
+                                    /* Toast 메시지 */
                                 }
                             }
 
                             @Override
                             public void onFailure(Call<List<AlbumDTO>> call, Throwable t) {
-                                Log.e("Found Shared AlbumList Error", t.getMessage());
+                                /* Toast 메시지 */
                             }
                         });
-                    } else {
-                        Log.e("Intent Error", "teamDTO is Null");
                     }
                     ga.disableSelectionMode();
                 });
             }
         });
 
-        /* 채팅 눌림 */
+        /* 채팅 */
         chat.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -361,7 +354,7 @@ public class Gallery extends AppCompatActivity {
             }
         });
 
-        /* 내비게이션 바 */
+        /* 네비게이션 */
         navi.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
@@ -415,34 +408,41 @@ public class Gallery extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
+        /* 갤러리 */
         if (requestCode == GALLERY && resultCode == RESULT_OK) {
-            /* 선택된 이미지 처리 */
             if (data != null) {
+                /* 사진 여러 장 */
                 if (data.getClipData() != null) {
                     int count = data.getClipData().getItemCount();
 
                     List<Uri> uriList = new ArrayList<>(count);
                     List<String> paths = new ArrayList<>(count);
                     List<LocalDateTime> creates = new ArrayList<>(count);
+                    List<String> regions = new ArrayList<>(count);
 
                     for (int i = 0; i < count; i++) {
                         Uri imageUri = data.getClipData().getItemAt(i).getUri();
-                        getContentResolver().takePersistableUriPermission(imageUri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
-                        AlbumMain.PhotoMetaData metadata = getImageMetadata(imageUri);
-                        String path = imageUri.toString();
-                        LocalDateTime created = metadata.getCreated();
+                        PhotoMetaData metadata = getImageMetadata(imageUri);
+                        if (metadata != null) {
+                            String path = imageUri.toString();
+                            LocalDateTime created = metadata.getCreated();
+                            String region = metadata.getRegion();
 
-                        Log.d("path", path);
-                        Log.d("created", created.toString());
-
-                        uriList.add(imageUri);
-                        paths.add(path);
-                        creates.add(created);
+                            uriList.add(imageUri);
+                            paths.add(path);
+                            creates.add(created);
+                            regions.add(region);
+                        }
                     }
 
                     /* 개인 */
                     if (isPrivate) {
+                        /* 권한 요청 */
+                        for (Uri uri : uriList) {
+                            getContentResolver().takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                        }
+
                         pr.create(albumDTO.getAlbumId(), paths, creates, new Callback<Boolean>() {
                             @Override
                             public void onSuccess(Boolean result) {
@@ -456,124 +456,122 @@ public class Gallery extends AppCompatActivity {
                                         Toast.makeText(Gallery.this, "사진이 저장되었습니다.", Toast.LENGTH_SHORT).show();
                                         startActivity(galleryPage);
                                     });
-                                    Log.i("Photo Upload In Private Album", "Success");
                                 } else {
-                                    Log.i("Photo Upload In Private Album", "Fail");
+                                    /* Toast 메시지 */
                                 }
                             }
 
                             @Override
                             public void onError(Exception e) {
-                                Log.e("Photo Upload In Private Album Error", e.getMessage());
+                                /* Toast 메시지 */
                             }
                         });
                     }
                     /* 공유 */
                     else {
                         if (albumDTO != null) {
-                            pc.uploadPhoto(albumDTO.getAlbumId(), uriList, creates, new retrofit2.Callback<ResponseBody>() {
+                            pc.uploadPhoto(albumDTO.getAlbumId(), uriList, creates, regions, new retrofit2.Callback<ResponseBody>() {
                                 @Override
                                 public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                                     if (response.isSuccessful()) {
                                         handler.post(() -> {
-                                            Intent galleryPage = new Intent(Gallery.this, Gallery.class);
-                                            galleryPage.putExtra("loginMember", loginMember);
-                                            galleryPage.putExtra("isPrivate", isPrivate);
-                                            galleryPage.putExtra("teamDTO", teamDTO);
-                                            galleryPage.putExtra("albumDTO", albumDTO);
                                             Toast.makeText(Gallery.this, "사진이 저장되었습니다.", Toast.LENGTH_SHORT).show();
-                                            startActivity(galleryPage);
                                         });
-                                        Log.i("Photo Upload In Shared Album", "Success");
+                                        Intent galleryPage = new Intent(Gallery.this, Gallery.class);
+                                        galleryPage.putExtra("loginMember", loginMember);
+                                        galleryPage.putExtra("isPrivate", isPrivate);
+                                        galleryPage.putExtra("teamDTO", teamDTO);
+                                        galleryPage.putExtra("albumDTO", albumDTO);
+                                        startActivity(galleryPage);
                                     } else {
-                                        Log.i("Photo Upload In Shared Album", "Fail");
+                                        /* Toast 메시지 */
                                     }
                                 }
 
                                 @Override
                                 public void onFailure(Call<ResponseBody> call, Throwable t) {
-                                    Log.e("Photo Upload In Shared Album Error", t.getMessage());
+                                    /* Toast 메시지 */
                                 }
                             });
-                        } else {
-                            Log.e("Intent Error", "AlbumDTO is Null");
                         }
                     }
-                } else if (data.getData() != null) {
+                }
+                /* 사진 한 장 */
+                else if (data.getData() != null) {
                     Uri imageUri = data.getData();
-                    getContentResolver().takePersistableUriPermission(imageUri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
                     List<Uri> uriList = new ArrayList<>();
                     List<String> paths = new ArrayList<>();
                     List<LocalDateTime> creates = new ArrayList<>();
+                    List<String> regions = new ArrayList<>();
 
-                    AlbumMain.PhotoMetaData metadata = getImageMetadata(imageUri);
-                    String path = imageUri.toString();
-                    LocalDateTime created = metadata.getCreated();
+                    PhotoMetaData metadata = getImageMetadata(imageUri);
 
-                    Log.d("path", path);
-                    Log.d("created", created.toString());
+                    if (metadata != null) {
+                        String path = imageUri.toString();
+                        LocalDateTime created = metadata.getCreated();
+                        String region = metadata.getRegion();
 
-                    uriList.add(imageUri);
-                    paths.add(path);
-                    creates.add(created);
+                        uriList.add(imageUri);
+                        paths.add(path);
+                        creates.add(created);
+                        regions.add(region);
+                    }
 
-                    /* 개인 */
                     if (isPrivate) {
+                        /* 권한 요청 */
+                        getContentResolver().takePersistableUriPermission(imageUri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
                         pr.create(albumDTO.getAlbumId(), paths, creates, new Callback<Boolean>() {
                             @Override
                             public void onSuccess(Boolean result) {
                                 if (result) {
                                     handler.post(() -> {
-                                        Intent galleryPage = new Intent(Gallery.this, Gallery.class);
-                                        galleryPage.putExtra("loginMember", loginMember);
-                                        galleryPage.putExtra("isPrivate", isPrivate);
-                                        galleryPage.putExtra("teamDTO", teamDTO);
-                                        galleryPage.putExtra("albumDTO", albumDTO);
                                         Toast.makeText(Gallery.this, "사진이 저장되었습니다.", Toast.LENGTH_SHORT).show();
-                                        startActivity(galleryPage);
                                     });
-                                    Log.i("Photo Upload In Private Album", "Success");
+                                    Intent galleryPage = new Intent(Gallery.this, Gallery.class);
+                                    galleryPage.putExtra("loginMember", loginMember);
+                                    galleryPage.putExtra("isPrivate", isPrivate);
+                                    galleryPage.putExtra("teamDTO", teamDTO);
+                                    galleryPage.putExtra("albumDTO", albumDTO);
+                                    startActivity(galleryPage);
                                 } else {
-                                    Log.i("Photo Upload In Private Album", "Fail");
+                                    /* Toast 메시지 */
                                 }
                             }
 
                             @Override
                             public void onError(Exception e) {
-                                Log.e("Photo Upload In Private Album", e.getMessage());
+                                /* Toast 메시지 */
                             }
                         });
                     }
                     /* 공유 */
                     else {
                         if (albumDTO != null) {
-                            pc.uploadPhoto(albumDTO.getAlbumId(), uriList, creates, new retrofit2.Callback<ResponseBody>() {
+                            pc.uploadPhoto(albumDTO.getAlbumId(), uriList, creates, regions, new retrofit2.Callback<ResponseBody>() {
                                 @Override
                                 public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                                     if (response.isSuccessful()) {
                                         handler.post(() -> {
-                                            Intent galleryPage = new Intent(Gallery.this, Gallery.class);
-                                            galleryPage.putExtra("loginMember", loginMember);
-                                            galleryPage.putExtra("isPrivate", isPrivate);
-                                            galleryPage.putExtra("teamDTO", teamDTO);
-                                            galleryPage.putExtra("albumDTO", albumDTO);
                                             Toast.makeText(Gallery.this, "사진이 저장되었습니다.", Toast.LENGTH_SHORT).show();
-                                            startActivity(galleryPage);
                                         });
-                                        Log.i("Photo Upload In Shared Album", "Success");
+                                        Intent galleryPage = new Intent(Gallery.this, Gallery.class);
+                                        galleryPage.putExtra("loginMember", loginMember);
+                                        galleryPage.putExtra("isPrivate", isPrivate);
+                                        galleryPage.putExtra("teamDTO", teamDTO);
+                                        galleryPage.putExtra("albumDTO", albumDTO);
+                                        startActivity(galleryPage);
                                     } else {
-                                        Log.i("Photo Upload In Shared Album", "Fail");
+                                        /* Toast 메시지 */
                                     }
                                 }
 
                                 @Override
                                 public void onFailure(Call<ResponseBody> call, Throwable t) {
-                                    Log.e("Photo Upload In Shared Album Error", t.getMessage());
+                                    /* Toast 메시지 */
                                 }
                             });
-                        } else {
-                            Log.e("Intent Error", "albumDTO is Null");
                         }
                     }
                 }
@@ -581,15 +579,17 @@ public class Gallery extends AppCompatActivity {
         }
     }
 
-    /* 사진 metadata 담을 내부 클래스 */
+    /* 사진 metadata */
     static class PhotoMetaData {
         private String photoName;
         private LocalDateTime created;
+        private String region;
 
-        public static AlbumMain.PhotoMetaData create(String photoName, LocalDateTime created) {
-            AlbumMain.PhotoMetaData photoMetaData = new AlbumMain.PhotoMetaData();
+        public static PhotoMetaData create(String photoName, LocalDateTime created, String region) {
+            PhotoMetaData photoMetaData = new PhotoMetaData();
             photoMetaData.setPhotoName(photoName);
             photoMetaData.setCreated(created);
+            photoMetaData.setRegion(region);
             return photoMetaData;
         }
 
@@ -608,40 +608,78 @@ public class Gallery extends AppCompatActivity {
         public void setCreated(LocalDateTime created) {
             this.created = created;
         }
+
+        public String getRegion() {
+            return region;
+        }
+
+        public void setRegion(String region) {
+            this.region = region;
+        }
     }
 
-    /* 사진의 metadata 추출 */
-    private AlbumMain.PhotoMetaData getImageMetadata(Uri imageUri) {
-        String[] projection = {
-                MediaStore.Images.Media.DISPLAY_NAME, // 사진 이름
-                MediaStore.Images.Media.DATE_TAKEN, // 사진 날짜
+    /* 사진 metadata 추출 */
+    private PhotoMetaData getImageMetadata(Uri imageUri) {
+        String photoName = null;
+        LocalDateTime createdToLocalDateTime = null;
+        Double latitude = null;
+        Double longitude = null;
+        String cityName = null;
+
+        String[] projection = {MediaStore.Images.Media.DISPLAY_NAME,
+                MediaStore.Images.Media.DATE_TAKEN,
         };
 
-        try (Cursor cursor = getContentResolver().query(
-                imageUri,
-                projection,
-                null,
-                null,
-                null)) {
+        ContentResolver resolver = getContentResolver();
 
+        /* 날짜 추출 */
+        try (Cursor cursor = resolver.query(imageUri, projection, null, null, null)) {
             if (cursor != null && cursor.moveToFirst()) {
-                String photoName = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DISPLAY_NAME));
+                photoName = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DISPLAY_NAME));
                 long created = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATE_TAKEN));
 
-                LocalDateTime createdToLocalDateTime = LocalDateTime.ofInstant(
-                        Instant.ofEpochMilli(created),
-                        ZoneId.systemDefault()
-                );
-
-                return AlbumMain.PhotoMetaData.create(photoName, createdToLocalDateTime);
+                createdToLocalDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(created), ZoneId.systemDefault());
             }
         } catch (Exception e) {
-            e.printStackTrace();
+
+        }
+
+        try (InputStream inputStream = resolver.openInputStream(imageUri)) {
+            Metadata metadata = ImageMetadataReader.readMetadata(inputStream);
+
+            /* 위도 경도 추출 */
+            GpsDirectory directory = metadata.getFirstDirectoryOfType(GpsDirectory.class);
+            if (directory != null) {
+                latitude = directory.getGeoLocation().getLatitude();
+                longitude = directory.getGeoLocation().getLongitude();
+            }
+
+            /* 도시 추출 */
+            if (latitude != null && longitude != null) {
+                Geocoder geocoder = new Geocoder(getApplicationContext(), Locale.KOREAN);
+                List<Address> addresses = geocoder.getFromLocation(latitude, longitude, 1);
+                if (addresses != null && !addresses.isEmpty()) {
+                    Address address = addresses.get(0);
+                    cityName = address.getLocality();
+                    if (cityName == null) {
+                        cityName = address.getSubLocality();
+                    }
+                }
+            }
+
+            if (photoName != null && createdToLocalDateTime != null) {
+                if (cityName == null) {
+                    cityName = "null";
+                }
+                return PhotoMetaData.create(photoName, createdToLocalDateTime, cityName);
+            }
+        } catch (Exception e) {
+
         }
 
         return null;
     }
-
+    
     /* Confirm 창 */
     public void onClick_setting_costume_save(String message,
                                              DialogInterface.OnClickListener positive,
@@ -656,6 +694,7 @@ public class Gallery extends AppCompatActivity {
                 .show();
     }
 
+    /* 화면 이벤트 처리 */
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
         if (ev.getAction() == MotionEvent.ACTION_DOWN) {

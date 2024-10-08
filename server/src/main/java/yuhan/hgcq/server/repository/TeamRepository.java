@@ -12,11 +12,6 @@ public class TeamRepository {
     @PersistenceContext
     private final EntityManager em;
 
-    /**
-     * 그룹 저장
-     *
-     * @param team 그룹
-     */
     public Long save(Team team) {
         if (team.getId() == null) {
             em.persist(team);
@@ -26,22 +21,11 @@ public class TeamRepository {
         return team.getId();
     }
 
-    /**
-     * 그룹 삭제
-     *
-     * @param id 그룹 id
-     */
     public void delete(Long id) {
         Team find = findOne(id);
         em.remove(find);
     }
 
-    /**
-     * 그룹 조회
-     *
-     * @param id 그룹 id
-     * @return 그룹
-     */
     public Team findOne(Long id) {
         return em.find(Team.class, id);
     }

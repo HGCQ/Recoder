@@ -35,15 +35,14 @@ import yuhan.hgcq.client.controller.MemberController;
 import yuhan.hgcq.client.model.dto.member.SignupForm;
 
 public class Join extends AppCompatActivity {
-
     /* View */
     EditText name, email, pw, pwCheck;
     ImageButton nameCheck, emailCheck, join;
 
-    /* 서버와 통신 */
+    /* http 통신 */
     MemberController mc;
 
-    /* Toast */
+    /* 메인 스레드 */
     Handler handler = new Handler(Looper.getMainLooper());
 
     /* 중복 확인용 */
@@ -72,11 +71,12 @@ public class Join extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         getSupportActionBar().setTitle("회원가입");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        super.onCreate(savedInstanceState);
 
         EdgeToEdge.enable(this);
+        /* Layout */
         setContentView(R.layout.activity_join);
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
@@ -85,15 +85,13 @@ public class Join extends AppCompatActivity {
             return insets;
         });
 
-        /* 서버와 연결할 Controller 생성 */
+        /* 초기화 */
         mc = new MemberController(this);
 
-        /* View와 Layout 연결 */
         name = findViewById(R.id.name);
         email = findViewById(R.id.email);
         pw = findViewById(R.id.password);
         pwCheck = findViewById(R.id.passwordCheck);
-
         nameCheck = findViewById(R.id.nameCheck);
         emailCheck = findViewById(R.id.emailCheck);
         join = findViewById(R.id.join);
@@ -101,7 +99,7 @@ public class Join extends AppCompatActivity {
         /* 관련된 페이지 */
         Intent loginPage = new Intent(this, Login.class);
 
-        /* 이름 중복 확인 버튼 눌림 */
+        /* 이름 중복 확인 */
         nameCheck.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -138,7 +136,7 @@ public class Join extends AppCompatActivity {
             }
         });
 
-        /* 이메일 중복 확인 버튼 눌림 */
+        /* 이메일 중복 확인 */
         emailCheck.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -175,7 +173,7 @@ public class Join extends AppCompatActivity {
             }
         });
 
-        /* 회원 가입 버튼 눌림 */
+        /* 회원 가입 */
         join.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -276,6 +274,7 @@ public class Join extends AppCompatActivity {
                 .show();
     }
 
+    /* 화면 이벤트 처리 */
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
         if (ev.getAction() == MotionEvent.ACTION_DOWN) {

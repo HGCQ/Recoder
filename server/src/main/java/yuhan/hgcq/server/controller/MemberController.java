@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.session.Session;
@@ -33,10 +34,10 @@ public class MemberController {
     private final SessionRepository<? extends Session> sessionRepository;
 
     /**
-     * 회원 가입
+     * Join
      *
-     * @param form 회원 가입 폼
-     * @return 성공시 201 상태 코드, 실패 시 400 상태 코드
+     * @param form join form
+     * @return status code
      */
     @PostMapping("/join")
     public ResponseEntity<?> join(@RequestBody SignupForm form) {
@@ -44,16 +45,16 @@ public class MemberController {
             ms.join(form);
             return ResponseEntity.status(HttpStatus.CREATED).body("Join Member Success");
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Join Member Fail");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 
     /**
-     * 로그인
+     * Login
      *
-     * @param form    로그인 폼
-     * @param request 요청
-     * @return 성공 시 200 상태 코드와 memberDTO, 실패 시 404 상태 코드
+     * @param form    login form
+     * @param request request
+     * @return status code, cookie
      */
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginForm form, HttpServletRequest request) {
@@ -72,15 +73,15 @@ public class MemberController {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Login Fail");
             }
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Login Fail");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
 
     /**
-     * 로그아웃
+     * Logout
      *
-     * @param request 요청
-     * @return 성공 시 200 상태 코드, 실패 시 400 상태 코드
+     * @param request request
+     * @return status code
      */
     @GetMapping("/logout")
     public ResponseEntity<?> logout(HttpServletRequest request) {
@@ -97,11 +98,11 @@ public class MemberController {
     }
 
     /**
-     * 정보 수정
+     * Update member information
      *
-     * @param form    정보 수정 폼
-     * @param request 요청
-     * @return 성공 시 200 상태 코드, 실패 시 404 상태 코드, 세션 없을 시 401 상태 코드
+     * @param form    update member form
+     * @param request request
+     * @return status code, member dto
      */
     @PostMapping("/update")
     public ResponseEntity<?> update(@RequestBody MemberUpdateForm form, HttpServletRequest request) {
@@ -112,20 +113,20 @@ public class MemberController {
 
             if (loginMember != null) {
                 try {
-                    Member findMember = ms.search(loginMember.getMemberId());
+                    Member findMember = ms.searchOne(loginMember.getMemberId());
 
                     if (findMember != null) {
                         try {
-                            ms.update(findMember, form);
+                            ms.updateMember(findMember, form);
                             MemberDTO memberDTO = mapping(findMember);
                             session.setAttribute("member", memberDTO);
-                            return ResponseEntity.status(HttpStatus.OK).body("Member Update Success");
+                            return ResponseEntity.status(HttpStatus.OK).body(memberDTO);
                         } catch (IllegalArgumentException e) {
-                            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Member Update Fail");
+                            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
                         }
                     }
                 } catch (IllegalArgumentException e) {
-                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found Member Fail");
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
                 }
             }
         }
@@ -134,11 +135,11 @@ public class MemberController {
     }
 
     /**
-     * 이메일 중복 확인
+     * Check duplicate email
      *
-     * @param email   이메일
-     * @param request 요청
-     * @return 성공 시 200 상태 코드와 중복 유무
+     * @param email   email
+     * @param request request
+     * @return status code, is duplicate?
      */
     @GetMapping("/duplicate/email")
     public ResponseEntity<?> duplicateEmail(@RequestParam("email") String email, HttpServletRequest request) {
@@ -152,11 +153,11 @@ public class MemberController {
     }
 
     /**
-     * 닉네임 중복 확인
+     * Check duplicate name
      *
-     * @param name    닉네임
-     * @param request 요청
-     * @return 성공 시 200 상태 코드와 중복 유무
+     * @param name    name
+     * @param request request
+     * @return status code, is duplicate?
      */
     @GetMapping("/duplicate/name")
     public ResponseEntity<?> duplicateName(@RequestParam("name") String name, HttpServletRequest request) {
@@ -170,10 +171,10 @@ public class MemberController {
     }
 
     /**
-     * 회원 리스트
+     * Find memberList
      *
-     * @param request 요청
-     * @return 성공 시 200 상태 코드와 회원 리스트, 실패 시 404 상태 코드, 세션 없을 시 401 상태 코드
+     * @param request request
+     * @return status code, memberList
      */
     @GetMapping("/list")
     public ResponseEntity<?> memberList(HttpServletRequest request) {
@@ -184,12 +185,12 @@ public class MemberController {
 
             if (loginMember != null) {
                 try {
-                    Member findMember = ms.search(loginMember.getMemberId());
+                    Member findMember = ms.searchOne(loginMember.getMemberId());
 
                     if (findMember != null) {
                         List<Member> memberList = ms.searchAll();
                         memberList.remove(findMember);
-                        List<Member> followingList = fs.searchFollowing(findMember);
+                        List<Member> followingList = fs.searchFollowingList(findMember);
 
                         List<MemberDTO> memberDtoList = new ArrayList<>();
                         List<MemberDTO> followingDtoList = new ArrayList<>();
@@ -211,7 +212,7 @@ public class MemberController {
                         return ResponseEntity.status(HttpStatus.OK).body(members);
                     }
                 } catch (IllegalArgumentException e) {
-                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found Member Fail");
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
                 }
             }
         }
@@ -220,11 +221,11 @@ public class MemberController {
     }
 
     /**
-     * 회원 리스트 이름으로 검색
+     * Find memberList by name
      *
-     * @param name    이름
-     * @param request 요청
-     * @return 성공 시 200 상태 코드와 회원 리스트, 실패 시 404 상태 코드, 세션 없을 시 401 상태 코드
+     * @param name    member name
+     * @param request request
+     * @return status code, memberList
      */
     @GetMapping("/list/name")
     public ResponseEntity<?> memberListByName(@RequestParam("name") String name, HttpServletRequest request) {
@@ -235,12 +236,12 @@ public class MemberController {
 
             if (loginMember != null) {
                 try {
-                    Member findMember = ms.search(loginMember.getMemberId());
+                    Member findMember = ms.searchOne(loginMember.getMemberId());
 
                     if (findMember != null) {
                         List<Member> memberList = ms.searchAllByName(name);
                         memberList.remove(findMember);
-                        List<Member> followingList = fs.searchFollowing(findMember);
+                        List<Member> followingList = fs.searchFollowingList(findMember);
 
                         List<MemberDTO> memberDtoList = new ArrayList<>();
                         List<MemberDTO> followingDtoList = new ArrayList<>();
@@ -262,7 +263,7 @@ public class MemberController {
                         return ResponseEntity.status(HttpStatus.OK).body(members);
                     }
                 } catch (IllegalArgumentException e) {
-                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found Member Fail");
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
                 }
             }
         }
@@ -271,10 +272,10 @@ public class MemberController {
     }
 
     /**
-     * 로그인 유무 확인
+     * Check login
      *
-     * @param request 요청
-     * @return 성공 시 200 상태 코드와 회원 정보, 실패 시 401 상태 코드
+     * @param request request
+     * @return status code, is login?
      */
     @GetMapping("/islogin")
     public ResponseEntity<?> isLogin(HttpServletRequest request) {
@@ -306,6 +307,13 @@ public class MemberController {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Not Login");
     }
 
+    /**
+     * Upload member image
+     *
+     * @param form    member image form
+     * @param request request
+     * @return status code
+     */
     @PostMapping("/upload")
     public ResponseEntity<?> upload(@ModelAttribute UploadMemberForm form, HttpServletRequest request) {
         HttpSession session = request.getSession(false);
@@ -315,7 +323,7 @@ public class MemberController {
 
             if (loginMember != null) {
                 try {
-                    Member findMember = ms.search(loginMember.getMemberId());
+                    Member findMember = ms.searchOne(loginMember.getMemberId());
 
                     if (findMember != null) {
                         try {
@@ -324,13 +332,13 @@ public class MemberController {
                             session.setAttribute("member", memberDTO);
                             return ResponseEntity.status(HttpStatus.OK).body(path);
                         } catch (IOException e) {
-                            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Upload Photo Error");
+                            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
                         } catch (IllegalArgumentException e) {
-                            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found Member Fail");
+                            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
                         }
                     }
                 } catch (IllegalArgumentException e) {
-                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Found Member Fail");
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
                 }
             }
         }
@@ -338,12 +346,6 @@ public class MemberController {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Not Login");
     }
 
-    /**
-     * Member -> MemberDTO
-     *
-     * @param member 회원
-     * @return MemberDTO
-     */
     private MemberDTO mapping(Member member) {
         MemberDTO dto = new MemberDTO();
         dto.setMemberId(member.getId());

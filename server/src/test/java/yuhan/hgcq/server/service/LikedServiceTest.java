@@ -10,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 import yuhan.hgcq.server.domain.*;
 import yuhan.hgcq.server.dto.member.SignupForm;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -24,7 +23,7 @@ class LikedServiceTest {
     LikedService ls;
 
     @Autowired
-    PhotoService ps;
+    LocalPhotoService ps;
 
     @Autowired
     AlbumService as;
@@ -61,19 +60,19 @@ class LikedServiceTest {
         m3Id = ms.join(m3);
         m4Id = ms.join(m4);
 
-        Member fm1 = ms.search(m1Id);
-        Member fm2 = ms.search(m2Id);
-        Member fm3 = ms.search(m3Id);
-        Member fm4 = ms.search(m4Id);
+        Member fm1 = ms.searchOne(m1Id);
+        Member fm2 = ms.searchOne(m2Id);
+        Member fm3 = ms.searchOne(m3Id);
+        Member fm4 = ms.searchOne(m4Id);
 
         Team t1 = new Team(fm1, "t1");
         Team t2 = new Team(fm1, "t2");
 
-        t1Id = ts.create(t1);
-        t2Id = ts.create(t2);
+        t1Id = ts.createTeam(t1);
+        t2Id = ts.createTeam(t2);
 
-        Album a1 = new Album(t1, LocalDate.now(), LocalDate.now(), "a1");
-        Album a2 = new Album(t1, LocalDate.now(), LocalDate.now(), "a2");
+        Album a1 = new Album(t1, "a1");
+        Album a2 = new Album(t1, "a2");
 
         try {
             a1Id = as.create(fm1, a1);
@@ -82,23 +81,23 @@ class LikedServiceTest {
             fail();
         }
 
-        Photo p1 = new Photo(a1, "p1", "/t1/a1/p1", LocalDateTime.now());
-        Photo p2 = new Photo(a1, "p2", "/t1/a1/p2", LocalDateTime.now());
+        Photo p1 = new Photo(a1, "p1", "/t1/a1/p1", "region", LocalDateTime.now());
+        Photo p2 = new Photo(a1, "p2", "/t1/a1/p2", "region", LocalDateTime.now());
 
-        p1Id = ps.save(p1);
-        p2Id = ps.save(p2);
+        p1Id = ps.savePhoto(p1);
+        p2Id = ps.savePhoto(p2);
     }
 
     @Test
     @DisplayName("좋아요 추가")
-    void add() {
-        Member m1 = ms.search(m1Id);
-        Photo p1 = ps.search(p1Id);
+    void addLike() {
+        Member m1 = ms.searchOne(m1Id);
+        Photo p1 = ps.searchOne(p1Id);
 
         Liked l1 = new Liked(m1, p1);
-        ls.add(l1);
+        ls.addLike(l1);
 
-        Liked find = ls.search(m1, p1);
+        Liked find = ls.searchOne(m1, p1);
 
         assertThat(find).isEqualTo(l1);
         assertThat(find.getIsLiked()).isTrue();
@@ -106,32 +105,32 @@ class LikedServiceTest {
 
     @Test
     @DisplayName("좋아요 삭제")
-    void remove() {
-        Member m1 = ms.search(m1Id);
-        Photo p1 = ps.search(p1Id);
+    void removeLike() {
+        Member m1 = ms.searchOne(m1Id);
+        Photo p1 = ps.searchOne(p1Id);
 
         Liked l1 = new Liked(m1, p1);
-        ls.add(l1);
+        ls.addLike(l1);
 
-        Liked find = ls.search(m1, p1);
-        ls.remove(find);
+        Liked find = ls.searchOne(m1, p1);
+        ls.removeLike(find);
 
-        find = ls.search(m1, p1);
+        find = ls.searchOne(m1, p1);
         assertThat(find.getIsLiked()).isFalse();
     }
-    
+
     @Test
     @DisplayName("좋아요한 사진 리스트")
     void photoList() {
-        Member m1 = ms.search(m1Id);
-        Photo p1 = ps.search(p1Id);
-        Photo p2 = ps.search(p2Id);
+        Member m1 = ms.searchOne(m1Id);
+        Photo p1 = ps.searchOne(p1Id);
+        Photo p2 = ps.searchOne(p2Id);
 
         Liked l1 = new Liked(m1, p1);
         Liked l2 = new Liked(m1, p2);
 
-        ls.add(l1);
-        ls.add(l2);
+        ls.addLike(l1);
+        ls.addLike(l2);
 
         List<Photo> likeList = ls.searchAll(m1);
         assertThat(likeList).hasSize(2).contains(p1, p2);
