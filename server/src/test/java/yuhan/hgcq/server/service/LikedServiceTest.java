@@ -10,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 import yuhan.hgcq.server.domain.*;
 import yuhan.hgcq.server.dto.member.SignupForm;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -24,7 +23,7 @@ class LikedServiceTest {
     LikedService ls;
 
     @Autowired
-    PhotoService ps;
+    LocalPhotoService ps;
 
     @Autowired
     AlbumService as;
