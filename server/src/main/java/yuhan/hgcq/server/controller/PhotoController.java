@@ -6,15 +6,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-import yuhan.hgcq.server.config.FileStorageUtil;
 import yuhan.hgcq.server.domain.Album;
 import yuhan.hgcq.server.domain.Member;
 import yuhan.hgcq.server.domain.Photo;
 import yuhan.hgcq.server.dto.member.MemberDTO;
 import yuhan.hgcq.server.dto.photo.*;
-import yuhan.hgcq.server.kafka.message.PhotoAutoSaveMessage;
-import yuhan.hgcq.server.kafka.message.PhotoUploadMessage;
 import yuhan.hgcq.server.kafka.producer.PhotoAutoSaveProducer;
 import yuhan.hgcq.server.kafka.producer.PhotoUploadProducer;
 import yuhan.hgcq.server.service.AlbumService;
@@ -236,6 +232,8 @@ public class PhotoController {
                                     return ResponseEntity.status(HttpStatus.OK).body("Move Photo Success");
                                 } catch (IllegalArgumentException e) {
                                     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+                                } catch (IOException e) {
+                                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
                                 }
                             }
                         } catch (IllegalArgumentException e) {
