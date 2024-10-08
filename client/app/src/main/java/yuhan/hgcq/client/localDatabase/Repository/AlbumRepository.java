@@ -32,6 +32,9 @@ public class AlbumRepository {
     public void create(Album album, Callback<Boolean> callback) {
         executor.execute(() -> {
             try {
+                if (dao.findAlbumNameList().contains(album.getName())) {
+                    throw new IllegalArgumentException("Already name exist");
+                }
                 dao.save(album);
                 callback.onSuccess(Boolean.TRUE);
             } catch (Exception e) {
@@ -90,7 +93,6 @@ public class AlbumRepository {
     public void searchByName(String name, Callback<List<AlbumDTO>> callback){
         executor.execute(() -> {
             try {
-
                 List<Album> albumList = dao.findByName(name);
                 List<AlbumDTO> dtoList = new ArrayList<>();
                 if (albumList == null) {
@@ -168,8 +170,6 @@ public class AlbumRepository {
         AlbumDTO dto = new AlbumDTO();
         dto.setAlbumId(album.getAlbumId());
         dto.setName(album.getName());
-        dto.setStartDate(album.getStartDate().toString());
-        dto.setEndDate(album.getEndDate().toString());
         return dto;
     }
 
