@@ -58,6 +58,7 @@ import yuhan.hgcq.client.adapter.AlbumAdapter;
 import yuhan.hgcq.client.adapter.GalleryAdapter;
 import yuhan.hgcq.client.controller.AlbumController;
 import yuhan.hgcq.client.controller.PhotoController;
+import yuhan.hgcq.client.localDatabase.Repository.AlbumRepository;
 import yuhan.hgcq.client.localDatabase.Repository.PhotoRepository;
 import yuhan.hgcq.client.localDatabase.callback.Callback;
 import yuhan.hgcq.client.model.dto.album.AlbumDTO;
@@ -91,6 +92,7 @@ public class Gallery extends AppCompatActivity {
 
     /* Room DB */
     PhotoRepository pr;
+    AlbumRepository ar;
 
     /* 메인 스레드 */
     Handler handler = new Handler(Looper.getMainLooper());
@@ -143,6 +145,7 @@ public class Gallery extends AppCompatActivity {
         ac = new AlbumController(this);
 
         pr = new PhotoRepository(this);
+        ar = new AlbumRepository(this);
 
         albumList = findViewById(R.id.albumList);
         albumListViewTop = findViewById(R.id.albumListViewTop);
@@ -267,7 +270,75 @@ public class Gallery extends AppCompatActivity {
         move.setOnClickListener(v -> {
             /* 개인 */
             if (isPrivate) {
+                ga.enableSelectionMode();
+                moveOk.setVisibility(View.VISIBLE);
 
+                moveOk.setOnClickListener(v1 -> {
+                    List<PhotoDTO> selectedItems = ga.getSelectedPhotos();
+                    ar.searchAll(new Callback<List<AlbumDTO>>() {
+                        @Override
+                        public void onSuccess(List<AlbumDTO> result) {
+                            if (result != null) {
+                                aa = new AlbumAdapter(result, Gallery.this, isPrivate);
+                                handler.post(() -> {
+                                    albumListView.setVisibility(View.VISIBLE);
+                                    albumList.setVisibility(View.VISIBLE);
+                                    albumListViewTop.setVisibility(View.VISIBLE);
+                                    albumList.setAdapter(aa);
+                                    aa.notifyDataSetChanged(); // 데이터 변경 알림
+                                });
+
+                                aa.setOnItemClickListener(new AlbumAdapter.OnItemClickListener() {
+                                    @Override
+                                    public void onItemClick(View view, int position) {
+                                        onClick_setting_costume_save("이동하시겠습니까?", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                AlbumDTO albumDTO = result.get(position);
+                                                MovePhotoForm form = new MovePhotoForm(albumDTO.getAlbumId(), selectedItems);
+                                                pr.move(form, new Callback<Boolean>() {
+                                                    @Override
+                                                    public void onSuccess(Boolean result) {
+                                                        if (result != null) {
+                                                            Intent galleryPage = new Intent(Gallery.this, Gallery.class);
+                                                            galleryPage.putExtra("isPrivate", isPrivate);
+                                                            galleryPage.putExtra("loginMember", loginMember);
+                                                            galleryPage.putExtra("albumDTO", albumDTO);
+                                                            handler.post(() -> {
+                                                                Toast.makeText(Gallery.this, "앨범 이동 했습니다.", Toast.LENGTH_SHORT).show();
+                                                            });
+                                                            startActivity(galleryPage);
+                                                        } else {
+                                                            /* Toast 메시지 */
+                                                        }
+                                                    }
+
+                                                    @Override
+                                                    public void onError(Exception e) {
+
+                                                    }
+                                                });
+
+                                            }
+                                        }, new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                Toast.makeText(Gallery.this, "취소했습니다.", Toast.LENGTH_SHORT).show();
+                                            }
+                                        });
+                                    }
+                                });
+                            } else {
+                                /* Toast 메시지 */
+                            }
+                        }
+
+                        @Override
+                        public void onError(Exception e) {
+
+                        }
+                    });
+                });
             }
             /* 공유 */
             else {
