@@ -18,44 +18,42 @@
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintTop_toTopOf="parent"
       app:layout_constraintVertical_bias="0.0" >
-  </FrameLayout>
 
-  <LinearLayout
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:background="#ffffff"
-      tools:ignore="Orientation"
-      tools:layout_editor_absoluteX="0dp"
-      tools:layout_editor_absoluteY="0dp">
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/albumList"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="470dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="170dp"
+        android:layout_height="match_parent"
         android:background="#ffffff"
-        android:clipToPadding="false"
-        android:gravity="center"
-        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-        app:spanCount="2" />
+        tools:ignore="Orientation">
 
-    <ImageButton
-        android:id="@+id/albumplus"
-        android:layout_width="50dp"
-        android:layout_height="45dp"
-        android:layout_marginStart="-230dp"
-        android:layout_marginTop="545dp"
-        android:background="#00000000"
-        android:scaleType="fitCenter"
-        android:src="@drawable/plusicon"
-        android:elevation="10dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.501"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+      <androidx.recyclerview.widget.RecyclerView
+          android:id="@+id/albumList"
+          android:layout_width="match_parent"
+          android:layout_height="470dp"
+          android:layout_marginStart="20dp"
+          android:layout_marginTop="170dp"
+          android:background="#ffffff"
+          android:clipToPadding="false"
+          android:gravity="center"
+          app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+          app:spanCount="2" />
 
-  </LinearLayout>
+      <ImageButton
+          android:id="@+id/albumplus"
+          android:layout_width="50dp"
+          android:layout_height="45dp"
+          android:layout_marginStart="-230dp"
+          android:layout_marginTop="545dp"
+          android:background="#00000000"
+          android:elevation="10dp"
+          android:scaleType="fitCenter"
+          android:src="@drawable/plusicon"
+          app:layout_constraintEnd_toEndOf="parent"
+          app:layout_constraintHorizontal_bias="0.501"
+          app:layout_constraintStart_toStartOf="parent"
+          app:layout_constraintTop_toTopOf="parent" />
+
+    </LinearLayout>
+  </FrameLayout>
 
   <View
       android:layout_width="417dp"
@@ -82,7 +80,7 @@
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintTop_toTopOf="parent" />
 
-  <EditText
+  <android.widget.EditText
       android:id="@+id/searchText"
       android:hint="앨범 이름, 장소..."
       android:gravity="center_vertical"
@@ -93,7 +91,7 @@
       android:textSize="15sp"
       android:padding="3dp"
       android:textColor="@color/black"
-      android:background="@drawable/edittext"
+      android:background="@drawable/searchview"
       android:fontFamily="@font/ibm_regular"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintHorizontal_bias="0.48"
