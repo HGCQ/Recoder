@@ -14,6 +14,8 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -56,7 +58,9 @@ public class Photo extends AppCompatActivity {
     Button move, photoDelete;
     ViewPager2 photoView;
     BottomNavigationView navi;
-    RecyclerView albumListView;
+    RecyclerView albumList;
+    TextView albumListViewTop;
+    ImageView albumListView;
 
     /* Adapter */
     PhotoAdapter pa;
@@ -142,8 +146,10 @@ public class Photo extends AppCompatActivity {
         move = findViewById(R.id.move);
         photoDelete = findViewById(R.id.photoDelete);
         photoView = findViewById(R.id.viewPager);
-        albumListView = findViewById(R.id.albumList);
+        albumList = findViewById(R.id.albumList);
         navi = findViewById(R.id.bottom_navigation_view);
+        albumListViewTop = findViewById(R.id.albumListViewTop);
+        albumListView = findViewById(R.id.albumListView);
 
         /* 관련된 페이지 */
         Intent groupMainPage = new Intent(this, GroupMain.class);
@@ -438,7 +444,9 @@ public class Photo extends AppCompatActivity {
                             aa.setPhoto();
                             handler.post(() -> {
                                 albumListView.setVisibility(View.VISIBLE);
-                                albumListView.setAdapter(aa);
+                                albumListViewTop.setVisibility(View.VISIBLE);
+                                albumList.setVisibility(View.VISIBLE);
+                                albumList.setAdapter(aa);
                             });
 
                             aa.setOnItemClickListener(new AlbumAdapter.OnItemClickListener() {
@@ -465,6 +473,8 @@ public class Photo extends AppCompatActivity {
                                                             photoView.getAdapter().notifyItemRangeChanged(index, photoList.size());
                                                             Toast.makeText(Photo.this, "앨범 이동 했습니다.", Toast.LENGTH_SHORT).show();
                                                             albumListView.setVisibility(View.INVISIBLE);
+                                                            albumList.setVisibility(View.INVISIBLE);
+                                                            albumListViewTop.setVisibility(View.INVISIBLE);
                                                         });
                                                         int newItemPosition = index;
                                                         if (index == photoList.size()) {
@@ -516,12 +526,14 @@ public class Photo extends AppCompatActivity {
                         @Override
                         public void onResponse(Call<List<AlbumDTO>> call, Response<List<AlbumDTO>> response) {
                             if (response.isSuccessful() && response.body() != null) {
-                                List<AlbumDTO> albumList = response.body();
-                                aa = new AlbumAdapter(albumList, Photo.this, isPrivate);
+                                List<AlbumDTO> albumList1 = response.body();
+                                aa = new AlbumAdapter(albumList1, Photo.this, isPrivate);
                                 aa.setPhoto();
                                 handler.post(() -> {
+                                    albumList.setVisibility(View.VISIBLE);
+                                    albumListViewTop.setVisibility(View.VISIBLE);
                                     albumListView.setVisibility(View.VISIBLE);
-                                    albumListView.setAdapter(aa);
+                                    albumList.setAdapter(aa);
                                 });
 
                                 aa.setOnItemClickListener(new AlbumAdapter.OnItemClickListener() {
@@ -531,7 +543,7 @@ public class Photo extends AppCompatActivity {
                                             @Override
                                             public void onClick(DialogInterface dialogInterface, int i) {
                                                 int index = photoView.getCurrentItem();
-                                                AlbumDTO albumDTO = albumList.get(position);
+                                                AlbumDTO albumDTO = albumList1.get(position);
                                                 List<PhotoDTO> photoList = pa.getPhotoList();
                                                 PhotoDTO dto = photoList.get(index);
                                                 List<PhotoDTO> pls = new ArrayList<>();
@@ -548,6 +560,8 @@ public class Photo extends AppCompatActivity {
                                                                 photoView.getAdapter().notifyItemRangeChanged(index, photoList.size());
                                                                 Toast.makeText(Photo.this, "앨범 이동 했습니다.", Toast.LENGTH_SHORT).show();
                                                                 albumListView.setVisibility(View.INVISIBLE);
+                                                                albumListViewTop.setVisibility(View.INVISIBLE);
+                                                                albumList.setVisibility(View.INVISIBLE);
                                                             });
                                                             int newItemPosition = index;
                                                             if (index == photoList.size()) {

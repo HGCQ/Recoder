@@ -527,23 +527,18 @@ public class AlbumMain extends AppCompatActivity {
 
                     /* 개인 */
                     if (isPrivate) {
-                        /* 권한 요청 */
-                        for (Uri uri : uriList) {
-                            getContentResolver().takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                        }
-
-                        pr.autoSave(paths, creates, new Callback<Boolean>() {
+                        pr.autoSave(paths, creates, regions, new Callback<Boolean>() {
                             @Override
                             public void onSuccess(Boolean result) {
                                 if (result) {
                                     handler.post(() -> {
                                         Toast.makeText(AlbumMain.this, "사진이 저장되었습니다.", Toast.LENGTH_SHORT).show();
+                                        Intent albumMainPage = new Intent(AlbumMain.this, AlbumMain.class);
+                                        albumMainPage.putExtra("isPrivate", true);
+                                        albumMainPage.putExtra("loginMember", loginMember);
+                                        albumMainPage.putExtra("teamDTO", teamDTO);
+                                        startActivity(albumMainPage);
                                     });
-                                    Intent albumMainPage = new Intent(AlbumMain.this, AlbumMain.class);
-                                    albumMainPage.putExtra("isPrivate", true);
-                                    albumMainPage.putExtra("loginMember", loginMember);
-                                    albumMainPage.putExtra("teamDTO", teamDTO);
-                                    startActivity(albumMainPage);
                                 } else {
                                     /* Toast 메시지 */
                                 }
@@ -565,11 +560,12 @@ public class AlbumMain extends AppCompatActivity {
                                     if (response.isSuccessful()) {
                                         handler.post(() -> {
                                             Toast.makeText(AlbumMain.this, "사진이 저장되었습니다.", Toast.LENGTH_SHORT).show();
+                                            Intent albumMainPage = new Intent(AlbumMain.this, AlbumMain.class);
+                                            albumMainPage.putExtra("isPrivate", true);
+                                            albumMainPage.putExtra("loginMember", loginMember);
+                                            albumMainPage.putExtra("teamDTO", teamDTO);
+                                            startActivity(albumMainPage);
                                         });
-                                        Intent albumMainPage = new Intent(AlbumMain.this, AlbumMain.class);
-                                        albumMainPage.putExtra("loginMember", loginMember);
-                                        albumMainPage.putExtra("teamDTO", teamDTO);
-                                        startActivity(albumMainPage);
                                     } else {
                                         /* Toast 메시지 */
                                     }
@@ -607,21 +603,18 @@ public class AlbumMain extends AppCompatActivity {
 
                     /* 개인 */
                     if (isPrivate) {
-                        /* 권한 요청 */
-                        getContentResolver().takePersistableUriPermission(imageUri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
-
-                        pr.autoSave(paths, creates, new Callback<Boolean>() {
+                        pr.autoSave(paths, creates, regions, new Callback<Boolean>() {
                             @Override
                             public void onSuccess(Boolean result) {
                                 if (result) {
                                     handler.post(() -> {
                                         Toast.makeText(AlbumMain.this, "사진이 저장되었습니다.", Toast.LENGTH_SHORT).show();
+                                        Intent albumMainPage = new Intent(AlbumMain.this, AlbumMain.class);
+                                        albumMainPage.putExtra("isPrivate", true);
+                                        albumMainPage.putExtra("loginMember", loginMember);
+                                        albumMainPage.putExtra("teamDTO", teamDTO);
+                                        startActivity(albumMainPage);
                                     });
-                                    Intent albumMainPage = new Intent(AlbumMain.this, AlbumMain.class);
-                                    albumMainPage.putExtra("isPrivate", true);
-                                    albumMainPage.putExtra("loginMember", loginMember);
-                                    albumMainPage.putExtra("teamDTO", teamDTO);
-                                    startActivity(albumMainPage);
                                 } else {
                                     /* Toast 메시지 추가 */
                                 }
@@ -643,11 +636,12 @@ public class AlbumMain extends AppCompatActivity {
                                     if (response.isSuccessful()) {
                                         handler.post(() -> {
                                             Toast.makeText(AlbumMain.this, "사진이 저장되었습니다.", Toast.LENGTH_SHORT).show();
+                                            Intent albumMainPage = new Intent(AlbumMain.this, AlbumMain.class);
+                                            albumMainPage.putExtra("isPrivate", true);
+                                            albumMainPage.putExtra("loginMember", loginMember);
+                                            albumMainPage.putExtra("teamDTO", teamDTO);
+                                            startActivity(albumMainPage);
                                         });
-                                        Intent albumMainPage = new Intent(AlbumMain.this, AlbumMain.class);
-                                        albumMainPage.putExtra("loginMember", loginMember);
-                                        albumMainPage.putExtra("teamDTO", teamDTO);
-                                        startActivity(albumMainPage);
                                     } else {
                                         /* Toast 메시지 추가 */
                                     }
