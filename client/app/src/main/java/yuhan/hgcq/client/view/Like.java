@@ -6,6 +6,7 @@ import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -57,6 +58,46 @@ public class Like extends AppCompatActivity {
 
     /* 메인 스레드 */
     Handler handler = new Handler(Looper.getMainLooper());
+
+
+    /* 액션바 아이콘 */
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        if (isPrivate) {
+            getMenuInflater().inflate(R.menu.menu_actionbar_icon_share, menu);
+        } else {
+            getMenuInflater().inflate(R.menu.menu_actionbar_icon_privated, menu);
+        }
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    /* 개인 공유 이동 */
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+
+        if (isPrivate) {
+            if (id == R.id.icon_share) {
+                if (loginMember != null) {
+                    Intent likePage = new Intent(this, Like.class);
+                    likePage.putExtra("loginMember", loginMember);
+                    startActivity(likePage);
+                    return true;
+                } else {
+                    Intent loginPage = new Intent(this, Login.class);
+                    startActivity(loginPage);
+                }
+            }
+        } else {
+            Intent likePage = new Intent(this, Like.class);
+            likePage.putExtra("loginMember", loginMember);
+            likePage.putExtra("isPrivate", true);
+            startActivity(likePage);
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -144,7 +185,7 @@ public class Like extends AppCompatActivity {
                         List<PhotoDTO> likeList = response.body();
                         if (likeList.isEmpty()) {
                             handler.post(() -> {
-                               empty.setVisibility(View.VISIBLE);
+                                empty.setVisibility(View.VISIBLE);
                             });
                         } else {
                             handler.post(() -> {
