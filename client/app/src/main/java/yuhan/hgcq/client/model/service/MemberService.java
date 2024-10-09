@@ -20,6 +20,9 @@ public interface MemberService {
     @POST("/member/join")
     Call<ResponseBody> joinMember(@Body SignupForm signupForm);
 
+    @POST("/member/delete")
+    Call<ResponseBody> deleteMember();
+
     @POST("/member/login")
     Call<MemberDTO> loginMember(@Body LoginForm loginForm);
 

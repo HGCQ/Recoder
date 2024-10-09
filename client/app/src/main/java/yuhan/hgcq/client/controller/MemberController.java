@@ -40,6 +40,11 @@ public class MemberController {
         call.enqueue(callback);
     }
 
+    public void deleteMember(Callback<ResponseBody> callback) {
+        Call<ResponseBody> call = memberService.deleteMember();
+        call.enqueue(callback);
+    }
+
     public void loginMember(LoginForm loginForm, Callback<MemberDTO> callback) {
         Call<MemberDTO> call = memberService.loginMember(loginForm);
         call.enqueue(callback);

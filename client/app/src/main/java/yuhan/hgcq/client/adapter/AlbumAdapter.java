@@ -159,10 +159,8 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.AlbumViewHol
                             if (photoDTO != null && !photoDTO.isEmpty()) {
                                 int random = (int) (Math.random() * photoDTO.size());
                                 String path = serverIp + photoDTO.get(random).getPath();
-                                Uri uri = Uri.parse(path);
-                                Bitmap thumbNail = getThumbNail(uri);
                                 Glide.with(context)
-                                        .load(thumbNail)
+                                        .load(path)
                                         .into(holder.photo);
                             } else {
                                 holder.photo.setImageResource(R.drawable.basic2); // 기본 이미지 설정
