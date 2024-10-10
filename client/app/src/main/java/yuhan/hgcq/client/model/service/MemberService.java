@@ -50,4 +50,7 @@ public interface MemberService {
     @Multipart
     @POST("/member/upload")
     Call<ResponseBody> upload(@Part MultipartBody.Part file);
+
+    @POST("/member/searched")
+    Call<MemberDTO> searched();
 }
