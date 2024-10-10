@@ -5,7 +5,6 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#ffffff"
     tools:context=".view.AlbumMain">
 
     <LinearLayout
@@ -14,14 +13,13 @@
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/GroupList"
-            android:layout_width="match_parent"
-            android:clipToPadding="false"
-            android:layout_height="470dp"
+            android:layout_width="399dp"
+            android:layout_height="515dp"
+            android:paddingLeft="5dp"
             android:layout_marginTop="150dp"
-            android:layout_marginStart="20dp"
             android:layout_marginEnd="20dp"
+            android:clipToPadding="false"
             android:gravity="center"
-            android:elevation="10dp"
             app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
             app:spanCount="2" />
     </LinearLayout>
@@ -54,7 +52,6 @@
         android:id="@+id/searchText"
         android:hint=" 그룹 이름, 장소..."
         android:gravity="center_vertical"
-        android:paddingTop="5dp"
         android:textSize="15sp"
         android:textColor="@color/black"
         android:drawableLeft="@drawable/sizesearch"
@@ -72,12 +69,12 @@
         android:id="@+id/groupAdd"
         android:layout_width="50dp"
         android:layout_height="45dp"
-        android:layout_marginTop="545dp"
+        android:layout_marginTop="95dp"
         android:background="#00000000"
         android:scaleType="fitCenter"
         android:src="@drawable/plusicon"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.501"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -95,10 +92,9 @@
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation_view"
         android:layout_width="match_parent"
-        android:layout_height="85dp"
-        app:itemIconTint="#2196F3"
+        android:layout_height="65dp"
         app:itemTextColor="@color/black"
-        app:labelVisibilityMode="labeled"
+        app:labelVisibilityMode="unlabeled"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
