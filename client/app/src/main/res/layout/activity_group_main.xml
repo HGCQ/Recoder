@@ -15,6 +15,7 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/GroupList"
             android:layout_width="match_parent"
+            android:clipToPadding="false"
             android:layout_height="470dp"
             android:layout_marginTop="150dp"
             android:layout_marginStart="20dp"
@@ -93,7 +94,7 @@
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation_view"
-        android:layout_width="410dp"
+        android:layout_width="match_parent"
         android:layout_height="85dp"
         app:itemIconTint="#2196F3"
         app:itemTextColor="@color/black"

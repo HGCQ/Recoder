@@ -18,6 +18,7 @@
         android:layout_marginTop="117dp"
         android:gravity="center"
         android:padding="5dp"
+        android:clipToPadding="false"
         app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
         app:spanCount="1" />
 
@@ -65,7 +66,7 @@
         android:id="@+id/move"
         android:layout_width="120dp"
         android:layout_height="32dp"
-        android:layout_marginTop="70dp"
+        android:layout_marginTop="65dp"
         android:background="@drawable/edittext"
         android:drawableLeft="@drawable/sizetrash"
         android:gravity="center_vertical"
@@ -104,7 +105,7 @@
         android:layout_width="120dp"
         android:layout_height="32dp"
         android:gravity="center_vertical"
-        android:layout_marginTop="70dp"
+        android:layout_marginTop="65dp"
         android:background="@drawable/edittext"
         android:drawableLeft="@drawable/sizephotoplus"
         android:scaleType="fitCenter"
@@ -124,7 +125,7 @@
         android:layout_width="120dp"
         android:gravity="center_vertical"
         android:layout_height="32dp"
-        android:layout_marginTop="70dp"
+        android:layout_marginTop="65dp"
         android:background="@drawable/edittext"
         android:drawableLeft="@drawable/sizetrash"
         android:scaleType="fitCenter"
@@ -155,20 +156,9 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <View
-        android:layout_width="417dp"
-        android:layout_height="2dp"
-        android:background="#D3D3D3"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.08" />
-
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation_view"
-        android:layout_width="410dp"
+        android:layout_width="match_parent"
         android:layout_height="85dp"
         app:itemIconTint="#2196F3"
         app:itemTextColor="@color/black"
@@ -231,6 +221,7 @@
         android:layout_width="320dp"
         android:layout_height="330dp"
         android:layout_marginTop="225dp"
+        android:clipToPadding="false"
         android:layout_marginStart="-330dp"
         android:background="@drawable/text"
         android:gravity="center"
@@ -243,21 +234,6 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.408"
         app:spanCount="2" />
-
-    <android.widget.Button
-        android:id="@+id/save"
-        android:layout_width="80dp"
-        android:layout_height="30dp"
-        android:layout_marginTop="545dp"
-        android:layout_marginStart="-75dp"
-        android:elevation="30dp"
-        android:padding="0dp"
-        android:text="이동하기"
-        android:background="@drawable/select"
-        android:fontFamily="@font/ibm_medium"
-        android:scaleType="fitCenter"
-        android:stateListAnimator="@null"
-        android:visibility="invisible" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

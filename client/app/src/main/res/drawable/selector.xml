@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <stroke
-        android:width="2dp"
-        android:color="#C7CFFF" />
-    <solid android:color="#c2dcff" />
-    <corners android:radius="5dp" />
-</shape>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:drawable="@drawable/trackoff"
+        android:state_checked="false"/>
+
+    <item
+        android:drawable="@drawable/track"
+        android:state_checked="true"/>
+
+</selector>

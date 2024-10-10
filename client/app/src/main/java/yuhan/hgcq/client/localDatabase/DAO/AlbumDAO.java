@@ -24,6 +24,9 @@ public interface AlbumDAO {
     @Query("select * from Album where albumId = :id")
     Album findById(Long id);
 
+    @Query("select * from Album where name = :name and isDeleted = 0")
+    Album findOneByName(String name);
+
     @Query("SELECT * FROM Album where isDeleted = 0")
     List<Album> findAll();
 
@@ -32,4 +35,7 @@ public interface AlbumDAO {
 
     @Query("select * from Album where isDeleted = 1")
     List<Album> findByIsDeleted();
+
+    @Query("select name from Album where isDeleted = 0")
+    List<String> findAlbumNameList();
 }
