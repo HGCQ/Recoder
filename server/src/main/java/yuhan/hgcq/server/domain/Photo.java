@@ -64,6 +64,11 @@ public class Photo {
         this.album = album;
     }
 
+    public void changeAlbum(Album album, String path) {
+        this.album = album;
+        this.path = path;
+    }
+
     /* 테스트 코드(나중에 삭제) */
     public void test(LocalDateTime date) {
         deleted = date;

@@ -14,7 +14,7 @@ public class ChatWebSocketClient extends WebSocketListener {
 
     private WebSocket webSocket;
     private final Gson gson = new Gson();
-    private final static String SERVER_IP = "127.0.0.1";
+    private final static String SERVER_IP = "10.0.2.2";
     private final ChatWebSocketCallback callback;
     private Long albumId;
 

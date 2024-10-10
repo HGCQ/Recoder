@@ -41,7 +41,7 @@ public class NetworkClient {
     private PhotoService ps;
     private TeamService ts;
 
-    private final String serverIp = "http://127.0.0.1:8080";
+    private final String serverIp = "http://10.0.2.2:8080/";
 
     private NetworkClient(Context context) {
         app = context.getApplicationContext();
