@@ -32,7 +32,7 @@
         android:scaleType="fitCenter"
         android:src="@drawable/profile"
         android:text="이름"
-        android:layout_marginStart="-360dp"
+        android:layout_marginStart="-370dp"
         android:fontFamily="@font/ibm_medium"
         app:tint="#234567" />
 
@@ -105,7 +105,7 @@
         android:layout_marginStart="-30dp"
         android:background="#00000000"
         android:scaleType="fitCenter"
-        android:src="@drawable/profileadd1"
+        android:src="@drawable/profileadd"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.673"
@@ -113,18 +113,15 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.237"/>
 
-    <android.widget.Button
+    <android.widget.ImageButton
         android:id="@+id/retouch"
-        android:layout_width="80dp"
+        android:layout_width="40dp"
         android:layout_height="35dp"
+        android:background="@drawable/edit"
         android:layout_marginTop="452dp"
-        android:layout_marginStart="25dp"
-        android:background="@drawable/select"
+        android:layout_marginStart="75dp"
         android:scaleType="fitCenter"
-        android:padding="0dp"
-        android:text="정보수정"
-        android:elevation="20dp"
-        android:fontFamily="@font/ibm_medium"/>
+        android:elevation="20dp"/>
 
     <Switch
         android:id="@+id/switch1"
@@ -133,7 +130,7 @@
         android:track="@drawable/selector"
         android:thumb="@drawable/thumb"
         android:layout_marginTop="200dp"
-        android:layout_marginStart="-240dp"
+        android:layout_marginStart="-250dp"
         android:text="검색 허용"
         android:fontFamily="@font/ibm_medium"
         app:track="@drawable/track"
@@ -145,41 +142,36 @@
         android:layout_width="match_parent"
         android:layout_height="35dp"
         android:layout_marginTop="530dp"
-        android:layout_marginStart="-255dp"
-        android:background="@drawable/text"
+        android:layout_marginStart="-259dp"
+        android:background="@drawable/edittext3"
         android:elevation="20dp"
         android:fontFamily="@font/ibm_medium"
         android:textColor="@color/black"
         android:padding="0dp"
         android:scaleType="fitCenter"
-        android:text="로그아웃"
-        tools:layout_editor_absoluteX="275dp"
-        tools:layout_editor_absoluteY="558dp" />
+        android:text="로그아웃"/>
 
     <android.widget.Button
         android:id="@+id/secession"
         android:layout_width="match_parent"
         android:layout_height="35dp"
-        android:layout_marginTop="565dp"
-        android:layout_marginStart="-395dp"
-        android:background="@drawable/text"
+        android:layout_marginStart="-412dp"
+        android:layout_marginTop="570dp"
+        android:background="@drawable/button1"
         android:elevation="20dp"
         android:fontFamily="@font/ibm_medium"
         android:padding="0dp"
-        android:textColor="@color/colorRed"
         android:scaleType="fitCenter"
         android:text="탈퇴하기"
-        tools:layout_editor_absoluteX="275dp"
-        tools:layout_editor_absoluteY="558dp" />
+        android:textColor="@color/colorRed" />
 </LinearLayout>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation_view"
         android:layout_width="match_parent"
-        android:layout_height="85dp"
-        app:itemIconTint="#2196F3"
+        android:layout_height="65dp"
         app:itemTextColor="@color/black"
-        app:labelVisibilityMode="labeled"
+        app:labelVisibilityMode="unlabeled"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
