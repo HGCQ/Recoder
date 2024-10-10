@@ -82,26 +82,15 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageView
-        android:layout_width="45dp"
-        android:layout_height="45dp"
-        android:layout_marginTop="188dp"
-        android:background="@drawable/text"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.048"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:tint="#234567" />
-
     <ImageButton
         android:id="@+id/friendAdd"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:layout_marginTop="196dp"
-        android:background="@drawable/profileadd1"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_marginTop="190dp"
+        android:background="@drawable/profileadd2"
         android:scaleType="fitCenter"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.068"
+        app:layout_constraintHorizontal_bias="0.05"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -128,7 +117,7 @@
             android:layout_marginTop="530dp"
             android:layout_marginStart="10dp"
             android:padding="0dp"
-            android:background="@drawable/select"
+            android:background="@drawable/edittext3"
             android:scaleType="fitCenter"
             android:fontFamily="@font/ibm_medium"
             android:text="대표사진 선택" />
@@ -204,7 +193,7 @@
             android:elevation="30dp"
             android:padding="0dp"
             android:text="초대하기"
-            android:background="@drawable/select"
+            android:background="@drawable/edittext3"
             android:fontFamily="@font/ibm_medium"
             android:scaleType="fitCenter"
             android:stateListAnimator="@null"
@@ -219,7 +208,7 @@
             android:layout_marginStart="-358dp"
             android:padding="0dp"
             android:elevation="10dp"
-            android:background="@drawable/select"
+            android:background="@drawable/edittext3"
             android:fontFamily="@font/ibm_medium"
             android:onClick="onClick_setting_costume_save"
             android:scaleType="fitCenter"
