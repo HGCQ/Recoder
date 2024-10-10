@@ -134,12 +134,13 @@ public class AlbumRepository {
     public void searchMove(Long albumId, Callback<List<AlbumDTO>> callback) {
         executor.execute(() -> {
             try {
-                Album fa = dao.findById(albumId);
                 List<Album> albumList = dao.findAll();
-                albumList.remove(fa);
                 List<AlbumDTO> dtoList = new ArrayList<>();
 
                 for (Album album : albumList) {
+                    if (album.getAlbumId().equals(albumId)) {
+                        continue;
+                    }
                     AlbumDTO dto = mapping(album);
                     dtoList.add(dto);
                 }
