@@ -90,7 +90,7 @@ public class AlbumRepository {
     }
 
     //이름으로 찾기
-    public void searchByName(String name, Callback<List<AlbumDTO>> callback){
+    public void searchByName(String name, Callback<List<AlbumDTO>> callback) {
         executor.execute(() -> {
             try {
                 List<Album> albumList = dao.findByName(name);
@@ -131,11 +131,33 @@ public class AlbumRepository {
         });
     }
 
+    public void searchMove(Long albumId, Callback<List<AlbumDTO>> callback) {
+        executor.execute(() -> {
+            try {
+                Album fa = dao.findById(albumId);
+                List<Album> albumList = dao.findAll();
+                albumList.remove(fa);
+                List<AlbumDTO> dtoList = new ArrayList<>();
+
+                for (Album album : albumList) {
+                    AlbumDTO dto = mapping(album);
+                    dtoList.add(dto);
+                }
+
+                callback.onSuccess(dtoList);
+            } catch (Exception e) {
+                callback.onError(e);
+            }
+        });
+    }
+
     //휴지통에서 찾기
     public void searchTrash(Callback<List<AlbumDTO>> callback) {
         executor.execute(() -> {
             try {
                 List<Album> albumList = dao.findByIsDeleted();
+                trash(albumList);
+                albumList = dao.findByIsDeleted();
                 List<AlbumDTO> dtoList = new ArrayList<>();
 
                 for (Album album : albumList) {

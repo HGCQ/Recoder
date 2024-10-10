@@ -107,6 +107,11 @@ public class MemberController {
         }
     }
 
+    public void changeSearched(Callback<MemberDTO> callback) {
+        Call<MemberDTO> call = memberService.searched();
+        call.enqueue(callback);
+    }
+
     private String getFileNameFromUri(Uri uri) {
         String[] projection = { MediaStore.Images.Media.DISPLAY_NAME };
         Cursor cursor = context.getContentResolver().query(uri, projection, null, null, null);
