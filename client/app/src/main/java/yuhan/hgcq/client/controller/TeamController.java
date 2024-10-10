@@ -1,15 +1,18 @@
 package yuhan.hgcq.client.controller;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.util.Log;
+import android.widget.Toast;
 
-import org.apache.commons.io.IOUtils;
-
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.ByteArrayOutputStream;
 import java.util.List;
+import java.util.Objects;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -164,14 +167,20 @@ public class TeamController {
         );
 
         try {
-            InputStream inputStream = context.getContentResolver().openInputStream(uri);
-            byte[] imageBytes = IOUtils.toByteArray(inputStream); // Apache commons-io 사용
-            RequestBody reqFile = RequestBody.create(MediaType.parse("image/*"), imageBytes);
-            MultipartBody.Part image = MultipartBody.Part.createFormData("file", getFileNameFromUri(uri), reqFile);
-            Call<ResponseBody> call = teamService.upload(teamIdPart, image);
-            call.enqueue(callback);
-        } catch (IOException e) {
-            e.printStackTrace();
+            Bitmap thumbNail = getThumbNail(uri);
+
+            if (thumbNail != null) {
+                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                thumbNail.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
+                byte[] imageBytes = byteArrayOutputStream.toByteArray();
+
+                RequestBody reqFile = RequestBody.create(MediaType.parse("image/*"), imageBytes);
+                MultipartBody.Part image = MultipartBody.Part.createFormData("file", getFileNameFromUri(uri), reqFile);
+                Call<ResponseBody> call = teamService.upload(teamIdPart, image);
+                call.enqueue(callback);
+            }
+        } catch (Exception e) {
+            Log.e("Upload Error", Objects.requireNonNull(e.getMessage()));
         }
     }
 
@@ -184,5 +193,30 @@ public class TeamController {
             return fileName;
         }
         return "unknown_file_name";
+    }
+
+    private Bitmap getThumbNail(Uri uri) {
+        String[] filePathColumn = {MediaStore.Images.Media._ID, MediaStore.Images.Media.DATA, MediaStore.Images.Media.TITLE/*, MediaStore.Images.Media.ORIENTATION*/};
+
+        ContentResolver cor = context.getContentResolver();
+        Cursor cursor = cor.query(uri, filePathColumn, null, null, null);
+
+        Bitmap thumbnail = null;
+        if(cursor != null) {
+            cursor.moveToFirst();
+            int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+            long ImageId = cursor.getLong(columnIndex);
+            if(ImageId != 0) {
+                BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+                thumbnail = MediaStore.Images.Thumbnails.getThumbnail(
+                        context.getContentResolver(), ImageId,
+                        MediaStore.Images.Thumbnails.MINI_KIND,
+                        bmOptions);
+            } else {
+                Toast.makeText(context, "불러올수 없는 이미지 입니다.", Toast.LENGTH_LONG).show();
+            }
+            cursor.close();
+        }
+        return thumbnail;
     }
 }

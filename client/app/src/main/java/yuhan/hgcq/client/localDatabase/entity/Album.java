@@ -14,11 +14,7 @@ import yuhan.hgcq.client.localDatabase.Converters;
 public class Album {
     @PrimaryKey(autoGenerate = true)
     private Long albumId;
-    @NonNull
-    private LocalDateTime startDate;
 
-    @NonNull
-    private LocalDateTime endDate;
     @NonNull
     private String name;
 
@@ -32,10 +28,8 @@ public class Album {
     }
 
     // 정적 팩토리 메서드
-    public static Album create(@NonNull LocalDateTime startDate, @NonNull LocalDateTime endDate,  @NonNull String name) {
+    public static Album create(@NonNull String name) {
         Album album = new Album();
-        album.setStartDate(startDate);
-        album.setEndDate(endDate);
         album.setName(name);
         album.isDeleted = false;
         return album;
@@ -47,24 +41,6 @@ public class Album {
 
     public void setAlbumId(Long albumId) {
         this.albumId = albumId;
-    }
-
-    @NonNull
-    public LocalDateTime getStartDate() {
-        return startDate;
-    }
-
-    public void setStartDate(@NonNull LocalDateTime startDate) {
-        this.startDate = startDate;
-    }
-
-    @NonNull
-    public LocalDateTime getEndDate() {
-        return endDate;
-    }
-
-    public void setEndDate(@NonNull LocalDateTime endDate) {
-        this.endDate = endDate;
     }
 
     @NonNull
@@ -107,8 +83,6 @@ public class Album {
     public String toString() {
         return "Album{" +
                 "albumId=" + albumId +
-                ", startDate=" + startDate +
-                ", endDate=" + endDate +
                 ", name='" + name + '\'' +
                 ", isDeleted=" + isDeleted +
                 ", deleted=" + deletedTime +

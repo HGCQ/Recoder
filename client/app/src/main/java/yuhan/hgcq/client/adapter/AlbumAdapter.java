@@ -1,10 +1,15 @@
 package yuhan.hgcq.client.adapter;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -124,11 +129,13 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.AlbumViewHol
                         if (result != null && !result.isEmpty()) {
                             int random = (int) (Math.random() * result.size());
                             String path = result.get(random).getPath();
+                            Uri uri = Uri.parse(path);
+                            Bitmap thumbNail = getThumbNail(uri);
                             Glide.with(context)
-                                    .load(Uri.parse(path))
+                                    .load(thumbNail)
                                     .into(holder.photo);
                         } else {
-                            holder.photo.setImageResource(R.drawable.basic2); // 기본 이미지 설정
+                            holder.photo.setImageResource(R.drawable.basic); // 기본 이미지 설정
                         }
                         Log.i("앨범 대표 사진", "Success");
                     });
@@ -137,7 +144,7 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.AlbumViewHol
                 @Override
                 public void onError(Exception e) {
                     handler.post(() -> { // UI 스레드에서 실행
-                        holder.photo.setImageResource(R.drawable.basic2); // 기본 이미지 설정
+                        holder.photo.setImageResource(R.drawable.basic); // 기본 이미지 설정
                         Log.e("앨범 대표 사진", e.getMessage());
                     });
                 }
@@ -151,15 +158,16 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.AlbumViewHol
                             List<PhotoDTO> photoDTO = response.body();
                             if (photoDTO != null && !photoDTO.isEmpty()) {
                                 int random = (int) (Math.random() * photoDTO.size());
+                                String path = serverIp + photoDTO.get(random).getPath();
                                 Glide.with(context)
-                                        .load(serverIp + photoDTO.get(random).getPath())
+                                        .load(path)
                                         .into(holder.photo);
                             } else {
-                                holder.photo.setImageResource(R.drawable.basic2); // 기본 이미지 설정
+                                holder.photo.setImageResource(R.drawable.basic); // 기본 이미지 설정
                             }
                             Log.i("앨범 대표 사진", "Success");
                         } else {
-                            holder.photo.setImageResource(R.drawable.basic2); // 기본 이미지 설정
+                            holder.photo.setImageResource(R.drawable.basic); // 기본 이미지 설정
                         }
                     });
                 }
@@ -167,7 +175,7 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.AlbumViewHol
                 @Override
                 public void onFailure(Call<List<PhotoDTO>> call, Throwable t) {
                     handler.post(() -> { // UI 스레드에서 실행
-                        holder.photo.setImageResource(R.drawable.basic2); // 기본 이미지 설정
+                        holder.photo.setImageResource(R.drawable.basic); // 기본 이미지 설정
                         Log.e("앨범 대표 사진", t.getMessage());
                     });
                 }
@@ -240,5 +248,30 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.AlbumViewHol
         albumList.clear();
         albumList.addAll(newList);
         notifyDataSetChanged();
+    }
+
+    private Bitmap getThumbNail(Uri uri) {
+        String[] filePathColumn = {MediaStore.Images.Media._ID, MediaStore.Images.Media.DATA, MediaStore.Images.Media.TITLE/*, MediaStore.Images.Media.ORIENTATION*/};
+
+        ContentResolver cor = context.getContentResolver();
+        Cursor cursor = cor.query(uri, filePathColumn, null, null, null);
+
+        Bitmap thumbnail = null;
+        if(cursor != null) {
+            cursor.moveToFirst();
+            int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+            long ImageId = cursor.getLong(columnIndex);
+            if(ImageId != 0) {
+                BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+                thumbnail = MediaStore.Images.Thumbnails.getThumbnail(
+                        context.getContentResolver(), ImageId,
+                        MediaStore.Images.Thumbnails.MINI_KIND,
+                        bmOptions);
+            } else {
+                Toast.makeText(context, "불러올수 없는 이미지 입니다.", Toast.LENGTH_LONG).show();
+            }
+            cursor.close();
+        }
+        return thumbnail;
     }
 }

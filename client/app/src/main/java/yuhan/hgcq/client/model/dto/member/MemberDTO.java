@@ -8,6 +8,7 @@ public class MemberDTO implements Serializable {
     private String name;
     private String email;
     private String image;
+    private Boolean search;
 
     public MemberDTO() {
     }
@@ -16,6 +17,13 @@ public class MemberDTO implements Serializable {
         this.memberId = memberId;
         this.name = name;
         this.email = email;
+    }
+
+    public MemberDTO(Long memberId, String name, String email, Boolean search) {
+        this.memberId = memberId;
+        this.name = name;
+        this.email = email;
+        this.search = search;
     }
 
     public Long getMemberId() {
@@ -50,12 +58,22 @@ public class MemberDTO implements Serializable {
         this.image = image;
     }
 
+    public Boolean getSearch() {
+        return search;
+    }
+
+    public void setSearch(Boolean search) {
+        this.search = search;
+    }
+
     @Override
     public String toString() {
         return "MemberDTO{" +
                 "memberId=" + memberId +
                 ", name='" + name + '\'' +
                 ", email='" + email + '\'' +
+                ", image='" + image + '\'' +
+                ", search=" + search +
                 '}';
     }
 }

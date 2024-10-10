@@ -21,22 +21,15 @@ import yuhan.hgcq.client.localDatabase.Converters;
         indices = {@Index(value = {"albumId"})})
 @TypeConverters({Converters.class})
 public class Photo {
-    public Photo() {
-    }
-    public static Photo create(@NonNull String path, @NonNull Long albumId, @NonNull LocalDateTime created) {
-        Photo photo = new Photo();
-        photo.setPath(path);
-        photo.setAlbumId(albumId);
-        photo.setIs_liked(false); //
-        photo.setIs_deleted(false); // 삭제되지 않은 상태
-        photo.setCreated(created); // 생성 시간 설정
-        return photo;
-    }
 
     @PrimaryKey(autoGenerate = true)
     private Long photoId;
     @NonNull
     private String path;
+
+    @NonNull
+    private String region;
+
     @NonNull
     private Long albumId;
     @NonNull
@@ -48,6 +41,20 @@ public class Photo {
 
     private LocalDateTime deletedTime;
 
+    public Photo() {
+    }
+
+    public static Photo create(@NonNull String path, @NonNull Long albumId, @NonNull LocalDateTime created, @NonNull String region) {
+        Photo photo = new Photo();
+        photo.setPath(path);
+        photo.setAlbumId(albumId);
+        photo.setIs_liked(false); //
+        photo.setIs_deleted(false); // 삭제되지 않은 상태
+        photo.setCreated(created); // 생성 시간 설정
+        photo.setRegion(region);
+        return photo;
+    }
+
     public Long getPhotoId() {
         return photoId;
     }
@@ -55,7 +62,6 @@ public class Photo {
     public void setPhotoId(Long photoId) {
         this.photoId = photoId;
     }
-
 
     @NonNull
     public String getPath() {
@@ -102,6 +108,15 @@ public class Photo {
         this.created = created;
     }
 
+    @NonNull
+    public String getRegion() {
+        return region;
+    }
+
+    public void setRegion(@NonNull String region) {
+        this.region = region;
+    }
+
     public LocalDateTime getDeletedTime() {
         return deletedTime;
     }
@@ -110,23 +125,26 @@ public class Photo {
         this.deletedTime = deletedTime;
     }
 
-    public void delete(){
-        this.is_deleted=true;
-        this.deletedTime=LocalDateTime.now();
+    public void delete() {
+        this.is_deleted = true;
+        this.deletedTime = LocalDateTime.now();
     }
 
     public void deleteCancel() {
         this.is_deleted = false;
         this.deletedTime = null;
     }
+
     public void liked() {
         this.is_liked = !is_liked;
     }
+
     @Override
     public String toString() {
         return "Photo{" +
                 "photoId=" + photoId +
                 ", path='" + path + '\'' +
+                ", region='" + region + '\'' +
                 ", albumId=" + albumId +
                 ", is_liked=" + is_liked +
                 ", is_deleted=" + is_deleted +

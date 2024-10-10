@@ -18,6 +18,7 @@
         android:layout_height="489dp"
         android:layout_marginTop="150dp"
         android:padding="0dp"
+        android:clipToPadding="false"
         app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
         app:spanCount="1" />
 
@@ -41,30 +42,14 @@
 
     <ImageButton
         android:id="@+id/friendAdd"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
         android:layout_marginTop="92dp"
         android:background="#00000000"
         android:scaleType="fitCenter"
         android:src="@drawable/friendadd"
-        app:tint="#000000"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.924"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:layout_width="50dp"
-        android:layout_height="20dp"
-        android:layout_marginTop="115dp"
-        android:fontFamily="@font/ibm_regular"
-        android:gravity="center"
-        android:padding="0dp"
-        android:text="친구 추가"
-        android:textColor="@color/black"
-        android:textSize="10dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.946"
+        app:layout_constraintHorizontal_bias="0.96"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -136,11 +121,10 @@
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation_view"
-        android:layout_width="410dp"
-        android:layout_height="85dp"
-        app:itemIconTint="#2196F3"
+        android:layout_width="match_parent"
+        android:layout_height="65dp"
         app:itemTextColor="@color/black"
-        app:labelVisibilityMode="labeled"
+        app:labelVisibilityMode="unlabeled"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
