@@ -78,6 +78,11 @@ public class AlbumController {
         call.enqueue(callback);
     }
 
+    public void moveAlbumList(Long teamId, Long albumId, Callback<List<AlbumDTO>> callback) {
+        Call<List<AlbumDTO>> call = albumService.moveAlbumList(teamId, albumId);
+        call.enqueue(callback);
+    }
+
     /**
      * 앨범 검색
      *
