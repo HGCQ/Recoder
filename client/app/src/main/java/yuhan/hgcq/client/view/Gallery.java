@@ -275,7 +275,7 @@ public class Gallery extends AppCompatActivity {
 
                 moveOk.setOnClickListener(v1 -> {
                     List<PhotoDTO> selectedItems = ga.getSelectedPhotos();
-                    ar.searchAll(new Callback<List<AlbumDTO>>() {
+                    ar.searchMove(albumDTO.getAlbumId(), new Callback<List<AlbumDTO>>() {
                         @Override
                         public void onSuccess(List<AlbumDTO> result) {
                             if (result != null) {
@@ -294,8 +294,8 @@ public class Gallery extends AppCompatActivity {
                                         onClick_setting_costume_save("이동하시겠습니까?", new DialogInterface.OnClickListener() {
                                             @Override
                                             public void onClick(DialogInterface dialog, int which) {
-                                                AlbumDTO albumDTO = result.get(position);
-                                                MovePhotoForm form = new MovePhotoForm(albumDTO.getAlbumId(), selectedItems);
+                                                AlbumDTO albumDTO1 = result.get(position);
+                                                MovePhotoForm form = new MovePhotoForm(albumDTO1.getAlbumId(), selectedItems);
                                                 pr.move(form, new Callback<Boolean>() {
                                                     @Override
                                                     public void onSuccess(Boolean result) {
@@ -349,7 +349,8 @@ public class Gallery extends AppCompatActivity {
                     if (teamDTO != null) {
                         Long teamId = teamDTO.getTeamId();
                         List<PhotoDTO> selectedItems = ga.getSelectedPhotos();
-                        ac.albumList(teamId, new retrofit2.Callback<List<AlbumDTO>>() {
+                        Long albumId = albumDTO.getAlbumId();
+                        ac.moveAlbumList(teamId, albumId, new retrofit2.Callback<List<AlbumDTO>>() {
                             @Override
                             public void onResponse(Call<List<AlbumDTO>> call, Response<List<AlbumDTO>> response) {
                                 if (response.isSuccessful()) {
@@ -369,8 +370,8 @@ public class Gallery extends AppCompatActivity {
                                             onClick_setting_costume_save("이동하시겠습니까?", new DialogInterface.OnClickListener() {
                                                 @Override
                                                 public void onClick(DialogInterface dialog, int which) {
-                                                    AlbumDTO albumDTO = albumList1.get(position);
-                                                    MovePhotoForm form = new MovePhotoForm(albumDTO.getAlbumId(), selectedItems);
+                                                    AlbumDTO albumDTO1 = albumList1.get(position);
+                                                    MovePhotoForm form = new MovePhotoForm(albumDTO1.getAlbumId(), selectedItems);
                                                     pc.moveAlbumPhoto(form, new retrofit2.Callback<ResponseBody>() {
                                                         @Override
                                                         public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -784,6 +785,8 @@ public class Gallery extends AppCompatActivity {
                     handler.post(() -> {
                         albumListView.setVisibility(View.INVISIBLE);
                         moveOk.setVisibility(View.INVISIBLE);
+                        albumList.setVisibility(View.INVISIBLE);
+                        albumListViewTop.setVisibility(View.INVISIBLE);
                     });
                 }
             }
