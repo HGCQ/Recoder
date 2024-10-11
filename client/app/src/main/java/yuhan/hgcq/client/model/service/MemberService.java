@@ -20,6 +20,9 @@ public interface MemberService {
     @POST("/member/join")
     Call<ResponseBody> joinMember(@Body SignupForm signupForm);
 
+    @POST("/member/delete")
+    Call<ResponseBody> deleteMember();
+
     @POST("/member/login")
     Call<MemberDTO> loginMember(@Body LoginForm loginForm);
 
@@ -47,4 +50,7 @@ public interface MemberService {
     @Multipart
     @POST("/member/upload")
     Call<ResponseBody> upload(@Part MultipartBody.Part file);
+
+    @POST("/member/searched")
+    Call<MemberDTO> searched();
 }

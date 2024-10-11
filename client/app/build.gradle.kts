@@ -43,9 +43,6 @@ dependencies {
     implementation ("com.squareup.okhttp3:logging-interceptor:4.9.0")
     implementation ("com.github.franmontiel:PersistentCookieJar:v1.0.1")
 
-    /* Apache */
-    implementation ("commons-io:commons-io:2.11.0")
-
     /* Metadata */
     implementation ("com.drewnoakes:metadata-extractor:2.19.0")
 

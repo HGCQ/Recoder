@@ -21,10 +21,13 @@ public interface AlbumDAO {
     @Update
     void update(Album album);
 
-    @Query("select * from Album where albumId = :id")
+    @Query("select * from Album where albumId = :id and isDeleted = 0")
     Album findById(Long id);
 
-    @Query("SELECT * FROM Album where isDeleted = 0")
+    @Query("select * from Album where name = :name and isDeleted = 0")
+    Album findOneByName(String name);
+
+    @Query("SELECT * FROM Album where isDeleted = 0 order by name")
     List<Album> findAll();
 
     @Query("select * from Album where name like :name COLLATE NOCASE")
@@ -32,4 +35,7 @@ public interface AlbumDAO {
 
     @Query("select * from Album where isDeleted = 1")
     List<Album> findByIsDeleted();
+
+    @Query("select name from Album where isDeleted = 0")
+    List<String> findAlbumNameList();
 }
