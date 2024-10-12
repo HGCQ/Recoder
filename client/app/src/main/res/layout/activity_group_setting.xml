@@ -150,7 +150,7 @@
             android:fontFamily="@font/ibm_medium"
             android:padding="10dp"
             android:textSize="15sp"
-            android:text="   앨범 선택"
+            android:text=" >>  회원 초대"
             android:textColor="@color/black"
             android:elevation="30dp"
             android:visibility="invisible"
