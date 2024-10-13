@@ -436,17 +436,17 @@ public class Photo extends AppCompatActivity {
         move.setOnClickListener(v -> {
             /* 개인 */
             if (isPrivate) {
-                ar.searchAll(new yuhan.hgcq.client.localDatabase.callback.Callback<List<AlbumDTO>>() {
+                ar.searchMove(albumDTO.getAlbumId(), new yuhan.hgcq.client.localDatabase.callback.Callback<List<AlbumDTO>>() {
                     @Override
                     public void onSuccess(List<AlbumDTO> result) {
                         if (result != null) {
                             aa = new AlbumAdapter(result, Photo.this, isPrivate);
                             aa.setPhoto();
                             handler.post(() -> {
+                                albumList.setAdapter(aa);
                                 albumListView.setVisibility(View.VISIBLE);
                                 albumListViewTop.setVisibility(View.VISIBLE);
                                 albumList.setVisibility(View.VISIBLE);
-                                albumList.setAdapter(aa);
                             });
 
                             aa.setOnItemClickListener(new AlbumAdapter.OnItemClickListener() {
@@ -456,13 +456,13 @@ public class Photo extends AppCompatActivity {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
                                             int index = photoView.getCurrentItem();
-                                            AlbumDTO albumDTO = result.get(position);
+                                            AlbumDTO albumDTO1 = result.get(position);
                                             List<PhotoDTO> photoList = pa.getPhotoList();
                                             PhotoDTO dto = photoList.get(index);
                                             List<PhotoDTO> pls = new ArrayList<>();
                                             pls.add(dto);
 
-                                            MovePhotoForm form = new MovePhotoForm(albumDTO.getAlbumId(), pls);
+                                            MovePhotoForm form = new MovePhotoForm(albumDTO1.getAlbumId(), pls);
                                             pr.move(form, new yuhan.hgcq.client.localDatabase.callback.Callback<Boolean>() {
                                                 @Override
                                                 public void onSuccess(Boolean result) {
@@ -522,7 +522,7 @@ public class Photo extends AppCompatActivity {
             else {
                 if (teamDTO != null) {
                     Long teamId = teamDTO.getTeamId();
-                    ac.albumList(teamId, new retrofit2.Callback<List<AlbumDTO>>() {
+                    ac.moveAlbumList(teamId, albumDTO.getAlbumId(), new retrofit2.Callback<List<AlbumDTO>>() {
                         @Override
                         public void onResponse(Call<List<AlbumDTO>> call, Response<List<AlbumDTO>> response) {
                             if (response.isSuccessful() && response.body() != null) {
@@ -530,10 +530,10 @@ public class Photo extends AppCompatActivity {
                                 aa = new AlbumAdapter(albumList1, Photo.this, isPrivate);
                                 aa.setPhoto();
                                 handler.post(() -> {
+                                    albumList.setAdapter(aa);
                                     albumList.setVisibility(View.VISIBLE);
                                     albumListViewTop.setVisibility(View.VISIBLE);
                                     albumListView.setVisibility(View.VISIBLE);
-                                    albumList.setAdapter(aa);
                                 });
 
                                 aa.setOnItemClickListener(new AlbumAdapter.OnItemClickListener() {
@@ -543,13 +543,13 @@ public class Photo extends AppCompatActivity {
                                             @Override
                                             public void onClick(DialogInterface dialogInterface, int i) {
                                                 int index = photoView.getCurrentItem();
-                                                AlbumDTO albumDTO = albumList1.get(position);
+                                                AlbumDTO albumDTO1 = albumList1.get(position);
                                                 List<PhotoDTO> photoList = pa.getPhotoList();
                                                 PhotoDTO dto = photoList.get(index);
                                                 List<PhotoDTO> pls = new ArrayList<>();
                                                 pls.add(dto);
 
-                                                MovePhotoForm form = new MovePhotoForm(albumDTO.getAlbumId(), pls);
+                                                MovePhotoForm form = new MovePhotoForm(albumDTO1.getAlbumId(), pls);
                                                 pc.moveAlbumPhoto(form, new Callback<ResponseBody>() {
                                                     @Override
                                                     public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -794,6 +794,8 @@ public class Photo extends AppCompatActivity {
                 if (!rect.contains((int) ev.getRawX(), (int) ev.getRawY())) {
                     handler.post(() -> {
                         albumListView.setVisibility(View.INVISIBLE);
+                        albumList.setVisibility(View.INVISIBLE);
+                        albumListViewTop.setVisibility(View.INVISIBLE);
                     });
                 }
             }
