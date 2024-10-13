@@ -1,7 +1,6 @@
 package yuhan.hgcq.client.view;
 
 import android.content.Intent;
-import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.widget.ImageView;
@@ -17,9 +16,6 @@ import com.bumptech.glide.Glide;
 import yuhan.hgcq.client.R;
 
 public class Loading extends AppCompatActivity {
-    /* View */
-    MediaPlayer mediaPlayer;
-
     /* Setting */
     private static final int LOADING_TIME = 3000; // 3초
 
@@ -43,31 +39,10 @@ public class Loading extends AppCompatActivity {
                 .load(R.drawable.loading)
                 .into((ImageView) findViewById(R.id.loading));
 
-        // 음악 재생 설정
-        mediaPlayer = MediaPlayer.create(this, R.raw.loading);
-        mediaPlayer.setLooping(true);
-        mediaPlayer.start();
-
         new Handler().postDelayed(() -> {
-            // 음악 정지
-            if (mediaPlayer != null && mediaPlayer.isPlaying()) {
-                mediaPlayer.stop();
-                mediaPlayer.release();
-                mediaPlayer = null;
-            }
             Intent intent = new Intent(Loading.this, Select.class);
             startActivity(intent);
             finish();
         }, LOADING_TIME);
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (mediaPlayer != null) {
-            mediaPlayer.stop();
-            mediaPlayer.release();
-            mediaPlayer = null;
-        }
     }
 }
