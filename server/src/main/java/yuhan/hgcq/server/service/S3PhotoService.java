@@ -44,32 +44,6 @@ public class S3PhotoService implements PhotoService {
     @Value("${spring.cloud.aws.s3.bucket}")
     private String bucketName;
 
-    @Value("${spring.cloud.aws.region.static}")
-    private String region;
-
-    /**
-     * Upload photo
-     *
-     * @param photo photo
-     * @return photoId
-     * @throws IllegalArgumentException Argument is wrong
-     */
-    @Override
-    @Transactional
-    public Long savePhoto(Photo photo) throws IllegalArgumentException {
-        ensureNotNull(photo, "Photo");
-
-        Long saveId = pr.save(photo);
-        log.info("Save Photo : {}", photo);
-        return saveId;
-    }
-
-    @Override
-    @Transactional
-    public void savePhoto(Album album, String path, String region, String create) throws IOException {
-
-    }
-
     /**
      * Upload photoList
      *
@@ -253,16 +227,17 @@ public class S3PhotoService implements PhotoService {
         List<String> regions = form.getRegions();
 
         int size = files.size();
+        String noRegion = "위치정보없음";
 
         for (int i = 0; i < size; i++) {
             String region = regions.get(i);
             Album fa = null;
 
             if (region.equals("null")) {
-                if (albumNames.contains("위치정보없음")) {
-                    fa = ar.findOneByName(ft, "위치정보없음");
+                if (albumNames.contains(noRegion)) {
+                    fa = ar.findOneByName(ft, noRegion);
                 } else {
-                    Album album = new Album(ft, "위치정보없음");
+                    Album album = new Album(ft, noRegion);
                     Long saveId = ar.save(album);
                     log.info("Save Album : {}", album);
                     fa = ar.findOne(saveId);
@@ -298,17 +273,10 @@ public class S3PhotoService implements PhotoService {
                     pr.save(photo);
                     log.info("AutoSave Photo : {}", photo);
                 } catch (IOException e) {
-                    log.error("AutoSave Photo Error");
                     throw new IOException(e.getMessage());
                 }
             }
         }
-    }
-
-    @Override
-    @Transactional
-    public void autoSave(Team team, String path, String region, String create) throws IOException {
-
     }
 
     /**
