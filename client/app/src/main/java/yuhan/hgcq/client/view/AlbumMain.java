@@ -18,6 +18,7 @@ import android.provider.Settings;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -98,25 +99,45 @@ public class AlbumMain extends AppCompatActivity {
     private static final int GALLERY = 1000;
     private static final int REQUEST_PERMISSION = 1111;
 
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        if(isPrivate){
+            getMenuInflater().inflate(R.menu.menu_actionbar_icon_share, menu);
+        }else {
+            getMenuInflater().inflate(R.menu.menu_actionbar_icon_privated, menu);
+        }
+        return super.onCreateOptionsMenu(menu);
+    }
+
     /* 뒤로 가기 */
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                if (isPrivate) {
-                    Intent selectPage = new Intent(this, Select.class);
-                    selectPage.putExtra("loginMember", loginMember);
-                    startActivity(selectPage);
-                } else {
-                    Intent groupMainPage = new Intent(this, GroupMain.class);
-                    groupMainPage.putExtra("loginMember", loginMember);
-                    startActivity(groupMainPage);
-                }
-                finish();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+        Intent loginPage = new Intent(this, Login.class);
+        Intent selectPage = new Intent(this, Select.class);
+        Intent groupMainPage = new Intent(this, GroupMain.class);
+
+
+        if (item.getItemId() == android.R.id.home) {
+            if (isPrivate) {
+                selectPage.putExtra("loginMember", loginMember);
+                startActivity(selectPage);
+            } else {
+
+                groupMainPage.putExtra("loginMember", loginMember);
+                startActivity(groupMainPage);
+            }
+            finish();
+            return true;
+        }else {
+            if (loginMember != null) {
+                groupMainPage.putExtra("loginMember", loginMember);
+                startActivity(groupMainPage);
+            } else {
+                startActivity(loginPage);
+            }
         }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/icon_privated"
+        android:icon="@drawable/privated"
+        android:title="개인으로 이동"
+        app:showAsAction="always"/>
+</menu>

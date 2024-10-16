@@ -9,6 +9,7 @@ import android.os.Looper;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -37,7 +38,6 @@ import retrofit2.Response;
 import yuhan.hgcq.client.R;
 import yuhan.hgcq.client.adapter.TeamAdapter;
 import yuhan.hgcq.client.controller.TeamController;
-import yuhan.hgcq.client.model.dto.album.AlbumDTO;
 import yuhan.hgcq.client.model.dto.member.MemberDTO;
 import yuhan.hgcq.client.model.dto.team.TeamDTO;
 
@@ -56,23 +56,42 @@ public class GroupMain extends AppCompatActivity {
     TeamController tc;
 
     /* 받아올 값 */
+    private boolean isPrivate;
     MemberDTO loginMember;
 
     /* 메인 스레드 */
     Handler handler = new Handler(Looper.getMainLooper());
 
-    /* 뒤로 가기 */
+
+    /*액션바 아이콘*/
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        if(isPrivate){
+            getMenuInflater().inflate(R.menu.menu_actionbar_icon_share, menu);
+        }else {
+            getMenuInflater().inflate(R.menu.menu_actionbar_icon_privated, menu);
+        }
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    /* 뒤로 가기, 개인으로 이동 */
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                Intent selectPage = new Intent(this, Select.class);
-                startActivity(selectPage);
-                finish();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+
+        if (item.getItemId() == android.R.id.home) {
+            Intent selectPage = new Intent(this, Select.class);
+            startActivity(selectPage);
+            finish();
+            return true;
+        }else{
+            Intent albumMainPage = new Intent(this, AlbumMain.class);
+            albumMainPage.putExtra("isPrivate", true);
+            if (loginMember != null) {
+                albumMainPage.putExtra("loginMember", loginMember);
+            }
+            startActivity(albumMainPage);
         }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -111,6 +130,7 @@ public class GroupMain extends AppCompatActivity {
 
         /* 받아 올 값 */
         Intent getIntent = getIntent();
+        isPrivate = getIntent.getBooleanExtra("isPrivate", false);
         loginMember = (MemberDTO) getIntent.getSerializableExtra("loginMember");
 
         /* 초기 설정 */
