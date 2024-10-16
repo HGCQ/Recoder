@@ -40,16 +40,18 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import yuhan.hgcq.client.R;
+import yuhan.hgcq.client.adapter.MemberAdapter;
 import yuhan.hgcq.client.config.NetworkClient;
 import yuhan.hgcq.client.controller.MemberController;
 import yuhan.hgcq.client.model.dto.member.MemberDTO;
+import yuhan.hgcq.client.model.dto.member.Members;
 
 public class MyPage extends AppCompatActivity {
     /* View */
     ImageView profile;
     TextView name, email;
     ImageButton profileAdd;
-    Button retouch, secession;
+    Button retouch, secession,logout;
     BottomNavigationView navi;
 
     /* http 통신 */
@@ -58,6 +60,7 @@ public class MyPage extends AppCompatActivity {
     /* 받아올 값 */
     boolean isPrivate;
     MemberDTO loginMember;
+    MemberAdapter ma;
 
     /* 서버 주소 */
     String serverIp = NetworkClient.getInstance(MyPage.this).getServerIp();
@@ -94,6 +97,8 @@ public class MyPage extends AppCompatActivity {
         email = findViewById(R.id.email);
         retouch = findViewById(R.id.retouch);
         secession = findViewById(R.id.secession);
+        logout=findViewById(R.id.logout);
+        secession=findViewById(R.id.secession);
 
         /* 갤러리 */
         Intent gallery = new Intent(Intent.ACTION_PICK);
@@ -107,6 +112,7 @@ public class MyPage extends AppCompatActivity {
         Intent groupMainPage = new Intent(this, GroupMain.class);
         Intent friendListPage = new Intent(this, FriendList.class);
         Intent likePage = new Intent(this, Like.class);
+        Intent loginPage=new Intent(this, Login.class);
 
         /* 받아올 값 */
         Intent getIntent = getIntent();
@@ -125,6 +131,41 @@ public class MyPage extends AppCompatActivity {
                         .into(profile);
             }
         }
+           secession.setOnClickListener(v -> {
+                mc.deleteMember(new Callback<ResponseBody>() {
+                    @Override
+                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                        if(response.isSuccessful()){
+                            NetworkClient.getInstance(MyPage.this.getApplicationContext()).deleteCookie();
+                            Toast.makeText(MyPage.this,"회원 탈퇴 완료",Toast.LENGTH_SHORT).show();
+                            startActivity(loginPage);
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<ResponseBody> call, Throwable t) {
+
+                    }
+                });
+            });
+        logout.setOnClickListener(v->{
+            mc.logoutMember(new Callback<ResponseBody>() {
+                @Override
+                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                    if(response.isSuccessful()){
+                        String name=loginMember.getName();
+                        NetworkClient.getInstance(MyPage.this.getApplicationContext()).deleteCookie();
+                        Toast.makeText(MyPage.this,name+"님 로그아웃되었습니다.",Toast.LENGTH_SHORT).show();
+                        startActivity(loginPage);
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<ResponseBody> call, Throwable t) {
+
+                }
+            });
+        });
 
         /* 프로필 추가 */
         profileAdd.setOnClickListener(v -> {
