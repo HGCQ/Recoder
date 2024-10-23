@@ -1,8 +1,11 @@
 package yuhan.hgcq.server.service;
 
+import io.awspring.cloud.s3.ObjectMetadata;
+import io.awspring.cloud.s3.S3Operations;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -13,10 +16,8 @@ import yuhan.hgcq.server.dto.member.SignupForm;
 import yuhan.hgcq.server.dto.photo.UploadMemberForm;
 import yuhan.hgcq.server.repository.MemberRepository;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.io.InputStream;
 import java.util.List;
 
 @Service
@@ -26,11 +27,10 @@ public class MemberService {
     private static final Logger log = LoggerFactory.getLogger(MemberService.class);
 
     private final MemberRepository mr;
+    private final S3Operations s3Operations;
 
-    private final static String DIRECTORY_PATH = File.separator
-            + "app" + File.separator
-            + "images" + File.separator
-            + "member" + File.separator;
+    @Value("${spring.cloud.aws.s3.bucket}")
+    private String bucketName;
 
     /**
      * Join
@@ -58,6 +58,12 @@ public class MemberService {
 
         log.info("Join Member : {}", member);
         return member.getId();
+    }
+
+    @Transactional
+    public void delete(Long memberId) {
+        mr.delete(memberId);
+        log.info("Delete Member : {}", memberId);
     }
 
     /**
@@ -132,35 +138,6 @@ public class MemberService {
     }
 
     /**
-     * Find member by email
-     *
-     * @param email email
-     * @return member
-     * @throws IllegalArgumentException Argument is wrong
-     */
-    public Member searchByEmail(String email) throws IllegalArgumentException {
-        Member fm = mr.findOne(email);
-
-        if (fm == null) {
-            throw new IllegalArgumentException("Member Not Found");
-        }
-
-        return fm;
-    }
-
-    /**
-     * Find member by name
-     *
-     * @param name name
-     * @return member
-     * @throws IllegalArgumentException Argument is wrong
-     */
-    public List<Member> searchByName(String name) throws IllegalArgumentException {
-        return mr.findByName(name);
-    }
-
-
-    /**
      * Find memberList
      *
      * @return memberList
@@ -215,30 +192,29 @@ public class MemberService {
         ensureNotNull(member, "Member");
 
         MultipartFile file = form.getFile();
+        String name = file.getOriginalFilename();
 
-        try {
-            String newPath = DIRECTORY_PATH + member.getId() + File.separator;
-            File directory = new File(newPath);
+        String key = "images/member/" + member.getId() + "/" + name;
 
-            if (!directory.exists()) {
-                directory.mkdirs();
-            }
-
-            String name = file.getOriginalFilename();
-
-            Path path = Paths.get(newPath + name);
-            file.transferTo(path);
-            String imagePath = "/images/member/" + member.getId() + "/" + name;
-
-            member.changeImage(imagePath);
+        try (InputStream inputStream = file.getInputStream()) {
+            s3Operations.upload(bucketName, key, inputStream,
+                    ObjectMetadata.builder().contentType(file.getContentType()).build());
+            member.changeImage(key);
             mr.save(member);
 
             log.info("Upload Member : {}", member);
-            return imagePath;
+            return key;
         } catch (IOException e) {
             log.error("Upload Member Image Error");
-            throw new IOException();
+            throw new IOException(e.getMessage());
         }
+    }
+
+    @Transactional
+    public void toggleSearched(Member member) {
+        member.changeSearch();
+        mr.save(member);
+        log.info("Change Search : {}", member);
     }
 
     /**
