@@ -23,6 +23,8 @@ public interface AlbumDAO {
 
     @Query("select * from Album where albumId = :id and isDeleted = 0")
     Album findById(Long id);
+    @Query("select * from Album where albumId = :id and isDeleted = 1")
+    Album findByDeletedId(Long id);
 
     @Query("select * from Album where name = :name and isDeleted = 0")
     Album findOneByName(String name);

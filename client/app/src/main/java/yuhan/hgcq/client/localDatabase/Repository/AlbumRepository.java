@@ -64,7 +64,7 @@ public class AlbumRepository {
         executor.execute(() -> {
             try {
                 for (Long albumId : albumIds) {
-                    Album fa = dao.findById(albumId);
+                    Album fa = dao.findByDeletedId(albumId);
                     fa.deleteCancel();
                     dao.update(fa);
                 }
