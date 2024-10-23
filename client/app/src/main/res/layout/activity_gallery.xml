@@ -7,6 +7,33 @@
     android:background="#ffffff"
     android:id="@+id/main">
 
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:ignore="Orientation">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/photoList"
+        android:layout_width="match_parent"
+        android:layout_height="520dp"
+        android:layout_marginTop="117dp"
+        android:gravity="center"
+        android:clipToPadding="false"
+        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+        app:spanCount="1" />
+</LinearLayout>
+
+    <View
+        android:layout_width="417dp"
+        android:layout_height="2dp"
+        android:background="#D3D3D3"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.152" />
+
     <TextView
         android:id="@+id/empty"
         android:layout_width="200dp"
@@ -29,6 +56,9 @@
         android:layout_marginTop="65dp"
         android:background="@drawable/trash"
         android:scaleType="fitCenter"
+        android:stateListAnimator="@null"
+        android:text="앨범 선택하기"
+        android:visibility="invisible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.03"
         app:layout_constraintStart_toStartOf="parent"

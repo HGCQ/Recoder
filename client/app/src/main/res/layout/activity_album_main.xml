@@ -39,7 +39,7 @@
           android:id="@+id/albumplus"
           android:layout_width="50dp"
           android:layout_height="50dp"
-          android:layout_marginStart="-294dp"
+          android:layout_marginStart="-50dp"
           android:layout_marginTop="108dp"
           android:background="#00000000"
           android:elevation="10dp"
@@ -50,7 +50,7 @@
           android:id="@+id/auto"
           android:layout_width="40dp"
           android:layout_height="35dp"
-          android:layout_marginStart="-82dp"
+          android:layout_marginStart="-335dp"
           android:layout_marginTop="115dp"
           android:background="@drawable/photoplus"
           android:elevation="10dp"
@@ -118,12 +118,10 @@
   <com.google.android.material.bottomnavigation.BottomNavigationView
       android:id="@+id/bottom_navigation_view"
       android:layout_width="match_parent"
-      android:layout_height="100dp"
+      android:layout_height="55dp"
+      app:itemIconSize="20dp"
       app:itemTextColor="@color/black"
       app:labelVisibilityMode="unlabeled"
       app:layout_constraintBottom_toBottomOf="parent"
-      app:layout_constraintEnd_toEndOf="parent"
-      app:layout_constraintHorizontal_bias="0.0"
-      app:layout_constraintStart_toStartOf="parent"
       app:menu="@menu/menu_bottom_nav" />
 </androidx.constraintlayout.widget.ConstraintLayout>
