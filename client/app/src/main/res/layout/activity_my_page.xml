@@ -161,9 +161,10 @@
         android:elevation="20dp"
         android:fontFamily="@font/ibm_medium"
         android:padding="0dp"
+        android:backgroundTint="#f05659"
         android:scaleType="fitCenter"
         android:text="탈퇴하기"
-        android:textColor="@color/colorRed" />
+        android:textColor="@color/black" />
 </LinearLayout>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
