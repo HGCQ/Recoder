@@ -280,6 +280,7 @@ public class Gallery extends AppCompatActivity {
                         public void onSuccess(List<AlbumDTO> result) {
                             if (result != null) {
                                 aa = new AlbumAdapter(result, Gallery.this, isPrivate);
+                                aa.setPhoto();
                                 handler.post(() -> {
                                     albumListView.setVisibility(View.VISIBLE);
                                     albumList.setVisibility(View.VISIBLE);
@@ -356,6 +357,7 @@ public class Gallery extends AppCompatActivity {
                                 if (response.isSuccessful()) {
                                     List<AlbumDTO> albumList1 = response.body();
                                     aa = new AlbumAdapter(albumList1, Gallery.this, isPrivate);
+                                    aa.setPhoto();
                                     handler.post(() -> {
                                         albumListView.setVisibility(View.VISIBLE);
                                         albumList.setVisibility(View.VISIBLE);
