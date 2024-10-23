@@ -50,7 +50,7 @@
           android:id="@+id/auto"
           android:layout_width="40dp"
           android:layout_height="35dp"
-          android:layout_marginStart="-335dp"
+          android:layout_marginStart="-327dp"
           android:layout_marginTop="115dp"
           android:background="@drawable/photoplus"
           android:elevation="10dp"
