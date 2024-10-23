@@ -88,14 +88,11 @@
         android:id="@+id/profile"
         android:layout_width="150dp"
         android:layout_height="150dp"
-        android:maxWidth="150dp"
         android:layout_marginTop="50dp"
-        android:layout_marginStart="-245dp"
-        android:maxHeight="150dp"
-        android:adjustViewBounds="true"
-        android:scaleType="fitCenter"
         android:src="@drawable/profile"
-        android:foregroundGravity="center"/>
+        android:layout_marginStart="-245dp"
+        android:scaleType="centerCrop"
+        android:adjustViewBounds="true" />
 
     <ImageButton
         android:id="@+id/profileadd"
