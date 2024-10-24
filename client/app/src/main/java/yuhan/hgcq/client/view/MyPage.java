@@ -19,6 +19,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -50,9 +51,10 @@ public class MyPage extends AppCompatActivity {
     /* View */
     ImageView profile;
     TextView name, email;
-    ImageButton profileAdd;
-    Button retouch, secession,logout;
+    ImageButton profileAdd,retouch;
+    Button  secession,logout;
     BottomNavigationView navi;
+    Switch swit;
 
     /* http 통신 */
     MemberController mc;
@@ -99,6 +101,7 @@ public class MyPage extends AppCompatActivity {
         secession = findViewById(R.id.secession);
         logout=findViewById(R.id.logout);
         secession=findViewById(R.id.secession);
+        swit=findViewById(R.id.switch1);
 
         /* 갤러리 */
         Intent gallery = new Intent(Intent.ACTION_PICK);
@@ -148,6 +151,46 @@ public class MyPage extends AppCompatActivity {
                     }
                 });
             });
+        swit.setChecked(loginMember.getSearch());
+        swit.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
+                // 스위치가 켜져 있을 때 (검색 허용 상태)
+                mc.changeSearched(new Callback<MemberDTO>() {
+                    @Override
+                    public void onResponse(Call<MemberDTO> call, Response<MemberDTO> response) {
+                        if (response.isSuccessful()) {
+                            // 검색 결과를 보여줌 (검색 허용)
+                            loginMember = response.body();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<MemberDTO> call, Throwable t) {
+                        // 실패 처리
+
+                    }
+                });
+            } else {
+                // 스위치가 꺼져 있을 때 (검색 차단 상태)
+                // 검색 결과를 숨김
+                mc.changeSearched(new Callback<MemberDTO>() {
+                    @Override
+                    public void onResponse(Call<MemberDTO> call, Response<MemberDTO> response) {
+                        if(response.isSuccessful()){
+                            loginMember = response.body();
+                        }
+
+                    }
+
+                    @Override
+                    public void onFailure(Call<MemberDTO> call, Throwable t) {
+
+                    }
+                });
+
+            }
+        });
+
         logout.setOnClickListener(v->{
             mc.logoutMember(new Callback<ResponseBody>() {
                 @Override
