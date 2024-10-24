@@ -21,10 +21,8 @@ public interface AlbumDAO {
     @Update
     void update(Album album);
 
-    @Query("select * from Album where albumId = :id and isDeleted = 0")
+    @Query("select * from Album where albumId = :id")
     Album findById(Long id);
-    @Query("select * from Album where albumId = :id and isDeleted = 1")
-    Album findByDeletedId(Long id);
 
     @Query("select * from Album where name = :name and isDeleted = 0")
     Album findOneByName(String name);
