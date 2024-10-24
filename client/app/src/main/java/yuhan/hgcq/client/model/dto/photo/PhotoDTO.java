@@ -10,17 +10,19 @@ public class PhotoDTO implements Serializable {
     private String path;
     private String created;
     private Boolean isLiked;
+    private String member;
 
     public PhotoDTO() {
     }
 
-    public PhotoDTO(Long photoId, Long albumId, String name, String path, String created, Boolean isLiked) {
+    public PhotoDTO(Long photoId, Long albumId, String name, String path, String created, Boolean isLiked, String member) {
         this.photoId = photoId;
         this.albumId = albumId;
         this.name = name;
         this.path = path;
         this.created = created;
         this.isLiked = isLiked;
+        this.member = member;
     }
 
     public Long getPhotoId() {
@@ -71,6 +73,14 @@ public class PhotoDTO implements Serializable {
         isLiked = liked;
     }
 
+    public String getMember() {
+        return member;
+    }
+
+    public void setMember(String member) {
+        this.member = member;
+    }
+
     @Override
     public String toString() {
         return "PhotoDTO{" +
@@ -80,6 +90,7 @@ public class PhotoDTO implements Serializable {
                 ", path='" + path + '\'' +
                 ", created='" + created + '\'' +
                 ", isLiked=" + isLiked +
+                ", member='" + member + '\'' +
                 '}';
     }
 }
