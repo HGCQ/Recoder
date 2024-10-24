@@ -523,7 +523,6 @@ public class AlbumMain extends AppCompatActivity {
         ProgressDialog progressDialog = new ProgressDialog(AlbumMain.this);
         progressDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT)); // 배경을 투명하게
         progressDialog.setCancelable(false); // 다이얼로그 외부 클릭으로 종료되지 않게
-        progressDialog.show(); // 로딩 화면 보여주기
 
         /* 갤러리 */
         if (requestCode == GALLERY && resultCode == RESULT_OK) {
@@ -534,7 +533,7 @@ public class AlbumMain extends AppCompatActivity {
                     List<Uri> uriList = new ArrayList<>(count);
                     List<String> paths = new ArrayList<>(count);
                     List<LocalDateTime> creates = new ArrayList<>(count);
-                    List<String> regions = new ArrayList<>();
+                    List<String> regions = new ArrayList<>(count);
 
                     for (int i = 0; i < count; i++) {
                         Uri imageUri = data.getClipData().getItemAt(i).getUri();
@@ -552,6 +551,7 @@ public class AlbumMain extends AppCompatActivity {
 
                     /* 개인 */
                     if (isPrivate) {
+                        progressDialog.show(); // 로딩 화면 보여주기
                         pr.autoSave(paths, creates, regions, new Callback<Boolean>() {
                             @Override
                             public void onSuccess(Boolean result) {
@@ -581,6 +581,7 @@ public class AlbumMain extends AppCompatActivity {
                     else {
                         if (teamDTO != null) {
                             Long teamId = teamDTO.getTeamId();
+                            progressDialog.show(); // 로딩 화면 보여주기
                             pc.autoSavePhoto(uriList, teamId, creates, regions, new retrofit2.Callback<ResponseBody>() {
                                 @Override
                                 public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -631,6 +632,7 @@ public class AlbumMain extends AppCompatActivity {
 
                     /* 개인 */
                     if (isPrivate) {
+                        progressDialog.show(); // 로딩 화면 보여주기
                         pr.autoSave(paths, creates, regions, new Callback<Boolean>() {
                             @Override
                             public void onSuccess(Boolean result) {
@@ -659,8 +661,8 @@ public class AlbumMain extends AppCompatActivity {
                     /* 공유 */
                     else {
                         if (teamDTO != null) {
-                            Long teamId = teamDTO.getTeamId();
-                            pc.autoSavePhoto(uriList, teamId, creates, regions, new retrofit2.Callback<ResponseBody>() {
+                            progressDialog.show(); // 로딩 화면 보여주기
+                            pc.autoSavePhoto(uriList, teamDTO.getTeamId(), creates, regions, new retrofit2.Callback<ResponseBody>() {
                                 @Override
                                 public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                                     progressDialog.dismiss(); // 로딩 화면 종료
