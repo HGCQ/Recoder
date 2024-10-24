@@ -70,6 +70,19 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <android.widget.Button
+        android:id="@+id/calendar"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="60dp"
+        android:background="@drawable/calendar"
+        android:scaleType="fitCenter"
+        android:elevation="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.85"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <android.widget.Button
         android:id="@+id/chat"
         android:layout_width="50dp"
         android:layout_height="50dp"
@@ -197,7 +210,7 @@
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation_view"
         android:layout_width="match_parent"
-        android:layout_height="65dp"
+        android:layout_height="100dp"
         app:itemTextColor="@color/black"
         app:labelVisibilityMode="unlabeled"
         app:layout_constraintBottom_toBottomOf="parent"
