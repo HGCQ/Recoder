@@ -34,7 +34,7 @@
         android:padding="5dp"
         android:textColor="@color/black"
         android:background="@drawable/edittext"
-        android:fontFamily="@font/notosans_medium"
+        android:fontFamily="@font/ibm_regular"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.48"
         app:layout_constraintStart_toStartOf="parent"

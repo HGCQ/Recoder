@@ -143,7 +143,6 @@
         android:elevation="20dp"
         android:fontFamily="@font/ibm_medium"
         android:textColor="@color/black"
-        android:padding="0dp"
         android:scaleType="fitCenter"
         android:text="로그아웃"/>
 
