@@ -4,7 +4,9 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.graphics.Rect;
+import android.graphics.drawable.ColorDrawable;
 import android.location.Address;
 import android.location.Geocoder;
 import android.net.Uri;
@@ -517,13 +519,18 @@ public class AlbumMain extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
+        // ProgressDialog 선언
+        ProgressDialog progressDialog = new ProgressDialog(AlbumMain.this);
+        progressDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT)); // 배경을 투명하게
+        progressDialog.setCancelable(false); // 다이얼로그 외부 클릭으로 종료되지 않게
+        progressDialog.show(); // 로딩 화면 보여주기
+
         /* 갤러리 */
         if (requestCode == GALLERY && resultCode == RESULT_OK) {
             if (data != null) {
                 /* 사진 여러 장 */
                 if (data.getClipData() != null) {
                     int count = data.getClipData().getItemCount();
-
                     List<Uri> uriList = new ArrayList<>(count);
                     List<String> paths = new ArrayList<>(count);
                     List<LocalDateTime> creates = new ArrayList<>(count);
@@ -531,13 +538,11 @@ public class AlbumMain extends AppCompatActivity {
 
                     for (int i = 0; i < count; i++) {
                         Uri imageUri = data.getClipData().getItemAt(i).getUri();
-
                         PhotoMetaData metadata = getImageMetadata(imageUri);
                         if (metadata != null) {
                             String path = imageUri.toString();
                             LocalDateTime created = metadata.getCreated();
                             String region = metadata.getRegion();
-
                             uriList.add(imageUri);
                             paths.add(path);
                             creates.add(created);
@@ -550,6 +555,7 @@ public class AlbumMain extends AppCompatActivity {
                         pr.autoSave(paths, creates, regions, new Callback<Boolean>() {
                             @Override
                             public void onSuccess(Boolean result) {
+                                progressDialog.dismiss(); // 로딩 화면 종료
                                 if (result) {
                                     handler.post(() -> {
                                         Toast.makeText(AlbumMain.this, "사진이 저장되었습니다.", Toast.LENGTH_SHORT).show();
@@ -560,13 +566,14 @@ public class AlbumMain extends AppCompatActivity {
                                         startActivity(albumMainPage);
                                     });
                                 } else {
-                                    /* Toast 메시지 */
+                                    handler.post(() -> Toast.makeText(AlbumMain.this, "사진 저장에 실패했습니다.", Toast.LENGTH_SHORT).show());
                                 }
                             }
 
                             @Override
                             public void onError(Exception e) {
-                                /* Toast 메시지 */
+                                progressDialog.dismiss(); // 로딩 화면 종료
+                                handler.post(() -> Toast.makeText(AlbumMain.this, "사진 저장 중 오류가 발생했습니다.", Toast.LENGTH_SHORT).show());
                             }
                         });
                     }
@@ -577,6 +584,7 @@ public class AlbumMain extends AppCompatActivity {
                             pc.autoSavePhoto(uriList, teamId, creates, regions, new retrofit2.Callback<ResponseBody>() {
                                 @Override
                                 public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                                    progressDialog.dismiss(); // 로딩 화면 종료
                                     if (response.isSuccessful()) {
                                         handler.post(() -> {
                                             Toast.makeText(AlbumMain.this, "사진이 저장되었습니다.", Toast.LENGTH_SHORT).show();
@@ -586,34 +594,35 @@ public class AlbumMain extends AppCompatActivity {
                                             startActivity(albumMainPage);
                                         });
                                     } else {
-                                        /* Toast 메시지 */
+                                        handler.post(() -> Toast.makeText(AlbumMain.this, "사진 저장에 실패했습니다.", Toast.LENGTH_SHORT).show());
                                     }
                                 }
 
                                 @Override
                                 public void onFailure(Call<ResponseBody> call, Throwable t) {
-                                    /* Toast 메시지 */
+                                    progressDialog.dismiss(); // 로딩 화면 종료
+                                    handler.post(() -> Toast.makeText(AlbumMain.this, "사진 저장 중 오류가 발생했습니다.", Toast.LENGTH_SHORT).show());
                                 }
                             });
+                        } else {
+                            progressDialog.dismiss(); // 로딩 화면 종료
+                            handler.post(() -> Toast.makeText(AlbumMain.this, "팀 정보가 없습니다.", Toast.LENGTH_SHORT).show());
                         }
                     }
                 }
                 /* 사진 한 장 */
                 else if (data.getData() != null) {
                     Uri imageUri = data.getData();
-
                     List<Uri> uriList = new ArrayList<>();
                     List<String> paths = new ArrayList<>();
                     List<LocalDateTime> creates = new ArrayList<>();
                     List<String> regions = new ArrayList<>();
-
                     PhotoMetaData metadata = getImageMetadata(imageUri);
 
                     if (metadata != null) {
                         String path = imageUri.toString();
                         LocalDateTime created = metadata.getCreated();
                         String region = metadata.getRegion();
-
                         uriList.add(imageUri);
                         paths.add(path);
                         creates.add(created);
@@ -625,6 +634,7 @@ public class AlbumMain extends AppCompatActivity {
                         pr.autoSave(paths, creates, regions, new Callback<Boolean>() {
                             @Override
                             public void onSuccess(Boolean result) {
+                                progressDialog.dismiss(); // 로딩 화면 종료
                                 if (result) {
                                     handler.post(() -> {
                                         Toast.makeText(AlbumMain.this, "사진이 저장되었습니다.", Toast.LENGTH_SHORT).show();
@@ -635,13 +645,14 @@ public class AlbumMain extends AppCompatActivity {
                                         startActivity(albumMainPage);
                                     });
                                 } else {
-                                    /* Toast 메시지 추가 */
+                                    handler.post(() -> Toast.makeText(AlbumMain.this, "사진 저장에 실패했습니다.", Toast.LENGTH_SHORT).show());
                                 }
                             }
 
                             @Override
                             public void onError(Exception e) {
-                                /* Toast 메시지 추가 */
+                                progressDialog.dismiss(); // 로딩 화면 종료
+                                handler.post(() -> Toast.makeText(AlbumMain.this, "사진 저장 중 오류가 발생했습니다.", Toast.LENGTH_SHORT).show());
                             }
                         });
                     }
@@ -652,6 +663,7 @@ public class AlbumMain extends AppCompatActivity {
                             pc.autoSavePhoto(uriList, teamId, creates, regions, new retrofit2.Callback<ResponseBody>() {
                                 @Override
                                 public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                                    progressDialog.dismiss(); // 로딩 화면 종료
                                     if (response.isSuccessful()) {
                                         handler.post(() -> {
                                             Toast.makeText(AlbumMain.this, "사진이 저장되었습니다.", Toast.LENGTH_SHORT).show();
