@@ -35,6 +35,9 @@ public interface PhotoService {
     @POST("/photo/delete/cancel")
     Call<ResponseBody> cancelDeletePhoto(@Body DeleteCancelPhotoForm form);
 
+    @POST("/photo/remove")
+    Call<ResponseBody> removePhoto(@Body DeleteCancelPhotoForm form);
+
     @POST("/photo/move")
     Call<ResponseBody> moveAlbumPhoto(@Body MovePhotoForm movePhotoForm);
 

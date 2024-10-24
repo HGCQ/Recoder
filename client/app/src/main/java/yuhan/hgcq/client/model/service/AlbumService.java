@@ -24,6 +24,9 @@ public interface AlbumService {
     @POST("/album/delete/cancel")
     Call<ResponseBody> deleteCancelAlbum(@Body DeleteCancelAlbumForm form);
 
+    @POST("/album/remove")
+    Call<ResponseBody> removeAlbum(@Body DeleteCancelAlbumForm form);
+
     @POST("/album/update")
     Call<ResponseBody> updateAlbum(@Body AlbumUpdateForm albumUpdateForm);
 

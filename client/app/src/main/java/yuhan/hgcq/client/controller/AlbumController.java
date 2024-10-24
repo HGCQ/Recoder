@@ -56,6 +56,11 @@ public class AlbumController {
         call.enqueue(callback);
     }
 
+    public void removeAlbum(DeleteCancelAlbumForm form, Callback<ResponseBody> callback) {
+        Call<ResponseBody> call = albumService.removeAlbum(form);
+        call.enqueue(callback);
+    }
+
     /**
      * 앨범 수정
      *
