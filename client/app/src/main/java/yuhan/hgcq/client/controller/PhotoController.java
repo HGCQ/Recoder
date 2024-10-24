@@ -117,6 +117,11 @@ public class PhotoController {
         call.enqueue(callback);
     }
 
+    public void removePhoto(DeleteCancelPhotoForm form, Callback<ResponseBody> callback) {
+        Call<ResponseBody> call = photoService.removePhoto(form);
+        call.enqueue(callback);
+    }
+
     /**
      * 앨범 이동
      *
