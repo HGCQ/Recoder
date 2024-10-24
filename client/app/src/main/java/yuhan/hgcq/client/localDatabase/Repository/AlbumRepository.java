@@ -64,9 +64,26 @@ public class AlbumRepository {
         executor.execute(() -> {
             try {
                 for (Long albumId : albumIds) {
-                    Album fa = dao.findByDeletedId(albumId);
+                    Album fa = dao.findById(albumId);
                     fa.deleteCancel();
                     dao.update(fa);
+                }
+                callback.onSuccess(Boolean.TRUE);
+            } catch (Exception e) {
+                callback.onError(e);
+            }
+        });
+    }
+
+    @Transaction
+    public void remove(List<Long> albumIds, Callback<Boolean> callback) {
+        executor.execute(() -> {
+            try {
+                for (Long albumId : albumIds) {
+                    Album fa = dao.findById(albumId);
+                    if (fa.getDeleted()) {
+                        dao.delete(fa);
+                    }
                 }
                 callback.onSuccess(Boolean.TRUE);
             } catch (Exception e) {
