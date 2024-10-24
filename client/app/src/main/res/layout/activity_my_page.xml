@@ -21,8 +21,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.499" />
+        app:layout_constraintTop_toTopOf="parent"/>
 
     <TextView
         android:layout_width="100dp"
@@ -32,7 +31,7 @@
         android:scaleType="fitCenter"
         android:src="@drawable/profile"
         android:text="이름"
-        android:layout_marginStart="-370dp"
+        android:layout_marginStart="-360dp"
         android:fontFamily="@font/ibm_medium"
         app:tint="#234567" />
 
@@ -90,7 +89,7 @@
         android:layout_height="150dp"
         android:layout_marginTop="50dp"
         android:src="@drawable/profile"
-        android:layout_marginStart="-245dp"
+        android:layout_marginStart="-240dp"
         android:scaleType="centerCrop"
         android:adjustViewBounds="true" />
 
@@ -138,7 +137,7 @@
         android:id="@+id/logout"
         android:layout_width="match_parent"
         android:layout_height="35dp"
-        android:layout_marginTop="534dp"
+        android:layout_marginTop="530dp"
         android:layout_marginStart="-250dp"
         android:background="@drawable/edittext3"
         android:elevation="20dp"
@@ -151,7 +150,7 @@
         android:id="@+id/secession"
         android:layout_width="match_parent"
         android:layout_height="35dp"
-        android:layout_marginStart="-403dp"
+        android:layout_marginStart="-400dp"
         android:layout_marginTop="570dp"
         android:background="@drawable/button1"
         android:elevation="20dp"
