@@ -352,7 +352,7 @@ public class Gallery extends AppCompatActivity {
                     });
                 });
             }
-            /* 공유 */
+            /* 공유 !*/
             else {
                 ga.enableSelectionMode();
                 moveOk.setVisibility(View.VISIBLE);

@@ -161,7 +161,7 @@ public class AlbumTrash extends AppCompatActivity {
                 }
             });
         }
-        /* 공유 */
+        /* 공유! */
         else {
             if (teamDTO != null) {
                 Long teamId = teamDTO.getTeamId();

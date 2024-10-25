@@ -181,7 +181,7 @@ public class GroupSetting extends AppCompatActivity {
             }
         });
 
-        /* 저장 */
+        /* 저장 !*/
         save.setOnClickListener(v -> {
             List<Long> selectedMemberIds = fa.getSelectedItems();
             if (selectedMemberIds.isEmpty()) {
