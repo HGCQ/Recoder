@@ -74,8 +74,11 @@ dependencies {
     testImplementation ("androidx.test.ext:junit:1.1.5")
     testImplementation ("androidx.test:core:1.5.0")
     testImplementation ("junit:junit:4.13.2")
+
     /* Glide */
     implementation ("com.github.bumptech.glide:glide:4.15.0")
     annotationProcessor ("com.github.bumptech.glide:compiler:4.15.0")
 
+    /* Dialog */
+    implementation ("com.github.ybq:Android-SpinKit:1.4.0")
 }

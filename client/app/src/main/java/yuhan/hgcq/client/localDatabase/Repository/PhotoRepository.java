@@ -99,6 +99,27 @@ public class PhotoRepository {
         });
     }
 
+    @Transaction
+    public void remove(List<Long> photoIdList, Callback<Boolean> callback) {
+        executor.execute(() -> {
+            try {
+                for (Long id : photoIdList) {
+                    Photo photo = dao.findById(id).get(0);
+                    if (photo == null) {
+                        callback.onSuccess(false);
+                        return;
+                    }
+                    if (photo.getIs_deleted()) {
+                        dao.delete(photo);
+                    }
+                }
+                callback.onSuccess(Boolean.TRUE);
+            } catch (Exception e) {
+                callback.onError(e);
+            }
+        });
+    }
+
     //찾기
     //널 비교
     public void search(Long id, Callback<PhotoDTO> callback) {

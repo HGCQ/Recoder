@@ -259,7 +259,6 @@ public class Photo extends AppCompatActivity {
                 }
                 /* 공유 */
                 else {
-                    getSupportActionBar().setTitle("[공유] " + albumDTO.getName());
                     pc.photoList(albumDTO.getAlbumId(), new Callback<List<PhotoDTO>>() {
                         @Override
                         public void onResponse(Call<List<PhotoDTO>> call, Response<List<PhotoDTO>> response) {
@@ -320,6 +319,9 @@ public class Photo extends AppCompatActivity {
                 }
 
                 if (dto != null) {
+                    if (!isPrivate) {
+                        getSupportActionBar().setTitle("[공유자] " + dto.getMember());
+                    }
                     if (dto.getLiked()) {
                         like.setImageResource(R.drawable.love);
                     } else {

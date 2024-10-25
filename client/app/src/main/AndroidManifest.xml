@@ -68,6 +68,7 @@
             android:windowSoftInputMode="adjustPan"/>
         <activity
             android:name=".view.Photo"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
             android:exported="false" />
         <activity
             android:name=".view.Join"
