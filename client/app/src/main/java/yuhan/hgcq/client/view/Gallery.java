@@ -5,7 +5,9 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.graphics.Rect;
+import android.graphics.drawable.ColorDrawable;
 import android.location.Address;
 import android.location.Geocoder;
 import android.net.Uri;
@@ -487,6 +489,12 @@ public class Gallery extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
+        // ProgressDialog 선언
+        ProgressDialog progressDialog = new ProgressDialog(Gallery.this);
+        progressDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT)); // 배경을 투명하게
+        progressDialog.setCancelable(false); // 다이얼로그 외부 클릭으로 종료되지 않게
+        progressDialog.show(); // 로딩 화면 보여주기
+
         /* 갤러리 */
         if (requestCode == GALLERY && resultCode == RESULT_OK) {
             if (data != null) {
@@ -520,6 +528,7 @@ public class Gallery extends AppCompatActivity {
                         pr.create(albumDTO.getAlbumId(), paths, creates, regions, new Callback<Boolean>() {
                             @Override
                             public void onSuccess(Boolean result) {
+                                progressDialog.dismiss(); // 로딩 화면 종료
                                 if (result) {
                                     handler.post(() -> {
                                         Intent galleryPage = new Intent(Gallery.this, Gallery.class);
@@ -537,6 +546,7 @@ public class Gallery extends AppCompatActivity {
 
                             @Override
                             public void onError(Exception e) {
+                                progressDialog.dismiss(); // 로딩 화면 종료
                                 /* Toast 메시지 */
                             }
                         });
@@ -547,6 +557,7 @@ public class Gallery extends AppCompatActivity {
                             pc.uploadPhoto(albumDTO.getAlbumId(), uriList, creates, regions, new retrofit2.Callback<ResponseBody>() {
                                 @Override
                                 public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                                    progressDialog.dismiss(); // 로딩 화면 종료
                                     if (response.isSuccessful()) {
                                         handler.post(() -> {
                                             Toast.makeText(Gallery.this, "사진이 저장되었습니다.", Toast.LENGTH_SHORT).show();
@@ -596,6 +607,7 @@ public class Gallery extends AppCompatActivity {
                         pr.create(albumDTO.getAlbumId(), paths, creates, regions, new Callback<Boolean>() {
                             @Override
                             public void onSuccess(Boolean result) {
+                                progressDialog.dismiss(); // 로딩 화면 종료
                                 if (result) {
                                     handler.post(() -> {
                                         Toast.makeText(Gallery.this, "사진이 저장되었습니다.", Toast.LENGTH_SHORT).show();
@@ -607,6 +619,7 @@ public class Gallery extends AppCompatActivity {
                                     galleryPage.putExtra("albumDTO", albumDTO);
                                     startActivity(galleryPage);
                                 } else {
+                                    progressDialog.dismiss(); // 로딩 화면 종료
                                     /* Toast 메시지 */
                                 }
                             }
@@ -623,6 +636,7 @@ public class Gallery extends AppCompatActivity {
                             pc.uploadPhoto(albumDTO.getAlbumId(), uriList, creates, regions, new retrofit2.Callback<ResponseBody>() {
                                 @Override
                                 public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                                    progressDialog.dismiss(); // 로딩 화면 종료
                                     if (response.isSuccessful()) {
                                         handler.post(() -> {
                                             Toast.makeText(Gallery.this, "사진이 저장되었습니다.", Toast.LENGTH_SHORT).show();
