@@ -537,7 +537,6 @@ public class Gallery extends AppCompatActivity {
         ProgressDialog progressDialog = new ProgressDialog(Gallery.this);
         progressDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT)); // 배경을 투명하게
         progressDialog.setCancelable(false); // 다이얼로그 외부 클릭으로 종료되지 않게
-        progressDialog.show(); // 로딩 화면 보여주기
 
         /* 갤러리 */
         if (requestCode == GALLERY && resultCode == RESULT_OK) {
@@ -545,7 +544,6 @@ public class Gallery extends AppCompatActivity {
                 /* 사진 여러 장 */
                 if (data.getClipData() != null) {
                     int count = data.getClipData().getItemCount();
-
                     List<Uri> uriList = new ArrayList<>(count);
                     List<String> paths = new ArrayList<>(count);
                     List<LocalDateTime> creates = new ArrayList<>(count);
@@ -559,7 +557,6 @@ public class Gallery extends AppCompatActivity {
                             String path = imageUri.toString();
                             LocalDateTime created = metadata.getCreated();
                             String region = metadata.getRegion();
-
                             uriList.add(imageUri);
                             paths.add(path);
                             creates.add(created);
@@ -572,7 +569,6 @@ public class Gallery extends AppCompatActivity {
                         pr.create(albumDTO.getAlbumId(), paths, creates, regions, new Callback<Boolean>() {
                             @Override
                             public void onSuccess(Boolean result) {
-                                progressDialog.dismiss(); // 로딩 화면 종료
                                 if (result) {
                                     handler.post(() -> {
                                         Intent galleryPage = new Intent(Gallery.this, Gallery.class);
@@ -598,6 +594,7 @@ public class Gallery extends AppCompatActivity {
                     /* 공유 */
                     else {
                         if (albumDTO != null) {
+                            progressDialog.show(); // 로딩 화면 보여주기
                             pc.uploadPhoto(albumDTO.getAlbumId(), uriList, creates, regions, new retrofit2.Callback<ResponseBody>() {
                                 @Override
                                 public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -614,12 +611,14 @@ public class Gallery extends AppCompatActivity {
                                         startActivity(galleryPage);
                                     } else {
                                         /* Toast 메시지 */
+                                        progressDialog.dismiss(); // 로딩 화면 종료
                                     }
                                 }
 
                                 @Override
                                 public void onFailure(Call<ResponseBody> call, Throwable t) {
                                     /* Toast 메시지 */
+                                    progressDialog.dismiss(); // 로딩 화면 종료
                                 }
                             });
                         }
@@ -677,6 +676,7 @@ public class Gallery extends AppCompatActivity {
                     /* 공유 */
                     else {
                         if (albumDTO != null) {
+                            progressDialog.show(); // 로딩 화면 보여주기
                             pc.uploadPhoto(albumDTO.getAlbumId(), uriList, creates, regions, new retrofit2.Callback<ResponseBody>() {
                                 @Override
                                 public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
