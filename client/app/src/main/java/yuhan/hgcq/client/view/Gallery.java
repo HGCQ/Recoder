@@ -16,6 +16,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.provider.MediaStore;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -25,13 +26,13 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
+import androidx.core.util.Pair;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.RecyclerView;
@@ -41,11 +42,20 @@ import com.drew.metadata.Metadata;
 import com.drew.metadata.exif.GpsDirectory;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import com.google.android.material.datepicker.CalendarConstraints;
+import com.google.android.material.datepicker.DateValidatorPointForward;
+import com.google.android.material.datepicker.MaterialDatePicker;
+import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
+
+
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -70,7 +80,7 @@ import yuhan.hgcq.client.model.dto.team.TeamDTO;
 public class Gallery extends AppCompatActivity {
     /* View */
     TextView empty, albumListViewTop;
-    Button chat, move, photoPlus, photoTrash;
+    Button chat, move, photoPlus, photoTrash,calendar;
     RecyclerView photoListView, albumList;
     BottomNavigationView navi;
     Button moveOk;
@@ -158,6 +168,7 @@ public class Gallery extends AppCompatActivity {
         photoListView = findViewById(R.id.photoList);
         albumListView = findViewById(R.id.albumListView);
         navi = findViewById(R.id.bottom_navigation_view);
+        calendar=findViewById(R.id.calendar);
 
         /* 갤러리 */
         Intent gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
@@ -421,7 +432,40 @@ public class Gallery extends AppCompatActivity {
                 });
             }
         });
+        calendar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MaterialDatePicker.Builder<androidx.core.util.Pair<Long, Long>> builder = MaterialDatePicker.Builder.dateRangePicker();
 
+                // Setting title for picker
+                builder.setTitleText("Select Date Range");
+
+                // Optional: Restrict selectable dates to future dates
+                CalendarConstraints.Builder constraintsBuilder = new CalendarConstraints.Builder();
+                constraintsBuilder.setValidator(DateValidatorPointForward.now());
+
+                builder.setCalendarConstraints(constraintsBuilder.build());
+
+                final MaterialDatePicker<Pair<Long, Long>> datePicker = builder.build();
+
+                // Show the picker
+                datePicker.show(getSupportFragmentManager(), "DATE_PICKER");
+
+                // Handle positive button click
+                datePicker.addOnPositiveButtonClickListener(selection -> {
+                    // Handle date range selection
+                    Long startDate = selection.first;
+                    Long endDate = selection.second;
+
+                    // Format dates and display them
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+                    String start = sdf.format(new Date(startDate));
+                    String end = sdf.format(new Date(endDate));
+
+                    Log.d("DATE_RANGE", "Start Date: " + start + " End Date: " + end);
+                });
+            }
+        });
         /* 채팅 */
         chat.setOnClickListener(new View.OnClickListener() {
             @Override

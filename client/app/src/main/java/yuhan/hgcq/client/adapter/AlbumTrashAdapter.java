@@ -186,6 +186,10 @@ public class AlbumTrashAdapter extends RecyclerView.Adapter<AlbumTrashAdapter.Al
         return newList;
     }
 
+    public void removeAlbumsByIds(List<Long> albumIds) {
+        albumList.removeIf(album -> albumIds.contains(album.getAlbumId()));
+    }
+
     @Override
     public int getItemCount() {
         return albumList.size();

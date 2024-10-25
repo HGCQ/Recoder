@@ -1,5 +1,6 @@
 package yuhan.hgcq.client.view;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -205,6 +206,7 @@ public class GroupSetting extends AppCompatActivity {
                                     followingListView.setVisibility(View.INVISIBLE);
                                     followingListViewTop.setVisibility(View.INVISIBLE);
                                     save.setVisibility(View.INVISIBLE);
+                                    ((Activity) v.getContext()).recreate();
                                 });
                             } else {
                                 handler.post(() -> {
@@ -245,6 +247,7 @@ public class GroupSetting extends AppCompatActivity {
                                 followingListViewTop.setVisibility(View.VISIBLE);
                                 save.setVisibility(View.VISIBLE);
                                 followingList.setAdapter(fa);
+
                             });
                         } else {
                             /* Toast 메시지 */

@@ -54,7 +54,7 @@ dependencies {
     annotationProcessor ("com.github.bumptech.glide:compiler:4.15.1")
 
     /* Material */
-    implementation ("com.google.android.material:material:1.4.0")
+    implementation ("com.google.android.material:material:1.10.0")
 
     implementation(libs.appcompat)
     implementation(libs.material)
