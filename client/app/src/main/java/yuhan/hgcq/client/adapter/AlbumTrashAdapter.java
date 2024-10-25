@@ -152,7 +152,7 @@ public class AlbumTrashAdapter extends RecyclerView.Adapter<AlbumTrashAdapter.Al
 
                 @Override
                 public void onFailure(Call<List<PhotoDTO>> call, Throwable t) {
-                    handler.post(() -> { // UI 스레드에서 실행
+                    handler.post(() -> { // UI 스레드에서 실행!
                         holder.photo.setImageResource(R.drawable.basic2); // 기본 이미지 설정
                         Log.e("앨범 대표 사진", t.getMessage());
                     });
@@ -184,6 +184,10 @@ public class AlbumTrashAdapter extends RecyclerView.Adapter<AlbumTrashAdapter.Al
         }
 
         return newList;
+    }
+
+    public void removeAlbumsByIds(List<Long> albumIds) {
+        albumList.removeIf(album -> albumIds.contains(album.getAlbumId()));
     }
 
     @Override
