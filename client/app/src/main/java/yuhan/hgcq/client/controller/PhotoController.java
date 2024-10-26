@@ -1,21 +1,21 @@
 package yuhan.hgcq.client.controller;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.widget.Toast;
 
-import org.apache.commons.io.IOUtils;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.time.LocalDate;
+import java.io.ByteArrayOutputStream;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -57,13 +57,19 @@ public class PhotoController {
         List<MultipartBody.Part> fileParts = new ArrayList<>();
         for (Uri uri : photoUris) {
             try {
-                InputStream inputStream = context.getContentResolver().openInputStream(uri);
-                byte[] imageBytes = IOUtils.toByteArray(inputStream); // Apache commons-io 사용
-                RequestBody reqFile = RequestBody.create(MediaType.parse("image/*"), imageBytes);
-                MultipartBody.Part image = MultipartBody.Part.createFormData("files", getFileNameFromUri(uri), reqFile);
-                fileParts.add(image);
-            } catch (IOException e) {
-                e.printStackTrace();
+                Bitmap thumbNail = getThumbNail(uri);
+
+                if (thumbNail != null) {
+                    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                    thumbNail.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
+                    byte[] imageBytes = byteArrayOutputStream.toByteArray();
+
+                    RequestBody reqFile = RequestBody.create(MediaType.parse("image/*"), imageBytes);
+                    MultipartBody.Part image = MultipartBody.Part.createFormData("files", getFileNameFromUri(uri), reqFile);
+                    fileParts.add(image);
+                }
+            } catch (Exception e) {
+                Log.e("Upload Error", Objects.requireNonNull(e.getMessage()));
             }
         }
 
@@ -84,10 +90,6 @@ public class PhotoController {
             );
             regionParts.add(regionPart);
         }
-
-        Log.i("fileParts size : ", String.valueOf(fileParts.size()));
-        Log.i("createParts size : ", String.valueOf(createParts.size()));
-        Log.i("regionParts size : ", String.valueOf(regionParts.size()));
 
         Call<ResponseBody> call = photoService.uploadPhoto(albumIdPart, fileParts, createParts, regionParts);
         call.enqueue(callback);
@@ -112,6 +114,11 @@ public class PhotoController {
      */
     public void cancelDeletePhoto(DeleteCancelPhotoForm form, Callback<ResponseBody> callback) {
         Call<ResponseBody> call = photoService.cancelDeletePhoto(form);
+        call.enqueue(callback);
+    }
+
+    public void removePhoto(DeleteCancelPhotoForm form, Callback<ResponseBody> callback) {
+        Call<ResponseBody> call = photoService.removePhoto(form);
         call.enqueue(callback);
     }
 
@@ -143,13 +150,19 @@ public class PhotoController {
         List<MultipartBody.Part> fileParts = new ArrayList<>();
         for (Uri uri : photoUris) {
             try {
-                InputStream inputStream = context.getContentResolver().openInputStream(uri);
-                byte[] imageBytes = IOUtils.toByteArray(inputStream); // Apache commons-io 사용
-                RequestBody reqFile = RequestBody.create(MediaType.parse("image/*"), imageBytes);
-                MultipartBody.Part image = MultipartBody.Part.createFormData("files", getFileNameFromUri(uri), reqFile);
-                fileParts.add(image);
-            } catch (IOException e) {
-                e.printStackTrace();
+                Bitmap thumbNail = getThumbNail(uri);
+
+                if (thumbNail != null) {
+                    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                    thumbNail.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
+                    byte[] imageBytes = byteArrayOutputStream.toByteArray();
+
+                    RequestBody reqFile = RequestBody.create(MediaType.parse("image/*"), imageBytes);
+                    MultipartBody.Part image = MultipartBody.Part.createFormData("files", getFileNameFromUri(uri), reqFile);
+                    fileParts.add(image);
+                }
+            } catch (Exception e) {
+                Log.e("Upload Error", Objects.requireNonNull(e.getMessage()));
             }
         }
 
@@ -217,5 +230,30 @@ public class PhotoController {
             return fileName;
         }
         return "unknown_file_name";
+    }
+
+    private Bitmap getThumbNail(Uri uri) {
+        String[] filePathColumn = {MediaStore.Images.Media._ID, MediaStore.Images.Media.DATA, MediaStore.Images.Media.TITLE/*, MediaStore.Images.Media.ORIENTATION*/};
+
+        ContentResolver cor = context.getContentResolver();
+        Cursor cursor = cor.query(uri, filePathColumn, null, null, null);
+
+        Bitmap thumbnail = null;
+        if(cursor != null) {
+            cursor.moveToFirst();
+            int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+            long ImageId = cursor.getLong(columnIndex);
+            if(ImageId != 0) {
+                BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+                thumbnail = MediaStore.Images.Thumbnails.getThumbnail(
+                        context.getContentResolver(), ImageId,
+                        MediaStore.Images.Thumbnails.MINI_KIND,
+                        bmOptions);
+            } else {
+                Toast.makeText(context, "불러올수 없는 이미지 입니다.", Toast.LENGTH_LONG).show();
+            }
+            cursor.close();
+        }
+        return thumbnail;
     }
 }

@@ -3,12 +3,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
-    android:background="#ffffff"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".view.AlbumMain">
 
-  <!--<FrameLayout
+  <FrameLayout
       android:id="@+id/main_container"
       android:layout_width="match_parent"
       android:layout_height="0dp"
@@ -19,43 +18,46 @@
       app:layout_constraintTop_toTopOf="parent"
       app:layout_constraintVertical_bias="0.0" >
   </FrameLayout>
--->
 
-  <LinearLayout
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:background="#ffffff"
-      tools:ignore="Orientation"
-      tools:layout_editor_absoluteX="0dp"
-      tools:layout_editor_absoluteY="0dp">
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/albumList"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="470dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="170dp"
-        android:background="#ffffff"
-        android:gravity="center"
-        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-        app:spanCount="2" />
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
 
-    <ImageButton
-        android:id="@+id/albumplus"
-        android:layout_width="50dp"
-        android:layout_height="45dp"
-        android:layout_marginStart="-230dp"
-        android:layout_marginTop="545dp"
-        android:background="#00000000"
-        android:scaleType="fitCenter"
-        android:src="@drawable/plusicon"
-        android:elevation="10dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.501"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+      <androidx.recyclerview.widget.RecyclerView
+          android:id="@+id/albumList"
+          android:layout_width="match_parent"
+          android:layout_height="452dp"
+          android:layout_marginTop="170dp"
+          android:clipToPadding="false"
+          android:gravity="center"
+          android:padding="5dp"
+          app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+          app:spanCount="2" />
 
-  </LinearLayout>
+      <ImageButton
+          android:id="@+id/albumplus"
+          android:layout_width="50dp"
+          android:layout_height="50dp"
+          android:layout_marginStart="-50dp"
+          android:layout_marginTop="108dp"
+          android:background="#00000000"
+          android:elevation="10dp"
+          android:scaleType="fitCenter"
+          android:src="@drawable/plusicon" />
+
+      <android.widget.Button
+          android:id="@+id/auto"
+          android:layout_width="40dp"
+          android:layout_height="35dp"
+          android:layout_marginStart="-327dp"
+          android:layout_marginTop="115dp"
+          android:background="@drawable/photoplus"
+          android:elevation="10dp"
+          android:fontFamily="@font/ibm_regular"
+          android:scaleType="fitCenter" />
+
+    </LinearLayout>
 
   <View
       android:layout_width="417dp"
@@ -82,7 +84,7 @@
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintTop_toTopOf="parent" />
 
-  <EditText
+  <android.widget.EditText
       android:id="@+id/searchText"
       android:hint="앨범 이름, 장소..."
       android:gravity="center_vertical"
@@ -101,54 +103,25 @@
       app:layout_constraintTop_toTopOf="parent" />
 
   <android.widget.Button
-      android:id="@+id/auto"
-      android:layout_width="170dp"
-      android:layout_height="32dp"
-      android:layout_marginTop="120dp"
-      android:background="@drawable/edittext"
-      android:drawableLeft="@drawable/sizephotoplus"
-      android:fontFamily="@font/ibm_regular"
-      android:scaleType="fitCenter"
-      android:padding="2dp"
-      android:text=" 자동 정렬"
-      android:textSize="13sp"
-      android:gravity="center_vertical"
-      android:elevation="10dp"
-      android:textStyle="bold"
-      app:layout_constraintEnd_toEndOf="parent"
-      app:layout_constraintHorizontal_bias="0.88"
-      app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toTopOf="parent" />
-
-  <android.widget.Button
       android:id="@+id/albumTrash"
-      android:layout_width="170dp"
-      android:layout_height="32dp"
-      android:layout_marginTop="120dp"
-      android:background="@drawable/edittext"
-      android:drawableLeft="@drawable/sizetrash"
+      android:layout_width="40dp"
+      android:layout_height="35dp"
+      android:layout_marginTop="115dp"
+      android:background="@drawable/trash"
       android:scaleType="fitCenter"
-      android:padding="2dp"
-      android:text="앨범 휴지통"
-      android:fontFamily="@font/ibm_regular"
-      android:textSize="13sp"
       android:elevation="10dp"
-      android:textStyle="bold"
-      android:gravity="center_vertical"
       app:layout_constraintEnd_toEndOf="parent"
-      app:layout_constraintHorizontal_bias="0.085"
+      app:layout_constraintHorizontal_bias="0.042"
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintTop_toTopOf="parent" />
 
   <com.google.android.material.bottomnavigation.BottomNavigationView
       android:id="@+id/bottom_navigation_view"
-      android:layout_width="410dp"
-      android:layout_height="85dp"
+      android:layout_width="match_parent"
+      android:layout_height="100dp"
+      app:itemIconSize="20dp"
       app:itemTextColor="@color/black"
-      app:labelVisibilityMode="labeled"
+      app:labelVisibilityMode="unlabeled"
       app:layout_constraintBottom_toBottomOf="parent"
-      app:layout_constraintEnd_toEndOf="parent"
-      app:layout_constraintHorizontal_bias="0.1"
-      app:layout_constraintStart_toStartOf="parent"
       app:menu="@menu/menu_bottom_nav" />
 </androidx.constraintlayout.widget.ConstraintLayout>

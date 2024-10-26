@@ -21,6 +21,7 @@
         android:theme="@style/Theme.Material3.DayNight"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
+        <meta-data android:name="android.max_aspect" android:value="2.1"/>
         <activity
             android:name=".view.Modify"
             android:exported="false" />
@@ -64,10 +65,10 @@
         <activity
             android:name=".view.Login"
             android:exported="false"
-            android:windowSoftInputMode="adjustPan">
-        </activity>
+            android:windowSoftInputMode="adjustPan"/>
         <activity
             android:name=".view.Photo"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
             android:exported="false" />
         <activity
             android:name=".view.Join"
@@ -75,15 +76,11 @@
         <activity
             android:name=".view.AlbumMain"
             android:exported="false"
-            android:windowSoftInputMode="adjustPan">
-            />
-        </activity>
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".view.GroupMain"
             android:exported="false"
-            android:windowSoftInputMode="adjustPan">
-            />
-        </activity>
+            android:windowSoftInputMode="adjustPan"/>
         <activity
             android:name=".view.Loading"
             android:exported="true"

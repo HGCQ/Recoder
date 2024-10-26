@@ -5,7 +5,9 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.graphics.Rect;
+import android.graphics.drawable.ColorDrawable;
 import android.location.Address;
 import android.location.Geocoder;
 import android.net.Uri;
@@ -22,6 +24,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -57,6 +60,7 @@ import yuhan.hgcq.client.adapter.AlbumAdapter;
 import yuhan.hgcq.client.adapter.GalleryAdapter;
 import yuhan.hgcq.client.controller.AlbumController;
 import yuhan.hgcq.client.controller.PhotoController;
+import yuhan.hgcq.client.localDatabase.Repository.AlbumRepository;
 import yuhan.hgcq.client.localDatabase.Repository.PhotoRepository;
 import yuhan.hgcq.client.localDatabase.callback.Callback;
 import yuhan.hgcq.client.model.dto.album.AlbumDTO;
@@ -67,11 +71,12 @@ import yuhan.hgcq.client.model.dto.team.TeamDTO;
 
 public class Gallery extends AppCompatActivity {
     /* View */
-    TextView empty, date;
+    TextView empty, albumListViewTop;
     Button chat, move, photoPlus, photoTrash;
-    RecyclerView photoListView, albumListView;
+    RecyclerView photoListView, albumList;
     BottomNavigationView navi;
     Button moveOk;
+    ImageView albumListView;
 
     /* Adapter */
     GalleryAdapter ga;
@@ -89,6 +94,7 @@ public class Gallery extends AppCompatActivity {
 
     /* Room DB */
     PhotoRepository pr;
+    AlbumRepository ar;
 
     /* 메인 스레드 */
     Handler handler = new Handler(Looper.getMainLooper());
@@ -141,16 +147,18 @@ public class Gallery extends AppCompatActivity {
         ac = new AlbumController(this);
 
         pr = new PhotoRepository(this);
+        ar = new AlbumRepository(this);
 
+        albumList = findViewById(R.id.albumList);
+        albumListViewTop = findViewById(R.id.albumListViewTop);
         empty = findViewById(R.id.empty);
-        date = findViewById(R.id.date);
         chat = findViewById(R.id.chat);
         move = findViewById(R.id.move);
         photoPlus = findViewById(R.id.photoPlus);
         photoTrash = findViewById(R.id.photoTrash);
         moveOk = findViewById(R.id.moveOk);
         photoListView = findViewById(R.id.photoList);
-        albumListView = findViewById(R.id.albumList);
+        albumListView = findViewById(R.id.albumListView);
         navi = findViewById(R.id.bottom_navigation_view);
 
         /* 갤러리 */
@@ -264,7 +272,76 @@ public class Gallery extends AppCompatActivity {
         move.setOnClickListener(v -> {
             /* 개인 */
             if (isPrivate) {
+                ga.enableSelectionMode();
+                moveOk.setVisibility(View.VISIBLE);
 
+                moveOk.setOnClickListener(v1 -> {
+                    List<PhotoDTO> selectedItems = ga.getSelectedPhotos();
+                    ar.searchMove(albumDTO.getAlbumId(), new Callback<List<AlbumDTO>>() {
+                        @Override
+                        public void onSuccess(List<AlbumDTO> result) {
+                            if (result != null) {
+                                aa = new AlbumAdapter(result, Gallery.this, isPrivate);
+                                aa.setPhoto();
+                                handler.post(() -> {
+                                    albumListView.setVisibility(View.VISIBLE);
+                                    albumList.setVisibility(View.VISIBLE);
+                                    albumListViewTop.setVisibility(View.VISIBLE);
+                                    albumList.setAdapter(aa);
+                                    aa.notifyDataSetChanged(); // 데이터 변경 알림
+                                });
+
+                                aa.setOnItemClickListener(new AlbumAdapter.OnItemClickListener() {
+                                    @Override
+                                    public void onItemClick(View view, int position) {
+                                        onClick_setting_costume_save("이동하시겠습니까?", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                AlbumDTO albumDTO1 = result.get(position);
+                                                MovePhotoForm form = new MovePhotoForm(albumDTO1.getAlbumId(), selectedItems);
+                                                pr.move(form, new Callback<Boolean>() {
+                                                    @Override
+                                                    public void onSuccess(Boolean result) {
+                                                        if (result != null) {
+                                                            Intent galleryPage = new Intent(Gallery.this, Gallery.class);
+                                                            galleryPage.putExtra("isPrivate", isPrivate);
+                                                            galleryPage.putExtra("loginMember", loginMember);
+                                                            galleryPage.putExtra("albumDTO", albumDTO);
+                                                            handler.post(() -> {
+                                                                Toast.makeText(Gallery.this, "앨범 이동 했습니다.", Toast.LENGTH_SHORT).show();
+                                                            });
+                                                            startActivity(galleryPage);
+                                                        } else {
+                                                            /* Toast 메시지 */
+                                                        }
+                                                    }
+
+                                                    @Override
+                                                    public void onError(Exception e) {
+
+                                                    }
+                                                });
+
+                                            }
+                                        }, new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                Toast.makeText(Gallery.this, "취소했습니다.", Toast.LENGTH_SHORT).show();
+                                            }
+                                        });
+                                    }
+                                });
+                            } else {
+                                /* Toast 메시지 */
+                            }
+                        }
+
+                        @Override
+                        public void onError(Exception e) {
+
+                        }
+                    });
+                });
             }
             /* 공유 */
             else {
@@ -275,15 +352,19 @@ public class Gallery extends AppCompatActivity {
                     if (teamDTO != null) {
                         Long teamId = teamDTO.getTeamId();
                         List<PhotoDTO> selectedItems = ga.getSelectedPhotos();
-                        ac.albumList(teamId, new retrofit2.Callback<List<AlbumDTO>>() {
+                        Long albumId = albumDTO.getAlbumId();
+                        ac.moveAlbumList(teamId, albumId, new retrofit2.Callback<List<AlbumDTO>>() {
                             @Override
                             public void onResponse(Call<List<AlbumDTO>> call, Response<List<AlbumDTO>> response) {
                                 if (response.isSuccessful()) {
-                                    List<AlbumDTO> albumList = response.body();
-                                    aa = new AlbumAdapter(albumList, Gallery.this, isPrivate);
+                                    List<AlbumDTO> albumList1 = response.body();
+                                    aa = new AlbumAdapter(albumList1, Gallery.this, isPrivate);
+                                    aa.setPhoto();
                                     handler.post(() -> {
                                         albumListView.setVisibility(View.VISIBLE);
-                                        albumListView.setAdapter(aa);
+                                        albumList.setVisibility(View.VISIBLE);
+                                        albumListViewTop.setVisibility(View.VISIBLE);
+                                        albumList.setAdapter(aa);
                                         aa.notifyDataSetChanged(); // 데이터 변경 알림
                                     });
 
@@ -293,8 +374,8 @@ public class Gallery extends AppCompatActivity {
                                             onClick_setting_costume_save("이동하시겠습니까?", new DialogInterface.OnClickListener() {
                                                 @Override
                                                 public void onClick(DialogInterface dialog, int which) {
-                                                    AlbumDTO albumDTO = albumList.get(position);
-                                                    MovePhotoForm form = new MovePhotoForm(albumDTO.getAlbumId(), selectedItems);
+                                                    AlbumDTO albumDTO1 = albumList1.get(position);
+                                                    MovePhotoForm form = new MovePhotoForm(albumDTO1.getAlbumId(), selectedItems);
                                                     pc.moveAlbumPhoto(form, new retrofit2.Callback<ResponseBody>() {
                                                         @Override
                                                         public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -408,6 +489,12 @@ public class Gallery extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
+        // ProgressDialog 선언
+        ProgressDialog progressDialog = new ProgressDialog(Gallery.this);
+        progressDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT)); // 배경을 투명하게
+        progressDialog.setCancelable(false); // 다이얼로그 외부 클릭으로 종료되지 않게
+        progressDialog.show(); // 로딩 화면 보여주기
+
         /* 갤러리 */
         if (requestCode == GALLERY && resultCode == RESULT_OK) {
             if (data != null) {
@@ -438,14 +525,10 @@ public class Gallery extends AppCompatActivity {
 
                     /* 개인 */
                     if (isPrivate) {
-                        /* 권한 요청 */
-                        for (Uri uri : uriList) {
-                            getContentResolver().takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                        }
-
-                        pr.create(albumDTO.getAlbumId(), paths, creates, new Callback<Boolean>() {
+                        pr.create(albumDTO.getAlbumId(), paths, creates, regions, new Callback<Boolean>() {
                             @Override
                             public void onSuccess(Boolean result) {
+                                progressDialog.dismiss(); // 로딩 화면 종료
                                 if (result) {
                                     handler.post(() -> {
                                         Intent galleryPage = new Intent(Gallery.this, Gallery.class);
@@ -463,6 +546,7 @@ public class Gallery extends AppCompatActivity {
 
                             @Override
                             public void onError(Exception e) {
+                                progressDialog.dismiss(); // 로딩 화면 종료
                                 /* Toast 메시지 */
                             }
                         });
@@ -473,6 +557,7 @@ public class Gallery extends AppCompatActivity {
                             pc.uploadPhoto(albumDTO.getAlbumId(), uriList, creates, regions, new retrofit2.Callback<ResponseBody>() {
                                 @Override
                                 public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                                    progressDialog.dismiss(); // 로딩 화면 종료
                                     if (response.isSuccessful()) {
                                         handler.post(() -> {
                                             Toast.makeText(Gallery.this, "사진이 저장되었습니다.", Toast.LENGTH_SHORT).show();
@@ -519,12 +604,10 @@ public class Gallery extends AppCompatActivity {
                     }
 
                     if (isPrivate) {
-                        /* 권한 요청 */
-                        getContentResolver().takePersistableUriPermission(imageUri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
-
-                        pr.create(albumDTO.getAlbumId(), paths, creates, new Callback<Boolean>() {
+                        pr.create(albumDTO.getAlbumId(), paths, creates, regions, new Callback<Boolean>() {
                             @Override
                             public void onSuccess(Boolean result) {
+                                progressDialog.dismiss(); // 로딩 화면 종료
                                 if (result) {
                                     handler.post(() -> {
                                         Toast.makeText(Gallery.this, "사진이 저장되었습니다.", Toast.LENGTH_SHORT).show();
@@ -536,6 +619,7 @@ public class Gallery extends AppCompatActivity {
                                     galleryPage.putExtra("albumDTO", albumDTO);
                                     startActivity(galleryPage);
                                 } else {
+                                    progressDialog.dismiss(); // 로딩 화면 종료
                                     /* Toast 메시지 */
                                 }
                             }
@@ -552,6 +636,7 @@ public class Gallery extends AppCompatActivity {
                             pc.uploadPhoto(albumDTO.getAlbumId(), uriList, creates, regions, new retrofit2.Callback<ResponseBody>() {
                                 @Override
                                 public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                                    progressDialog.dismiss(); // 로딩 화면 종료
                                     if (response.isSuccessful()) {
                                         handler.post(() -> {
                                             Toast.makeText(Gallery.this, "사진이 저장되었습니다.", Toast.LENGTH_SHORT).show();
@@ -679,7 +764,7 @@ public class Gallery extends AppCompatActivity {
 
         return null;
     }
-    
+
     /* Confirm 창 */
     public void onClick_setting_costume_save(String message,
                                              DialogInterface.OnClickListener positive,
@@ -716,6 +801,8 @@ public class Gallery extends AppCompatActivity {
                     handler.post(() -> {
                         albumListView.setVisibility(View.INVISIBLE);
                         moveOk.setVisibility(View.INVISIBLE);
+                        albumList.setVisibility(View.INVISIBLE);
+                        albumListViewTop.setVisibility(View.INVISIBLE);
                     });
                 }
             }

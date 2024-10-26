@@ -7,6 +7,7 @@ import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -213,13 +214,15 @@ public class AlbumTrash extends AppCompatActivity {
                                     });
                                     startActivity(albumTrashPage);
                                 } else {
-                                    /* Toast 메시지 */
+                                    Toast.makeText(AlbumTrash.this, "복구 실패", Toast.LENGTH_SHORT).show();
                                 }
                             }
 
                             @Override
                             public void onError(Exception e) {
-                                /* Toast 메시지 */
+                                Log.e("recover Error", "Failed Recover: "+e );
+                                Log.d("AlbumSelection", "Selected album IDs: " + selectedItems);
+
                             }
                         });
                     }

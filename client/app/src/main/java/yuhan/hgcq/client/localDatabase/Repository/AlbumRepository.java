@@ -32,6 +32,9 @@ public class AlbumRepository {
     public void create(Album album, Callback<Boolean> callback) {
         executor.execute(() -> {
             try {
+                if (dao.findAlbumNameList().contains(album.getName())) {
+                    throw new IllegalArgumentException("Already name exist");
+                }
                 dao.save(album);
                 callback.onSuccess(Boolean.TRUE);
             } catch (Exception e) {
@@ -72,6 +75,23 @@ public class AlbumRepository {
         });
     }
 
+    @Transaction
+    public void remove(List<Long> albumIds, Callback<Boolean> callback) {
+        executor.execute(() -> {
+            try {
+                for (Long albumId : albumIds) {
+                    Album fa = dao.findById(albumId);
+                    if (fa.getDeleted()) {
+                        dao.delete(fa);
+                    }
+                }
+                callback.onSuccess(Boolean.TRUE);
+            } catch (Exception e) {
+                callback.onError(e);
+            }
+        });
+    }
+
     //찾기
     public void search(Long id, Callback<AlbumDTO> callback) {
         executor.execute(() -> {
@@ -87,10 +107,9 @@ public class AlbumRepository {
     }
 
     //이름으로 찾기
-    public void searchByName(String name, Callback<List<AlbumDTO>> callback){
+    public void searchByName(String name, Callback<List<AlbumDTO>> callback) {
         executor.execute(() -> {
             try {
-
                 List<Album> albumList = dao.findByName(name);
                 List<AlbumDTO> dtoList = new ArrayList<>();
                 if (albumList == null) {
@@ -129,11 +148,34 @@ public class AlbumRepository {
         });
     }
 
+    public void searchMove(Long albumId, Callback<List<AlbumDTO>> callback) {
+        executor.execute(() -> {
+            try {
+                List<Album> albumList = dao.findAll();
+                List<AlbumDTO> dtoList = new ArrayList<>();
+
+                for (Album album : albumList) {
+                    if (album.getAlbumId().equals(albumId)) {
+                        continue;
+                    }
+                    AlbumDTO dto = mapping(album);
+                    dtoList.add(dto);
+                }
+
+                callback.onSuccess(dtoList);
+            } catch (Exception e) {
+                callback.onError(e);
+            }
+        });
+    }
+
     //휴지통에서 찾기
     public void searchTrash(Callback<List<AlbumDTO>> callback) {
         executor.execute(() -> {
             try {
                 List<Album> albumList = dao.findByIsDeleted();
+                trash(albumList);
+                albumList = dao.findByIsDeleted();
                 List<AlbumDTO> dtoList = new ArrayList<>();
 
                 for (Album album : albumList) {
@@ -168,8 +210,6 @@ public class AlbumRepository {
         AlbumDTO dto = new AlbumDTO();
         dto.setAlbumId(album.getAlbumId());
         dto.setName(album.getName());
-        dto.setStartDate(album.getStartDate().toString());
-        dto.setEndDate(album.getEndDate().toString());
         return dto;
     }
 

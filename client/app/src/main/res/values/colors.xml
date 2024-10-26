@@ -5,7 +5,7 @@
     <color name="colorPrimary">#6f52e8</color>
     <color name="colorPrimaryDark">#6f52e8</color>
     <color name="colorAccent">#6f52e8</color>
-
+    <color name="bg_progress">#ffd94d</color>
     <color name="colorRed">#ff0d00</color>
     <color name="colorPurple">#6f52e8</color>
 </resources>

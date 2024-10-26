@@ -13,7 +13,6 @@ import yuhan.hgcq.server.domain.Photo;
 import yuhan.hgcq.server.domain.Team;
 import yuhan.hgcq.server.dto.member.SignupForm;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,9 +22,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
-class PhotoServiceTest {
+class LocalPhotoServiceTest {
     @Autowired
-    PhotoService ps;
+    LocalPhotoService ps;
 
     @Autowired
     MemberService ms;

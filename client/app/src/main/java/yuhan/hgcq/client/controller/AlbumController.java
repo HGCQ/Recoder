@@ -56,6 +56,11 @@ public class AlbumController {
         call.enqueue(callback);
     }
 
+    public void removeAlbum(DeleteCancelAlbumForm form, Callback<ResponseBody> callback) {
+        Call<ResponseBody> call = albumService.removeAlbum(form);
+        call.enqueue(callback);
+    }
+
     /**
      * 앨범 수정
      *
@@ -75,6 +80,11 @@ public class AlbumController {
      */
     public void albumList(Long teamId, Callback<List<AlbumDTO>> callback) {
         Call<List<AlbumDTO>> call = albumService.albumList(teamId);
+        call.enqueue(callback);
+    }
+
+    public void moveAlbumList(Long teamId, Long albumId, Callback<List<AlbumDTO>> callback) {
+        Call<List<AlbumDTO>> call = albumService.moveAlbumList(teamId, albumId);
         call.enqueue(callback);
     }
 
