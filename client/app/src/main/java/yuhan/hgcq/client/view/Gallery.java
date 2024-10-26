@@ -18,6 +18,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.provider.MediaStore;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -27,13 +28,13 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
+import androidx.core.util.Pair;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.RecyclerView;
@@ -43,11 +44,20 @@ import com.drew.metadata.Metadata;
 import com.drew.metadata.exif.GpsDirectory;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import com.google.android.material.datepicker.CalendarConstraints;
+import com.google.android.material.datepicker.DateValidatorPointForward;
+import com.google.android.material.datepicker.MaterialDatePicker;
+import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
+
+
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -72,7 +82,7 @@ import yuhan.hgcq.client.model.dto.team.TeamDTO;
 public class Gallery extends AppCompatActivity {
     /* View */
     TextView empty, albumListViewTop;
-    Button chat, move, photoPlus, photoTrash;
+    Button chat, move, photoPlus, photoTrash,calendar;
     RecyclerView photoListView, albumList;
     BottomNavigationView navi;
     Button moveOk;
@@ -160,6 +170,7 @@ public class Gallery extends AppCompatActivity {
         photoListView = findViewById(R.id.photoList);
         albumListView = findViewById(R.id.albumListView);
         navi = findViewById(R.id.bottom_navigation_view);
+        calendar=findViewById(R.id.calendar);
 
         /* 갤러리 */
         Intent gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
@@ -343,7 +354,7 @@ public class Gallery extends AppCompatActivity {
                     });
                 });
             }
-            /* 공유 */
+            /* 공유 !*/
             else {
                 ga.enableSelectionMode();
                 moveOk.setVisibility(View.VISIBLE);
@@ -423,7 +434,40 @@ public class Gallery extends AppCompatActivity {
                 });
             }
         });
+        calendar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MaterialDatePicker.Builder<androidx.core.util.Pair<Long, Long>> builder = MaterialDatePicker.Builder.dateRangePicker();
 
+                // Setting title for picker
+                builder.setTitleText("Select Date Range");
+
+                // Optional: Restrict selectable dates to future dates
+                CalendarConstraints.Builder constraintsBuilder = new CalendarConstraints.Builder();
+                constraintsBuilder.setValidator(DateValidatorPointForward.now());
+
+                builder.setCalendarConstraints(constraintsBuilder.build());
+
+                final MaterialDatePicker<Pair<Long, Long>> datePicker = builder.build();
+
+                // Show the picker
+                datePicker.show(getSupportFragmentManager(), "DATE_PICKER");
+
+                // Handle positive button click
+                datePicker.addOnPositiveButtonClickListener(selection -> {
+                    // Handle date range selection
+                    Long startDate = selection.first;
+                    Long endDate = selection.second;
+
+                    // Format dates and display them
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+                    String start = sdf.format(new Date(startDate));
+                    String end = sdf.format(new Date(endDate));
+
+                    Log.d("DATE_RANGE", "Start Date: " + start + " End Date: " + end);
+                });
+            }
+        });
         /* 채팅 */
         chat.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -493,7 +537,6 @@ public class Gallery extends AppCompatActivity {
         ProgressDialog progressDialog = new ProgressDialog(Gallery.this);
         progressDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT)); // 배경을 투명하게
         progressDialog.setCancelable(false); // 다이얼로그 외부 클릭으로 종료되지 않게
-        progressDialog.show(); // 로딩 화면 보여주기
 
         /* 갤러리 */
         if (requestCode == GALLERY && resultCode == RESULT_OK) {
@@ -501,7 +544,6 @@ public class Gallery extends AppCompatActivity {
                 /* 사진 여러 장 */
                 if (data.getClipData() != null) {
                     int count = data.getClipData().getItemCount();
-
                     List<Uri> uriList = new ArrayList<>(count);
                     List<String> paths = new ArrayList<>(count);
                     List<LocalDateTime> creates = new ArrayList<>(count);
@@ -515,7 +557,6 @@ public class Gallery extends AppCompatActivity {
                             String path = imageUri.toString();
                             LocalDateTime created = metadata.getCreated();
                             String region = metadata.getRegion();
-
                             uriList.add(imageUri);
                             paths.add(path);
                             creates.add(created);
@@ -528,7 +569,6 @@ public class Gallery extends AppCompatActivity {
                         pr.create(albumDTO.getAlbumId(), paths, creates, regions, new Callback<Boolean>() {
                             @Override
                             public void onSuccess(Boolean result) {
-                                progressDialog.dismiss(); // 로딩 화면 종료
                                 if (result) {
                                     handler.post(() -> {
                                         Intent galleryPage = new Intent(Gallery.this, Gallery.class);
@@ -554,6 +594,7 @@ public class Gallery extends AppCompatActivity {
                     /* 공유 */
                     else {
                         if (albumDTO != null) {
+                            progressDialog.show(); // 로딩 화면 보여주기
                             pc.uploadPhoto(albumDTO.getAlbumId(), uriList, creates, regions, new retrofit2.Callback<ResponseBody>() {
                                 @Override
                                 public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -570,12 +611,14 @@ public class Gallery extends AppCompatActivity {
                                         startActivity(galleryPage);
                                     } else {
                                         /* Toast 메시지 */
+                                        progressDialog.dismiss(); // 로딩 화면 종료
                                     }
                                 }
 
                                 @Override
                                 public void onFailure(Call<ResponseBody> call, Throwable t) {
                                     /* Toast 메시지 */
+                                    progressDialog.dismiss(); // 로딩 화면 종료
                                 }
                             });
                         }
@@ -633,6 +676,7 @@ public class Gallery extends AppCompatActivity {
                     /* 공유 */
                     else {
                         if (albumDTO != null) {
+                            progressDialog.show(); // 로딩 화면 보여주기
                             pc.uploadPhoto(albumDTO.getAlbumId(), uriList, creates, regions, new retrofit2.Callback<ResponseBody>() {
                                 @Override
                                 public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {

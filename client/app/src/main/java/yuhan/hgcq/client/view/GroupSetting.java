@@ -1,5 +1,6 @@
 package yuhan.hgcq.client.view;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -180,7 +181,7 @@ public class GroupSetting extends AppCompatActivity {
             }
         });
 
-        /* 저장 */
+        /* 저장 !*/
         save.setOnClickListener(v -> {
             List<Long> selectedMemberIds = fa.getSelectedItems();
             if (selectedMemberIds.isEmpty()) {
@@ -205,6 +206,7 @@ public class GroupSetting extends AppCompatActivity {
                                     followingListView.setVisibility(View.INVISIBLE);
                                     followingListViewTop.setVisibility(View.INVISIBLE);
                                     save.setVisibility(View.INVISIBLE);
+                                    ((Activity) v.getContext()).recreate();
                                 });
                             } else {
                                 handler.post(() -> {
@@ -245,6 +247,7 @@ public class GroupSetting extends AppCompatActivity {
                                 followingListViewTop.setVisibility(View.VISIBLE);
                                 save.setVisibility(View.VISIBLE);
                                 followingList.setAdapter(fa);
+
                             });
                         } else {
                             /* Toast 메시지 */

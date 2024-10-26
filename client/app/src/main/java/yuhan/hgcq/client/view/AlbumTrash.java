@@ -12,6 +12,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -46,6 +47,7 @@ import yuhan.hgcq.client.model.dto.team.TeamDTO;
 public class AlbumTrash extends AppCompatActivity {
     /* View */
     AppCompatButton recover;
+    Button trash;
     TextView empty;
     RecyclerView albumTrashListView;
     BottomNavigationView navi;
@@ -112,6 +114,7 @@ public class AlbumTrash extends AppCompatActivity {
         albumTrashListView = findViewById(R.id.albumTrashList);
         navi = findViewById(R.id.bottom_navigation_view);
         recover = findViewById(R.id.recover);
+        trash=findViewById(R.id.trash);
 
         /* 관련된 페이지 */
         Intent groupMainPage = new Intent(this, GroupMain.class);
@@ -158,7 +161,7 @@ public class AlbumTrash extends AppCompatActivity {
                 }
             });
         }
-        /* 공유 */
+        /* 공유! */
         else {
             if (teamDTO != null) {
                 Long teamId = teamDTO.getTeamId();
@@ -192,6 +195,73 @@ public class AlbumTrash extends AppCompatActivity {
                 });
             }
         }
+        trash.setOnClickListener(v->{
+            List<Long> selectedItems = ata.getSelectedItems();
+            onClick_setting_costume_save("정말로 삭제하시겠습니까?", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    if(isPrivate){
+                        ar.remove(selectedItems, new Callback<Boolean>() {
+                            @Override
+                            public void onSuccess(Boolean result) {
+                                if (result != null) {
+                                    handler.post(() -> {
+                                        Toast.makeText(AlbumTrash.this, "삭제하였습니다.", Toast.LENGTH_SHORT).show();
+                                        ata.removeAlbumsByIds(selectedItems);
+
+                                        // Clear the selection state
+                                        selectedItems.clear();
+                                        // Notify adapter to refresh the UI
+                                        ata.notifyDataSetChanged();
+                                    });
+                                } else {
+                                    Toast.makeText(AlbumTrash.this, "삭제 실패", Toast.LENGTH_SHORT).show();
+                                }
+
+                            }
+
+                            @Override
+                            public void onError(Exception e) {
+
+                            }
+                        });
+                    }else{
+                        ac.removeAlbum(new DeleteCancelAlbumForm(selectedItems), new retrofit2.Callback<ResponseBody>() {
+                            @Override
+                            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+
+                                if (response.isSuccessful()) {
+                                    handler.post(() -> {
+                                        Toast.makeText(AlbumTrash.this,"삭제했습니다.", Toast.LENGTH_SHORT).show();
+                                        ata.removeAlbumsByIds(selectedItems);
+
+                                        // Clear the selection state
+                                        selectedItems.clear();
+                                        // Notify adapter to refresh the UI
+                                        ata.notifyDataSetChanged();
+                                    });
+                                } else {
+                                    handler.post(() -> {
+                                        Toast.makeText(AlbumTrash.this,"삭제 실패", Toast.LENGTH_SHORT).show();
+                                    });
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call<ResponseBody> call, Throwable t) {
+
+                            }
+                        });
+                    }
+                }
+
+            }, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    Toast.makeText(AlbumTrash.this, "취소했습니다.", Toast.LENGTH_SHORT).show();
+                }
+            });
+        });
 
         /* 복구 */
         recover.setOnClickListener(v -> {
