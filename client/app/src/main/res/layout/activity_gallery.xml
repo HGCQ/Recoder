@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#ffffff"
+    android:background="#e6f4f1"
     android:id="@+id/main">
 
     <View
@@ -119,6 +119,7 @@
             android:layout_height="520dp"
             android:layout_marginTop="117dp"
             android:gravity="center"
+            android:background="#e6f4f1"
             android:padding="5dp"
             android:clipToPadding="false"
             app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
@@ -211,7 +212,7 @@
         android:id="@+id/bottom_navigation_view"
         android:layout_width="match_parent"
         android:layout_height="100dp"
-        app:itemTextColor="@color/black"
+        app:itemIconTint="@color/black"
         app:labelVisibilityMode="unlabeled"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

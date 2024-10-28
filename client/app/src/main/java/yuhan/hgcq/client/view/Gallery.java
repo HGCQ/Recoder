@@ -31,6 +31,7 @@ import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
@@ -139,8 +140,13 @@ public class Gallery extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getSupportActionBar().setTitle("Recoder");
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        ActionBar actionBar = getSupportActionBar(); // actionBar 가져오기
+        if (actionBar != null) {
+            actionBar.setTitle("Recoder");
+            actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#c2dcff")));
+            actionBar.setDisplayHomeAsUpEnabled(true); // 뒤로가기 버튼 활성화
+        }
+
 
         EdgeToEdge.enable(this);
         /* Layout */

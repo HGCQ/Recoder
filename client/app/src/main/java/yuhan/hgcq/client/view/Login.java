@@ -2,7 +2,9 @@ package yuhan.hgcq.client.view;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.Rect;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.content.DialogInterface;
 import android.os.Handler;
@@ -17,6 +19,7 @@ import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
@@ -63,8 +66,13 @@ public class Login extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getSupportActionBar().setTitle("로그인");
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        ActionBar actionBar = getSupportActionBar(); // actionBar 가져오기
+        if (actionBar != null) {
+            actionBar.setTitle("로그인");
+            actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#c2dcff")));
+            actionBar.setDisplayHomeAsUpEnabled(true); // 뒤로가기 버튼 활성화
+        }
+
 
         EdgeToEdge.enable(this);
         /* Layout */

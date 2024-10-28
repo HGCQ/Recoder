@@ -5,6 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#e6f4f1"
     tools:context=".view.AlbumMain">
 
     <LinearLayout
@@ -15,6 +16,7 @@
             android:id="@+id/GroupList"
             android:layout_width="399dp"
             android:layout_height="515dp"
+            android:background="#e6f4f1"
             android:paddingLeft="5dp"
             android:layout_marginTop="150dp"
             android:layout_marginEnd="20dp"
@@ -38,15 +40,6 @@
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
-    <!-- <FrameLayout
-          android:id="@+id/main_container"
-          android:layout_width="match_parent"
-          android:layout_height="0dp"
-          app:layout_constraintBottom_toTopOf="@+id/bottom_navigation_view"
-          app:layout_constraintEnd_toEndOf="@+id/bottom_navigation_view"
-          app:layout_constraintStart_toStartOf="parent"
-          app:layout_constraintTop_toTopOf="parent"/>-->
 
     <EditText
         android:id="@+id/searchText"
