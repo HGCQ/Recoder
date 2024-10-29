@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#ffffff"
+    android:background="#e6f4f1"
     android:id="@+id/main">
 
     <LinearLayout
@@ -16,6 +16,7 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/albumTrashList"
             android:layout_width="match_parent"
+            android:background="#e6f4f1"
             android:layout_height="480dp"
             android:layout_marginTop="80dp"
             android:layout_marginStart="20dp"
