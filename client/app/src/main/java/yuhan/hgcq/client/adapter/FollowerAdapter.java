@@ -6,11 +6,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +23,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import yuhan.hgcq.client.R;
+import yuhan.hgcq.client.config.NetworkClient;
 import yuhan.hgcq.client.controller.FollowController;
 import yuhan.hgcq.client.model.dto.follow.FollowDTO;
 import yuhan.hgcq.client.model.dto.member.MemberDTO;
@@ -32,6 +36,7 @@ public class FollowerAdapter extends RecyclerView.Adapter<FollowerAdapter.Follow
     private List<String> followingNameList = new ArrayList<>();
     private OnItemClickListener listener;
     private Context context;
+    private String serverIp;
     private FollowController fc;
 
     public FollowerAdapter(Context context, List<MemberDTO> followerList, List<MemberDTO> followingList) {
@@ -39,6 +44,7 @@ public class FollowerAdapter extends RecyclerView.Adapter<FollowerAdapter.Follow
         this.fc = new FollowController(context);
         this.followerList = followerList;
         this.followingList = followingList;
+        this.serverIp = NetworkClient.getInstance(context).getServerIp();
 
         for (MemberDTO dto : followingList) {
             followingNameList.add(dto.getName());
@@ -57,10 +63,13 @@ public class FollowerAdapter extends RecyclerView.Adapter<FollowerAdapter.Follow
         public TextView name;
         public Button follow, unFollow;
 
+        public ImageView profile;
+
         public FollowerViewHolder(@NonNull View view, OnItemClickListener listener, int viewType) {
             super(view);
 
             name = view.findViewById(R.id.name);
+            profile = view.findViewById(R.id.profile);
             if (viewType == 1) {
                 unFollow = view.findViewById(R.id.unfollowButton);
             } else {
@@ -105,6 +114,11 @@ public class FollowerAdapter extends RecyclerView.Adapter<FollowerAdapter.Follow
         int viewType = getItemViewType(position);
 
         holder.name.setText(memberDTO.getName());
+        if (memberDTO.getImage() != null) {
+            Glide.with(context)
+                    .load(serverIp + memberDTO.getImage())
+                    .into(holder.profile);
+        }
         if (viewType == 1) {
             holder.unFollow.setOnClickListener(new View.OnClickListener() {
                 @Override

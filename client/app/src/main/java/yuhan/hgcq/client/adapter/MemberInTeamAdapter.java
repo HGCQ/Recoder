@@ -50,7 +50,6 @@ public class MemberInTeamAdapter extends RecyclerView.Adapter<MemberInTeamAdapte
         public ImageButton friendDelete, power;
 
 
-
         public MemberInTeamViewHolder(@NonNull View view) {
             super(view);
             name = view.findViewById(R.id.name);
@@ -70,7 +69,6 @@ public class MemberInTeamAdapter extends RecyclerView.Adapter<MemberInTeamAdapte
     @Override
     public void onBindViewHolder(@NonNull MemberInTeamViewHolder holder, int position) {
         MemberInTeamDTO dto = memberList.get(position);
-        MemberDTO memberDTO=new MemberDTO();
         holder.name.setText(dto.getName());
         holder.power.setVisibility(View.INVISIBLE);
         holder.friendDelete.setVisibility(View.INVISIBLE);
