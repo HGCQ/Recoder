@@ -444,7 +444,6 @@ public class Gallery extends AppCompatActivity {
 
                 // Optional: Restrict selectable dates to future dates
                 CalendarConstraints.Builder constraintsBuilder = new CalendarConstraints.Builder();
-                constraintsBuilder.setValidator(DateValidatorPointForward.now());
 
                 builder.setCalendarConstraints(constraintsBuilder.build());
 

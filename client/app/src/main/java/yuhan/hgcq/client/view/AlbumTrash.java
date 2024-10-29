@@ -114,7 +114,7 @@ public class AlbumTrash extends AppCompatActivity {
         albumTrashListView = findViewById(R.id.albumTrashList);
         navi = findViewById(R.id.bottom_navigation_view);
         recover = findViewById(R.id.recover);
-        trash=findViewById(R.id.trash);
+        trash=findViewById(R.id.remove);
 
         /* 관련된 페이지 */
         Intent groupMainPage = new Intent(this, GroupMain.class);
