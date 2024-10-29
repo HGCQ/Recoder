@@ -28,7 +28,7 @@
                 android:layout_gravity="center"
                 android:text="Recoder"
                 android:textColor="@color/black"
-                android:fontFamily="@font/continuous"
+                android:fontFamily="@font/hangle_b"
                 android:textSize="40sp"
                 android:textStyle="bold" />
 

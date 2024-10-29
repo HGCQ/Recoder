@@ -24,11 +24,17 @@ public interface AlbumService {
     @POST("/album/delete/cancel")
     Call<ResponseBody> deleteCancelAlbum(@Body DeleteCancelAlbumForm form);
 
+    @POST("/album/remove")
+    Call<ResponseBody> removeAlbum(@Body DeleteCancelAlbumForm form);
+
     @POST("/album/update")
     Call<ResponseBody> updateAlbum(@Body AlbumUpdateForm albumUpdateForm);
 
     @GET("/album/list/teamId")
     Call<List<AlbumDTO>> albumList(@Query("teamId") Long teamId);
+
+    @GET("/album/list/teamId/albumId")
+    Call<List<AlbumDTO>> moveAlbumList(@Query("teamId") Long teamId, @Query("albumId") Long albumId);
 
     @GET("/album/list/teamId/name")
     Call<List<AlbumDTO>> searchAlbumByName(@Query("teamId") Long teamId, @Query("name") String name);

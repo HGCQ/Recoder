@@ -657,7 +657,9 @@ public class TeamController {
                     if (findMember != null) {
                         try {
                             ts.uploadTeamImage(findMember, form);
-                            return ResponseEntity.status(HttpStatus.OK).body("Upload Team Success");
+                            Team ft = ts.searchOne(form.getTeamId());
+                            String path = ft.getImage();
+                            return ResponseEntity.status(HttpStatus.OK).body(path);
                         } catch (AccessException e) {
                             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
                         } catch (IOException e) {

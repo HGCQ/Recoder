@@ -2,6 +2,7 @@ package yuhan.hgcq.client.adapter;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
@@ -9,11 +10,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,10 +26,14 @@ import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Response;
 import yuhan.hgcq.client.R;
+import yuhan.hgcq.client.config.NetworkClient;
 import yuhan.hgcq.client.controller.AlbumController;
+import yuhan.hgcq.client.controller.PhotoController;
 import yuhan.hgcq.client.localDatabase.Repository.AlbumRepository;
+import yuhan.hgcq.client.localDatabase.Repository.PhotoRepository;
 import yuhan.hgcq.client.localDatabase.callback.Callback;
 import yuhan.hgcq.client.model.dto.album.AlbumDTO;
+import yuhan.hgcq.client.model.dto.photo.PhotoDTO;
 
 public class AlbumTrashAdapter extends RecyclerView.Adapter<AlbumTrashAdapter.AlbumTrashViewHolder> {
     private List<AlbumDTO> albumList;
@@ -33,11 +41,18 @@ public class AlbumTrashAdapter extends RecyclerView.Adapter<AlbumTrashAdapter.Al
     private OnItemClickListener listener;
     private Context context;
     private boolean isPrivate;
+    private PhotoRepository pr;
+    private PhotoController pc;
+    private Handler handler = new Handler(Looper.getMainLooper());
+    private String serverIp;
 
     public AlbumTrashAdapter(List<AlbumDTO> albumList, Context context, boolean isPrivate) {
         this.albumList = albumList;
         this.context = context;
         this.isPrivate = isPrivate;
+        this.pc = new PhotoController(context);
+        this.pr = new PhotoRepository(context);
+        this.serverIp = NetworkClient.getInstance(context).getServerIp();
     }
 
     public interface OnItemClickListener {
@@ -51,12 +66,14 @@ public class AlbumTrashAdapter extends RecyclerView.Adapter<AlbumTrashAdapter.Al
     public static class AlbumTrashViewHolder extends RecyclerView.ViewHolder {
         public TextView title;
         public ImageButton albumDelete;
+        public ImageView photo;
 
         public AlbumTrashViewHolder(@NonNull View view, OnItemClickListener listener) {
             super(view);
 
             title = view.findViewById(R.id.title);
             albumDelete = view.findViewById(R.id.albumdelete);
+            photo = view.findViewById(R.id.basicAlbumImage);
 
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -85,6 +102,64 @@ public class AlbumTrashAdapter extends RecyclerView.Adapter<AlbumTrashAdapter.Al
         holder.title.setText(albumDTO.getName());
         holder.albumDelete.setVisibility(View.INVISIBLE);
 
+        if (isPrivate) {
+            pr.searchByAlbum(albumDTO.getAlbumId(), new Callback<List<PhotoDTO>>() {
+                @Override
+                public void onSuccess(List<PhotoDTO> result) {
+                    handler.post(() -> { // UI 스레드에서 실행
+                        if (result != null && !result.isEmpty()) {
+                            int random = (int) (Math.random() * result.size());
+                            String path = result.get(random).getPath();
+                            Glide.with(context)
+                                    .load(Uri.parse(path))
+                                    .into(holder.photo);
+                        } else {
+                            holder.photo.setImageResource(R.drawable.basic2); // 기본 이미지 설정
+                        }
+                        Log.i("앨범 대표 사진", "Success");
+                    });
+                }
+
+                @Override
+                public void onError(Exception e) {
+                    handler.post(() -> { // UI 스레드에서 실행
+                        holder.photo.setImageResource(R.drawable.basic2); // 기본 이미지 설정
+                        Log.e("앨범 대표 사진", e.getMessage());
+                    });
+                }
+            });
+        } else {
+            pc.photoList(albumDTO.getAlbumId(), new retrofit2.Callback<List<PhotoDTO>>() {
+                @Override
+                public void onResponse(Call<List<PhotoDTO>> call, Response<List<PhotoDTO>> response) {
+                    handler.post(() -> { // UI 스레드에서 실행
+                        if (response.isSuccessful()) {
+                            List<PhotoDTO> photoDTO = response.body();
+                            if (photoDTO != null && !photoDTO.isEmpty()) {
+                                int random = (int) (Math.random() * photoDTO.size());
+                                Glide.with(context)
+                                        .load(serverIp + photoDTO.get(random).getPath())
+                                        .into(holder.photo);
+                            } else {
+                                holder.photo.setImageResource(R.drawable.basic2); // 기본 이미지 설정
+                            }
+                            Log.i("앨범 대표 사진", "Success");
+                        } else {
+                            holder.photo.setImageResource(R.drawable.basic2); // 기본 이미지 설정
+                        }
+                    });
+                }
+
+                @Override
+                public void onFailure(Call<List<PhotoDTO>> call, Throwable t) {
+                    handler.post(() -> { // UI 스레드에서 실행!
+                        holder.photo.setImageResource(R.drawable.basic2); // 기본 이미지 설정
+                        Log.e("앨범 대표 사진", t.getMessage());
+                    });
+                }
+            });
+        }
+
         if (selectedItems.contains(position)) {
             holder.itemView.setBackgroundColor(Color.LTGRAY);
         } else {
@@ -109,6 +184,10 @@ public class AlbumTrashAdapter extends RecyclerView.Adapter<AlbumTrashAdapter.Al
         }
 
         return newList;
+    }
+
+    public void removeAlbumsByIds(List<Long> albumIds) {
+        albumList.removeIf(album -> albumIds.contains(album.getAlbumId()));
     }
 
     @Override

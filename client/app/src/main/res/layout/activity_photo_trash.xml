@@ -19,6 +19,7 @@
             android:background="#00000000"
             android:layout_marginTop="80dp"
             android:gravity="center"
+            android:clipToPadding="false"
             android:padding="5dp"
             android:layout_marginEnd="-2dp"
             app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
@@ -53,7 +54,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!--<FrameLayout
+    <FrameLayout
         android:id="@+id/main_container"
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -62,23 +63,31 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0" />-->
+        app:layout_constraintVertical_bias="0.0" />
+
+    <android.widget.Button
+        android:id="@+id/remove"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_marginTop="23dp"
+        android:background="@drawable/trash"
+        android:onClick="onClick_setting_costume_save"
+        android:scaleType="fitCenter"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.02"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.018" />
 
     <android.widget.Button
         android:id="@+id/recover"
-        android:layout_width="40dp"
+        android:layout_width="30dp"
         android:layout_height="30dp"
-        android:padding="2dp"
-        android:layout_marginTop="30dp"
-        android:background="@drawable/select"
-        android:textStyle="bold"
-        android:gravity="center_vertical"
-        android:fontFamily="@font/ibm_regular"
-        android:drawableTop="@drawable/sizerecover"
+        android:layout_marginTop="25dp"
+        android:background="@drawable/recover"
         android:onClick="onClick_setting_costume_save"
         android:scaleType="fitCenter"
-        android:text=" 복구"
-        android:textSize="13sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.98"
@@ -100,11 +109,10 @@
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation_view"
-        android:layout_width="410dp"
-        android:layout_height="85dp"
-        app:itemIconTint="#2196F3"
+        android:layout_width="match_parent"
+        android:layout_height="65dp"
         app:itemTextColor="@color/black"
-        app:labelVisibilityMode="labeled"
+        app:labelVisibilityMode="unlabeled"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"

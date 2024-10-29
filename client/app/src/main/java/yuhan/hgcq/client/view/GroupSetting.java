@@ -1,12 +1,18 @@
 package yuhan.hgcq.client.view;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Rect;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
+import android.provider.MediaStore;
+import android.provider.Settings;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -14,11 +20,13 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
@@ -26,6 +34,9 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+
+import java.io.IOException;
 import java.util.List;
 
 import okhttp3.ResponseBody;
@@ -45,11 +56,11 @@ import yuhan.hgcq.client.model.dto.team.TeamInviteForm;
 
 public class GroupSetting extends AppCompatActivity {
     /* View */
-    TextView createGroupText;
+    TextView createGroupText, followingListViewTop;
     ImageButton friendAdd;
-    Button groupLeave, save;
-    RecyclerView memberListView;
-    RecyclerView memberSettingView;
+    Button groupLeave, save, groupImage;
+    RecyclerView groupSetList, followingList;
+    ImageView followingListView;
 
     /* Adapter */
     MemberInTeamAdapter mita;
@@ -66,6 +77,10 @@ public class GroupSetting extends AppCompatActivity {
 
     /* 메인 스레드 */
     Handler handler = new Handler(Looper.getMainLooper());
+
+    /* Intent 요청 코드 */
+    private static final int GALLERY = 1000;
+    private static final int REQUEST_PERMISSION = 1111;
 
     /* 뒤로 가기 */
     @Override
@@ -98,16 +113,25 @@ public class GroupSetting extends AppCompatActivity {
             return insets;
         });
 
+
         /* 초기화 */
         tc = new TeamController(this);
         fc = new FollowController(this);
 
+        groupSetList = findViewById(R.id.groupSetList);
+        followingListView = findViewById(R.id.followingListView);
+        followingList = findViewById(R.id.followingList);
+        groupImage = findViewById(R.id.groupImage);
+        followingListViewTop = findViewById(R.id.followingListViewTop);
         createGroupText = findViewById(R.id.createGroupText);
         friendAdd = findViewById(R.id.friendAdd);
         groupLeave = findViewById(R.id.groupLeave);
-        memberListView = findViewById(R.id.groupSetList);
-        memberSettingView = findViewById(R.id.followingList);
         save = findViewById(R.id.save);
+
+        /* 갤러리 */
+        Intent gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        gallery.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
+        gallery.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
         /* 관련된 페이지 */
         Intent groupMainPage = new Intent(this, GroupMain.class);
@@ -128,7 +152,7 @@ public class GroupSetting extends AppCompatActivity {
                     mita = new MemberInTeamAdapter(memberList, GroupSetting.this, teamDTO, loginMember);
 
                     handler.post(() -> {
-                        memberListView.setAdapter(mita);
+                        groupSetList.setAdapter(mita);
                     });
                 } else {
                     /* Toast 메시지 */
@@ -141,7 +165,23 @@ public class GroupSetting extends AppCompatActivity {
             }
         });
 
-        /* 저장 */
+        /* 그룹 대표 이미지 설정 */
+        groupImage.setOnClickListener(v -> {
+            /* Android 11 이상 */
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                if (Environment.isExternalStorageManager()) {
+                    startActivityForResult(Intent.createChooser(gallery, "사진 선택"), GALLERY);
+                } else {
+                    Toast.makeText(GroupSetting.this, "권한이 없습니다.", Toast.LENGTH_SHORT).show();
+                    Intent permission = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
+                    permission.addCategory("android.intent.category.DEFAULT");
+                    permission.setData(Uri.parse(String.format("package:%s", getApplicationContext().getPackageName())));
+                    startActivityForResult(permission, REQUEST_PERMISSION);
+                }
+            }
+        });
+
+        /* 저장 !*/
         save.setOnClickListener(v -> {
             List<Long> selectedMemberIds = fa.getSelectedItems();
             if (selectedMemberIds.isEmpty()) {
@@ -162,8 +202,11 @@ public class GroupSetting extends AppCompatActivity {
                             if (response.isSuccessful()) {
                                 handler.post(() -> {
                                     Toast.makeText(v.getContext(), "초대하였습니다.", Toast.LENGTH_SHORT).show();
-                                    memberSettingView.setVisibility(View.INVISIBLE);
+                                    followingList.setVisibility(View.INVISIBLE);
+                                    followingListView.setVisibility(View.INVISIBLE);
+                                    followingListViewTop.setVisibility(View.INVISIBLE);
                                     save.setVisibility(View.INVISIBLE);
+                                    ((Activity) v.getContext()).recreate();
                                 });
                             } else {
                                 handler.post(() -> {
@@ -199,9 +242,12 @@ public class GroupSetting extends AppCompatActivity {
                             List<MemberDTO> followList = response.body();
                             fa = new FollowAdapter(followList, GroupSetting.this, tc, teamDTO);
                             handler.post(() -> {
-                                memberSettingView.setVisibility(View.VISIBLE);
+                                followingList.setVisibility(View.VISIBLE);
+                                followingListView.setVisibility(View.VISIBLE);
+                                followingListViewTop.setVisibility(View.VISIBLE);
                                 save.setVisibility(View.VISIBLE);
-                                memberSettingView.setAdapter(fa);
+                                followingList.setAdapter(fa);
+
                             });
                         } else {
                             /* Toast 메시지 */
@@ -253,6 +299,40 @@ public class GroupSetting extends AppCompatActivity {
         });
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == GALLERY && resultCode == RESULT_OK) {
+            if (data != null) {
+                Uri uri = data.getData(); // 사용자가 선택한 이미지의 URI
+                // 서버에 이미지 업로드
+                tc.upload(teamDTO.getTeamId(), uri, new Callback<ResponseBody>() {
+                    @Override
+                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                        if (response.isSuccessful()) {
+                            handler.post(() -> {
+                                Toast.makeText(GroupSetting.this, "프로필 등록을 성공했습니다.", Toast.LENGTH_SHORT).show();
+                            });
+                        } else {
+                            handler.post(() -> {
+                                Toast.makeText(GroupSetting.this, "프로필 등록을 실패했습니다.", Toast.LENGTH_SHORT).show();
+                            });
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<ResponseBody> call, Throwable t) {
+                        handler.post(() -> {
+                            Toast.makeText(GroupSetting.this, "서버와 통신을 실패했습니다.", Toast.LENGTH_SHORT).show();
+                        });
+                    }
+                });
+            }
+        }
+    }
+
+
     /* Confirm 창 */
     public void onClick_setting_costume_save(String message,
                                              DialogInterface.OnClickListener positive,
@@ -284,11 +364,13 @@ public class GroupSetting extends AppCompatActivity {
                 }
             } else {
                 Rect recyclerViewRect = new Rect();
-                memberSettingView.getGlobalVisibleRect(recyclerViewRect);
+                followingListView.getGlobalVisibleRect(recyclerViewRect);
 
                 if (!recyclerViewRect.contains((int) ev.getRawX(), (int) ev.getRawY())) {
                     handler.post(() -> {
-                        memberSettingView.setVisibility(View.INVISIBLE);
+                        followingList.setVisibility(View.INVISIBLE);
+                        followingListView.setVisibility(View.INVISIBLE);
+                        followingListViewTop.setVisibility(View.INVISIBLE);
                         save.setVisibility(View.INVISIBLE);
                     });
                 }
