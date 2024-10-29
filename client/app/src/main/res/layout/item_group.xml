@@ -57,5 +57,4 @@
             android:textSize="15sp" />
 
     </LinearLayout>
-
 </androidx.constraintlayout.widget.ConstraintLayout>

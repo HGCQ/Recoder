@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#ffffff"
+    android:background="#e6f4f1"
     android:id="@+id/main">
 
 <LinearLayout
@@ -14,6 +14,7 @@
         android:id="@+id/likeList"
         android:layout_width="match_parent"
         android:layout_height="520dp"
+        android:background="#e6f4f1"
         android:layout_marginTop="100dp"
         android:gravity="center"
         android:padding="17dp"
