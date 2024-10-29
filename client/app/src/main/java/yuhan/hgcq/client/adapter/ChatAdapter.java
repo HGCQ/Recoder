@@ -1,8 +1,11 @@
 package yuhan.hgcq.client.adapter;
 
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -35,16 +38,16 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
     public static class ChatViewHolder extends RecyclerView.ViewHolder {
         public TextView name;
         public TextView message;
+        public ImageView profile;
+        public LinearLayout container;
 
         public ChatViewHolder(@NonNull View view, OnItemClickListener listener, int viewType) {
             super(view);
 
             message = view.findViewById(R.id.chatting);
-            if (viewType == 1) {
-
-            } else {
-                name = view.findViewById(R.id.name);
-            }
+            name = view.findViewById(R.id.name);
+            profile = view.findViewById(R.id.basicProfile);
+            container = view.findViewById(R.id.container);
 
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -76,11 +79,8 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
     public ChatViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View chatView;
         /* 자기 채팅 */
-        if (viewType == 1) {
-            chatView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_my_chat, parent, false);
-        } else {
-            chatView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_chat, parent, false);
-        }
+        chatView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_chat, parent, false);
+
         return new ChatAdapter.ChatViewHolder(chatView, listener, viewType);
     }
 
@@ -89,8 +89,26 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
         ChatDTO chatDTO = chatList.get(position);
         holder.message.setText(chatDTO.getMessage());
 
-        if(holder.getItemViewType() == 0) {
+        if (holder.getItemViewType() == 0) { // 상대의 채팅
             holder.name.setText(chatDTO.getWriterName());
+            holder.name.setVisibility(View.VISIBLE);
+
+
+            holder.profile.setVisibility(View.VISIBLE);
+
+            // 상대의 채팅은 왼쪽 정렬
+            holder.container.setGravity(Gravity.START); // 왼쪽 정렬
+            holder.message.setBackgroundResource(R.drawable.text);
+
+            holder.message.setTranslationX(-200);
+
+        } else { // 자신의 채팅
+            holder.name.setVisibility(View.GONE); // 이름 숨기기
+            holder.profile.setVisibility(View.GONE); // 프로필 숨기기
+
+            // 자신의 채팅은 오른쪽 정렬
+            holder.container.setGravity(Gravity.END); // 오른쪽 정렬
+            holder.message.setTranslationX(-20);
         }
     }
 
