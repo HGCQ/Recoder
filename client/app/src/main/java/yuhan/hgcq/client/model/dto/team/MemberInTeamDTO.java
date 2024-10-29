@@ -8,6 +8,7 @@ public class MemberInTeamDTO implements Serializable {
     private String name;
     private Boolean isAdmin;
     private Boolean isOwner;
+    private String image;
 
     public MemberInTeamDTO() {
     }
@@ -49,6 +50,14 @@ public class MemberInTeamDTO implements Serializable {
 
     public void setOwner(Boolean owner) {
         isOwner = owner;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 
     @Override

@@ -6,11 +6,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.bumptech.glide.Glide;
 
 import java.util.List;
 
@@ -19,6 +22,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import yuhan.hgcq.client.R;
+import yuhan.hgcq.client.config.NetworkClient;
 import yuhan.hgcq.client.controller.FollowController;
 import yuhan.hgcq.client.model.dto.follow.FollowDTO;
 import yuhan.hgcq.client.model.dto.member.MemberDTO;
@@ -28,10 +32,12 @@ public class FollowingAdapter extends RecyclerView.Adapter<FollowingAdapter.Foll
     private List<MemberDTO> followingList;
     private OnItemClickListener listener;
     private Context context;
+    private String serverIp;
     private FollowController fc;
 
     public FollowingAdapter(Context context, List<MemberDTO> followingList) {
         this.context = context;
+        this.serverIp = NetworkClient.getInstance(context).getServerIp();
         this.fc = new FollowController(context);
         this.followingList = followingList;
     }
@@ -47,12 +53,14 @@ public class FollowingAdapter extends RecyclerView.Adapter<FollowingAdapter.Foll
     public static class FollowingViewHolder extends RecyclerView.ViewHolder {
         public TextView name;
         public Button unFollow;
+        public ImageView profile;
 
         public FollowingViewHolder(@NonNull View view, OnItemClickListener listener) {
             super(view);
 
             name = view.findViewById(R.id.name);
             unFollow = view.findViewById(R.id.unfollowButton);
+            profile = view.findViewById(R.id.profile);
 
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -79,6 +87,11 @@ public class FollowingAdapter extends RecyclerView.Adapter<FollowingAdapter.Foll
     public void onBindViewHolder(@NonNull FollowingViewHolder holder, int position) {
         MemberDTO memberDTO = followingList.get(position);
         holder.name.setText(memberDTO.getName());
+        if (memberDTO.getImage() != null) {
+            Glide.with(context)
+                    .load(serverIp + memberDTO.getImage())
+                    .into(holder.profile);
+        }
         holder.unFollow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
