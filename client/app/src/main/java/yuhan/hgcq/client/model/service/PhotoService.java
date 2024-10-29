@@ -53,6 +53,11 @@ public interface PhotoService {
     @GET("/photo/gallery/albumId")
     Call<Map<String, List<PhotoDTO>>> galleryList(@Query("albumId") Long albumId);
 
+    @GET("/photo/gallery/albumId/date")
+    Call<Map<String, List<PhotoDTO>>> galleryListByDate(@Query("albumId") Long albumId,
+                                                  @Query("startDate") String startDate,
+                                                  @Query("endDate") String endDate);
+
     @GET("/photo/list/albumId")
     Call<List<PhotoDTO>> photoList(@Query("albumId") Long albumId);
 
