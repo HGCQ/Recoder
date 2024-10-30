@@ -5,20 +5,24 @@
     <item
         android:id="@+id/fragment_home"
         android:icon="@drawable/home"
+        android:enabled="true"
         tools:ignore="MenuTitle" />
 
     <item
         android:id="@+id/fragment_friend"
         android:icon="@drawable/friends"
+        android:enabled="true"
         tools:ignore="MenuTitle" />
 
     <item
         android:id="@+id/fragment_like"
         android:icon="@drawable/loveicon"
+        android:enabled="true"
         tools:ignore="MenuTitle" />
 
     <item
         android:id="@+id/fragment_setting"
         android:icon="@drawable/setting"
+        android:enabled="true"
         tools:ignore="MenuTitle" />
 </menu>

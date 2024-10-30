@@ -44,11 +44,9 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import yuhan.hgcq.client.R;
-import yuhan.hgcq.client.adapter.MemberAdapter;
 import yuhan.hgcq.client.config.NetworkClient;
 import yuhan.hgcq.client.controller.MemberController;
 import yuhan.hgcq.client.model.dto.member.MemberDTO;
-import yuhan.hgcq.client.model.dto.member.Members;
 
 public class MyPage extends AppCompatActivity {
     /* View */
@@ -65,7 +63,6 @@ public class MyPage extends AppCompatActivity {
     /* 받아올 값 */
     boolean isPrivate;
     MemberDTO loginMember;
-    MemberAdapter ma;
 
     /* 서버 주소 */
     String serverIp = NetworkClient.getInstance(MyPage.this).getServerIp();

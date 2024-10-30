@@ -41,7 +41,7 @@ public class NetworkClient {
     private PhotoService ps;
     private TeamService ts;
 
-    private final String serverIp = "http://10.0.2.2:8080/";
+    private final String serverIp = "http://52.79.92.225:8080/";
 
     private NetworkClient(Context context) {
         app = context.getApplicationContext();
@@ -60,9 +60,9 @@ public class NetworkClient {
         okHttpClient = new OkHttpClient.Builder()
                 .cookieJar(cookieJar)
                 .addInterceptor(logging)
-                .connectTimeout(30, TimeUnit.SECONDS)
-                .readTimeout(30, TimeUnit.SECONDS)
-                .writeTimeout(30, TimeUnit.SECONDS)
+                .connectTimeout(120, TimeUnit.SECONDS)
+                .readTimeout(120, TimeUnit.SECONDS)
+                .writeTimeout(120, TimeUnit.SECONDS)
                 .build();
 
         // 서버와 연결

@@ -450,7 +450,6 @@ public class Gallery extends AppCompatActivity {
 
                 // Optional: Restrict selectable dates to future dates
                 CalendarConstraints.Builder constraintsBuilder = new CalendarConstraints.Builder();
-                constraintsBuilder.setValidator(DateValidatorPointForward.now());
 
                 builder.setCalendarConstraints(constraintsBuilder.build());
 
@@ -470,10 +469,66 @@ public class Gallery extends AppCompatActivity {
                     String start = sdf.format(new Date(startDate));
                     String end = sdf.format(new Date(endDate));
 
-                    Log.d("DATE_RANGE", "Start Date: " + start + " End Date: " + end);
+                    if (isPrivate) {
+                        pr.galleryByDate(albumDTO.getAlbumId(), start, end, new Callback<Map<String, List<PhotoDTO>>>() {
+                            @Override
+                            public void onSuccess(Map<String, List<PhotoDTO>> result) {
+                                if (result != null) {
+                                    if (result.isEmpty()) {
+                                        handler.post(() -> {
+                                            empty.setVisibility(View.VISIBLE);
+                                        });
+                                    } else {
+                                        handler.post(() -> {
+                                            empty.setVisibility(View.INVISIBLE);
+                                        });
+                                    }
+                                    ga = new GalleryAdapter(result, Gallery.this, isPrivate, loginMember, teamDTO, albumDTO);
+                                    handler.post(() -> {
+                                        photoListView.setAdapter(ga);
+                                        ga.notifyDataSetChanged();
+                                    });
+                                }
+                            }
+
+                            @Override
+                            public void onError(Exception e) {
+
+                            }
+                        });
+                    } else {
+                        pc.galleryListByDate(albumDTO.getAlbumId(), start, end, new retrofit2.Callback<Map<String, List<PhotoDTO>>>() {
+                            @Override
+                            public void onResponse(Call<Map<String, List<PhotoDTO>>> call, Response<Map<String, List<PhotoDTO>>> response) {
+                                if (response.isSuccessful()) {
+                                    Map<String, List<PhotoDTO>> galleryList = response.body();
+                                    if (galleryList.isEmpty()) {
+                                        handler.post(() -> {
+                                            empty.setVisibility(View.VISIBLE);
+                                        });
+                                    } else {
+                                        handler.post(() -> {
+                                            empty.setVisibility(View.INVISIBLE);
+                                        });
+                                    }
+                                    ga = new GalleryAdapter(galleryList, Gallery.this, isPrivate, loginMember, teamDTO, albumDTO);
+                                    handler.post(() -> {
+                                        photoListView.setAdapter(ga);
+                                        ga.notifyDataSetChanged();
+                                    });
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call<Map<String, List<PhotoDTO>>> call, Throwable t) {
+
+                            }
+                        });
+                    }
                 });
             }
         });
+
         /* 채팅 */
         chat.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -150,11 +150,11 @@
 
         <android.widget.ImageView
             android:id="@+id/albumListView"
-            android:layout_width="350dp"
+            android:layout_width="370dp"
             android:layout_height="410dp"
-            android:layout_marginStart="15dp"
-            android:layout_marginTop="170dp"
-            android:background="@drawable/text"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="160dp"
+            android:backgroundTint="@color/color"
             android:elevation="30dp"
             android:gravity="center"
             android:padding="0dp"
@@ -168,14 +168,16 @@
 
         <android.widget.TextView
             android:id="@+id/albumListViewTop"
-            android:layout_width="350dp"
+            android:layout_width="370dp"
             android:layout_height="45dp"
-            android:layout_marginStart="-350dp"
-            android:layout_marginTop="175dp"
+            android:layout_marginStart="-370dp"
+            android:layout_marginTop="160dp"
             android:elevation="30dp"
             android:fontFamily="@font/ibm_medium"
             android:gravity="left"
-            android:padding="10dp"
+            android:padding="5dp"
+            android:background="#c2dcff"
+            android:outlineProvider="none"
             android:text=" >>  앨범 선택"
             android:textColor="@color/black"
             android:textSize="15sp"
@@ -183,25 +185,16 @@
             app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
             />
 
-        <View
-            android:layout_width="340dp"
-            android:layout_height="2dp"
-            android:layout_marginStart="-346dp"
-            android:layout_marginTop="215dp"
-            android:background="#D3D3D3"
-            android:elevation="30dp"
-            android:visibility="invisible" />
-
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/albumList"
-            android:layout_width="320dp"
-            android:layout_height="330dp"
-            android:layout_marginStart="-330dp"
-            android:layout_marginTop="225dp"
+            android:layout_width="370dp"
+            android:layout_height="366dp"
+            android:layout_marginStart="-370dp"
+            android:layout_marginTop="205dp"
             android:clipToPadding="false"
             android:elevation="30dp"
-            android:gravity="center"
-            android:padding="0dp"
+            android:background="#8ce6f4f1"
+            tools:listitem="@layout/item_album"
             android:visibility="invisible"
             app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
             app:spanCount="2" />
@@ -211,9 +204,10 @@
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation_view"
         android:layout_width="match_parent"
-        android:layout_height="100dp"
-        app:itemIconTint="@color/black"
+        android:layout_height="95dp"
+        android:background="#e6f4f1"
         app:labelVisibilityMode="unlabeled"
+        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"

@@ -199,6 +199,11 @@ public class PhotoController {
         call.enqueue(callback);
     }
 
+    public void galleryListByDate(Long albumId, String startDate, String endDate, Callback<Map<String, List<PhotoDTO>>> callback) {
+        Call<Map<String, List<PhotoDTO>>> call = photoService.galleryListByDate(albumId, startDate, endDate);
+        call.enqueue(callback);
+    }
+
     /**
      * 사진 리스트
      *

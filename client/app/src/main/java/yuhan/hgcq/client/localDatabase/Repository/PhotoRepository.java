@@ -202,6 +202,36 @@ public class PhotoRepository {
         });
     }
 
+    public void galleryByDate(Long albumId, String startDate, String endDate, Callback<Map<String, List<PhotoDTO>>> callback) {
+        executor.execute(() -> {
+            try {
+                LocalDate start = LocalDate.parse(startDate);
+                LocalDate end = LocalDate.parse(endDate);
+                List<Photo> photoList = dao.findByAlbumId(albumId);
+                Map<String, List<PhotoDTO>> gallery = new HashMap<>();
+
+                for (Photo photo : photoList) {
+                    LocalDate create = photo.getCreated().toLocalDate();
+
+                    if ((create.isEqual(start) || create.isAfter(start)) &&
+                            (create.isEqual(end) || create.isBefore(end))) {
+                        PhotoDTO dto = mapping(photo);
+
+                        List<PhotoDTO> photoDTOList = gallery.getOrDefault(create.toString(), new ArrayList<>());
+
+                        photoDTOList.add(dto);
+
+                        gallery.put(create.toString(), photoDTOList);
+                    }
+                }
+
+                callback.onSuccess(gallery);
+            } catch (Exception e) {
+                callback.onError(e);
+            }
+        });
+    }
+
     //앨범 안에 있는 사진 리스트
     public void searchByAlbum(Long albumId, Callback<List<PhotoDTO>> callback) {
         executor.execute(() -> {
