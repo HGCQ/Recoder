@@ -202,27 +202,26 @@ public class AlbumMain extends AppCompatActivity {
         loginMember = (MemberDTO) getIntent.getSerializableExtra("loginMember");
 
         /* 제목 */
-        ActionBar actionbar = getSupportActionBar();
+        ActionBar actionbar = getSupportActionBar(); // 액션바 가져오기
 
-        /* 제목 */
-        if (isPrivate) {
-            TextView customTitle = new TextView(this);
-            customTitle.setText("[개인] 앨범"); // Set your title text here
-            customTitle.setTextSize(20); // Adjust size as needed
-            customTitle.setTypeface(ResourcesCompat.getFont(this, R.font.hangle_l));
-            customTitle.setTextColor(getResources().getColor(R.color.white)); // Set color if needed
-            actionbar.setCustomView(customTitle);
-            getSupportActionBar().setTitle("");
+        if (actionbar != null) {
+            actionbar.setDisplayShowCustomEnabled(true); // 커스텀 뷰 사용 허용
+            actionbar.setDisplayShowTitleEnabled(false); // 기본 제목 비활성화
+            actionbar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#c2dcff"))); // 배경 색상 설정
 
-        } else if (teamDTO != null) {
+            // 제목 설정
             TextView customTitle = new TextView(this);
-            customTitle.setText("[공유] 앨범" + teamDTO.getName()); // Set your title text here
-            customTitle.setTextSize(20); // Adjust size as needed
-            customTitle.setTypeface(ResourcesCompat.getFont(this, R.font.hangle_l));
-            customTitle.setTextColor(getResources().getColor(R.color.white)); // Set color if needed
-            actionbar.setDisplayShowCustomEnabled(true);
-            actionbar.setCustomView(customTitle);
-            getSupportActionBar().setTitle("");
+            customTitle.setTextSize(20); // 텍스트 크기 조정
+            customTitle.setTypeface(ResourcesCompat.getFont(this, R.font.hangle_l)); // 폰트 설정
+            customTitle.setTextColor(getResources().getColor(R.color.white)); // 텍스트 색상 설정
+
+            if (isPrivate) {
+                customTitle.setText("[개인] 앨범"); // 개인 앨범 제목
+            } else if (teamDTO != null) {
+                customTitle.setText("[공유] 앨범 " + teamDTO.getName()); // 공유 앨범 제목
+            }
+
+            actionbar.setCustomView(customTitle); // 커스텀 뷰 설정
         }
 
         /* 초기 설정 */

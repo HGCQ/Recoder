@@ -3,7 +3,9 @@ package yuhan.hgcq.client.view;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.Rect;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -102,10 +104,11 @@ public class AlbumTrash extends AppCompatActivity {
         customTitle.setTextSize(20); // Adjust size as needed
         customTitle.setTypeface(ResourcesCompat.getFont(this, R.font.hangle_l));
         customTitle.setTextColor(getResources().getColor(R.color.white)); // Set color if needed
+        actionbar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#c2dcff")));
         actionbar.setDisplayShowCustomEnabled(true);
         actionbar.setCustomView(customTitle);
         getSupportActionBar().setTitle("");
-
+        actionbar.setDisplayHomeAsUpEnabled(true);
         EdgeToEdge.enable(this);
         /* Layout */
         setContentView(R.layout.activity_album_trash);
