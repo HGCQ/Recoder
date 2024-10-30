@@ -128,7 +128,7 @@ public class Chat extends AppCompatActivity {
             public void onResponse(Call<List<ChatDTO>> call, Response<List<ChatDTO>> response) {
                 if (response.isSuccessful()) {
                     List<ChatDTO> chatList = response.body();
-                    ca = new ChatAdapter(loginMember, chatList);
+                    ca = new ChatAdapter(loginMember, Chat.this, chatList);
                     chatListView.setAdapter(ca);
                     chatListView.scrollToPosition(ca.getItemCount() - 1);
                 }
