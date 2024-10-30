@@ -19,9 +19,11 @@ import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -92,8 +94,17 @@ public class AlbumTrash extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getSupportActionBar().setTitle("[앨범 휴지통]");
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        ActionBar actionbar = getSupportActionBar();
+        
+        TextView customTitle = new TextView(this);
+        customTitle.setText("앨범 휴지통"); // Set your title text here
+        customTitle.setTextSize(20); // Adjust size as needed
+        customTitle.setTypeface(ResourcesCompat.getFont(this, R.font.hangle_l));
+        customTitle.setTextColor(getResources().getColor(R.color.white)); // Set color if needed
+        actionbar.setDisplayShowCustomEnabled(true);
+        actionbar.setCustomView(customTitle);
+        getSupportActionBar().setTitle("");
 
         EdgeToEdge.enable(this);
         /* Layout */

@@ -23,6 +23,7 @@
           android:gravity="center"
           android:padding="5dp"
           app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+          tools:listitem="@layout/item_album"
           app:spanCount="2" />
 
       <ImageButton
