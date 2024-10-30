@@ -3,9 +3,7 @@ package yuhan.hgcq.client.view;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
 import android.graphics.Rect;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -21,7 +19,6 @@ import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
@@ -50,7 +47,7 @@ import yuhan.hgcq.client.model.dto.team.TeamDTO;
 public class AlbumTrash extends AppCompatActivity {
     /* View */
     AppCompatButton recover;
-    Button remove;
+    Button trash;
     TextView empty;
     RecyclerView albumTrashListView;
     BottomNavigationView navi;
@@ -95,13 +92,8 @@ public class AlbumTrash extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ActionBar actionBar = getSupportActionBar(); // actionBar 가져오기
-        if (actionBar != null) {
-            actionBar.setTitle("앨범 휴지통");
-            actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#c2dcff")));
-            actionBar.setDisplayHomeAsUpEnabled(true); // 뒤로가기 버튼 활성화
-        }
-
+        getSupportActionBar().setTitle("[앨범 휴지통]");
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         EdgeToEdge.enable(this);
         /* Layout */
@@ -122,7 +114,7 @@ public class AlbumTrash extends AppCompatActivity {
         albumTrashListView = findViewById(R.id.albumTrashList);
         navi = findViewById(R.id.bottom_navigation_view);
         recover = findViewById(R.id.recover);
-        remove =  findViewById(R.id.remove);
+        trash=findViewById(R.id.remove);
 
         /* 관련된 페이지 */
         Intent groupMainPage = new Intent(this, GroupMain.class);
@@ -203,7 +195,7 @@ public class AlbumTrash extends AppCompatActivity {
                 });
             }
         }
-        remove.setOnClickListener(v->{
+        trash.setOnClickListener(v->{
             List<Long> selectedItems = ata.getSelectedItems();
             onClick_setting_costume_save("정말로 삭제하시겠습니까?", new DialogInterface.OnClickListener() {
                 @Override
@@ -217,6 +209,9 @@ public class AlbumTrash extends AppCompatActivity {
                                         Toast.makeText(AlbumTrash.this, "삭제하였습니다.", Toast.LENGTH_SHORT).show();
                                         ata.removeAlbumsByIds(selectedItems);
 
+                                        if(ata.getItemCount()==0){
+                                            empty.setVisibility(View.VISIBLE);
+                                        }
                                         // Clear the selection state
                                         selectedItems.clear();
                                         // Notify adapter to refresh the UI
@@ -243,6 +238,9 @@ public class AlbumTrash extends AppCompatActivity {
                                         Toast.makeText(AlbumTrash.this,"삭제했습니다.", Toast.LENGTH_SHORT).show();
                                         ata.removeAlbumsByIds(selectedItems);
 
+                                        if(ata.getItemCount()==0){
+                                            empty.setVisibility(View.VISIBLE);
+                                        }
                                         // Clear the selection state
                                         selectedItems.clear();
                                         // Notify adapter to refresh the UI

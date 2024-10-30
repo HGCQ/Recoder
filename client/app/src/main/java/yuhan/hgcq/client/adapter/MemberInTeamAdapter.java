@@ -50,6 +50,7 @@ public class MemberInTeamAdapter extends RecyclerView.Adapter<MemberInTeamAdapte
         public ImageButton friendDelete, power;
 
 
+
         public MemberInTeamViewHolder(@NonNull View view) {
             super(view);
             name = view.findViewById(R.id.name);
@@ -69,6 +70,7 @@ public class MemberInTeamAdapter extends RecyclerView.Adapter<MemberInTeamAdapte
     @Override
     public void onBindViewHolder(@NonNull MemberInTeamViewHolder holder, int position) {
         MemberInTeamDTO dto = memberList.get(position);
+        MemberDTO memberDTO=new MemberDTO();
         holder.name.setText(dto.getName());
         holder.power.setVisibility(View.INVISIBLE);
         holder.friendDelete.setVisibility(View.INVISIBLE);
@@ -235,6 +237,12 @@ public class MemberInTeamAdapter extends RecyclerView.Adapter<MemberInTeamAdapte
     public int getItemCount() {
         return memberList.size();
     }
+    public void updateData(List<MemberInTeamDTO> newMemberList) {
+        this.memberList.clear(); // Clear the old data
+        this.memberList.addAll(newMemberList); // Add new data
+        notifyDataSetChanged(); // Notify the adapter of the data change
+    }
+
 
     // Confirm dialog method
     public void onClick_setting_costume_save(Context context, String message, DialogInterface.OnClickListener positive, DialogInterface.OnClickListener negative) {
