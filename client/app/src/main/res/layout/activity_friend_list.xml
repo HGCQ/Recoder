@@ -21,7 +21,8 @@
         android:padding="0dp"
         android:clipToPadding="false"
         app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-        app:spanCount="1" />
+        app:spanCount="1"
+        tools:listitem="@layout/item_friend_follwer"/>
 
 </LinearLayout>
     <EditText
