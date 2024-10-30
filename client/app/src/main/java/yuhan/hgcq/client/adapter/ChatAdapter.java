@@ -104,11 +104,16 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
             holder.name.setText(chatDTO.getWriterName());
             holder.name.setVisibility(View.VISIBLE);
             handler.post(() -> {
-                String path = serverIp+chatDTO.getImage();
-                Glide.with(context)
-                       .load(path)
-                        .into(holder.profile);
+                if(chatDTO.getImage() == null || chatDTO.getImage().isEmpty()) {
+                    holder.profile.setImageResource(R.drawable.profile);
+                }else{
+                    String path = serverIp + chatDTO.getImage();
+                    Glide.with(context)
+                            .load(path)
+                            .into(holder.profile);
+                }
             });
+
             holder.profile.setVisibility(View.VISIBLE);
 
             // 상대의 채팅은 왼쪽 정렬
