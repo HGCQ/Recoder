@@ -114,7 +114,7 @@ public class AlbumTrashAdapter extends RecyclerView.Adapter<AlbumTrashAdapter.Al
                                     .load(Uri.parse(path))
                                     .into(holder.photo);
                         } else {
-                            holder.photo.setImageResource(R.drawable.basic2); // 기본 이미지 설정
+                            holder.photo.setImageResource(R.drawable.basic); // 기본 이미지 설정
                         }
                         Log.i("앨범 대표 사진", "Success");
                     });
@@ -123,7 +123,7 @@ public class AlbumTrashAdapter extends RecyclerView.Adapter<AlbumTrashAdapter.Al
                 @Override
                 public void onError(Exception e) {
                     handler.post(() -> { // UI 스레드에서 실행
-                        holder.photo.setImageResource(R.drawable.basic2); // 기본 이미지 설정
+                        holder.photo.setImageResource(R.drawable.basic); // 기본 이미지 설정
                         Log.e("앨범 대표 사진", e.getMessage());
                     });
                 }
@@ -141,11 +141,11 @@ public class AlbumTrashAdapter extends RecyclerView.Adapter<AlbumTrashAdapter.Al
                                         .load(serverIp + photoDTO.get(random).getPath())
                                         .into(holder.photo);
                             } else {
-                                holder.photo.setImageResource(R.drawable.basic2); // 기본 이미지 설정
+                                holder.photo.setImageResource(R.drawable.basic); // 기본 이미지 설정
                             }
                             Log.i("앨범 대표 사진", "Success");
                         } else {
-                            holder.photo.setImageResource(R.drawable.basic2); // 기본 이미지 설정
+                            holder.photo.setImageResource(R.drawable.basic); // 기본 이미지 설정
                         }
                     });
                 }
@@ -153,7 +153,7 @@ public class AlbumTrashAdapter extends RecyclerView.Adapter<AlbumTrashAdapter.Al
                 @Override
                 public void onFailure(Call<List<PhotoDTO>> call, Throwable t) {
                     handler.post(() -> { // UI 스레드에서 실행!
-                        holder.photo.setImageResource(R.drawable.basic2); // 기본 이미지 설정
+                        holder.photo.setImageResource(R.drawable.basic); // 기본 이미지 설정
                         Log.e("앨범 대표 사진", t.getMessage());
                     });
                 }

@@ -4,9 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
 import android.graphics.Rect;
-import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -29,7 +27,6 @@ import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
@@ -84,6 +81,8 @@ public class GroupSetting extends AppCompatActivity {
     /* Intent 요청 코드 */
     private static final int GALLERY = 1000;
     private static final int REQUEST_PERMISSION = 1111;
+    private List<MemberInTeamDTO> updatedMemberList;
+
 
     /* 뒤로 가기 */
     @Override
@@ -103,13 +102,8 @@ public class GroupSetting extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ActionBar actionBar = getSupportActionBar(); // actionBar 가져오기
-        if (actionBar != null) {
-            actionBar.setTitle("그룹 설정");
-            actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#c2dcff")));
-            actionBar.setDisplayHomeAsUpEnabled(true); // 뒤로가기 버튼 활성화
-        }
-
+        getSupportActionBar().setTitle("그룹 설정");
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         EdgeToEdge.enable(this);
         /* Layout */
@@ -208,13 +202,33 @@ public class GroupSetting extends AppCompatActivity {
                         @Override
                         public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                             if (response.isSuccessful()) {
-                                handler.post(() -> {
-                                    Toast.makeText(v.getContext(), "초대하였습니다.", Toast.LENGTH_SHORT).show();
-                                    followingList.setVisibility(View.INVISIBLE);
-                                    followingListView.setVisibility(View.INVISIBLE);
-                                    followingListViewTop.setVisibility(View.INVISIBLE);
-                                    save.setVisibility(View.INVISIBLE);
-                                    ((Activity) v.getContext()).recreate();
+                                // Fetch updated member list after invitation
+                                tc.memberListInTeam(teamDTO.getTeamId(), new Callback<List<MemberInTeamDTO>>() {
+                                    @Override
+                                    public void onResponse(Call<List<MemberInTeamDTO>> call, Response<List<MemberInTeamDTO>> response) {
+                                        if (response.isSuccessful()) {
+                                            updatedMemberList = response.body(); // Update the list
+                                            handler.post(() -> {
+                                                Toast.makeText(v.getContext(), "초대하였습니다.", Toast.LENGTH_SHORT).show();
+                                                followingList.setVisibility(View.INVISIBLE);
+                                                followingListView.setVisibility(View.INVISIBLE);
+                                                followingListViewTop.setVisibility(View.INVISIBLE);
+                                                save.setVisibility(View.INVISIBLE);
+                                                mita.updateData(updatedMemberList); // Now this should work without error
+                                            });
+                                        } else {
+                                            handler.post(() -> {
+                                                Toast.makeText(v.getContext(), "회원 목록을 가져오는 데 실패했습니다.", Toast.LENGTH_SHORT).show();
+                                            });
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onFailure(Call<List<MemberInTeamDTO>> call, Throwable t) {
+                                        handler.post(() -> {
+                                            Toast.makeText(v.getContext(), "오류 발생", Toast.LENGTH_SHORT).show();
+                                        });
+                                    }
                                 });
                             } else {
                                 handler.post(() -> {
@@ -238,6 +252,7 @@ public class GroupSetting extends AppCompatActivity {
                 }
             });
         });
+
 
         /* 회원 초대 */
         friendAdd.setOnClickListener(new View.OnClickListener() {
