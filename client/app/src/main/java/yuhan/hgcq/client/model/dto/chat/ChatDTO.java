@@ -8,17 +8,19 @@ public class ChatDTO implements Serializable {
     private Long albumId;
     private Long writerId;
     private String writerName;
+    private String image;
     private String message;
     private String time;
 
     public ChatDTO() {
     }
 
-    public ChatDTO(Long chatId, Long albumId, Long writerId, String writerName, String message, String time) {
+    public ChatDTO(Long chatId, Long albumId, Long writerId, String writerName, String image, String message, String time) {
         this.chatId = chatId;
         this.albumId = albumId;
         this.writerId = writerId;
         this.writerName = writerName;
+        this.image = image;
         this.message = message;
         this.time = time;
     }
@@ -69,6 +71,14 @@ public class ChatDTO implements Serializable {
 
     public void setTime(String time) {
         this.time = time;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 
     @Override
