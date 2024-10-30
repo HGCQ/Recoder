@@ -37,6 +37,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -201,10 +202,27 @@ public class AlbumMain extends AppCompatActivity {
         loginMember = (MemberDTO) getIntent.getSerializableExtra("loginMember");
 
         /* 제목 */
+        ActionBar actionbar = getSupportActionBar();
+
+        /* 제목 */
         if (isPrivate) {
-            getSupportActionBar().setTitle("[개인] 앨범");
+            TextView customTitle = new TextView(this);
+            customTitle.setText("[개인] 앨범"); // Set your title text here
+            customTitle.setTextSize(20); // Adjust size as needed
+            customTitle.setTypeface(ResourcesCompat.getFont(this, R.font.hangle_l));
+            customTitle.setTextColor(getResources().getColor(R.color.white)); // Set color if needed
+            actionbar.setCustomView(customTitle);
+            getSupportActionBar().setTitle("");
+
         } else if (teamDTO != null) {
-            getSupportActionBar().setTitle("[공유] 앨범\n" + teamDTO.getName());
+            TextView customTitle = new TextView(this);
+            customTitle.setText("[공유] 앨범" + teamDTO.getName()); // Set your title text here
+            customTitle.setTextSize(20); // Adjust size as needed
+            customTitle.setTypeface(ResourcesCompat.getFont(this, R.font.hangle_l));
+            customTitle.setTextColor(getResources().getColor(R.color.white)); // Set color if needed
+            actionbar.setDisplayShowCustomEnabled(true);
+            actionbar.setCustomView(customTitle);
+            getSupportActionBar().setTitle("");
         }
 
         /* 초기 설정 */
