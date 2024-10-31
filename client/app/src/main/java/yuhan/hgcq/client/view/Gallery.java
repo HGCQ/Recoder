@@ -34,6 +34,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.util.Pair;
 import androidx.core.view.ViewCompat;
@@ -202,11 +203,26 @@ public class Gallery extends AppCompatActivity {
 
         /* 제목 */
         if (albumDTO != null) {
-            if (isPrivate) {
-                getSupportActionBar().setTitle("[개인] " + albumDTO.getName());
-                chat.setVisibility(View.INVISIBLE);
-            } else {
-                getSupportActionBar().setTitle("[공유] " + albumDTO.getName());
+            actionBar = getSupportActionBar();
+            if (actionBar != null) {
+                actionBar.setDisplayShowCustomEnabled(true); // 커스텀 뷰 사용 허용
+                actionBar.setDisplayShowTitleEnabled(false); // 기본 제목 비활성화
+
+                // 커스텀 타이틀 텍스트뷰 설정
+                TextView customTitle = new TextView(this);
+                customTitle.setTextSize(20); // 텍스트 크기 조정
+                customTitle.setTypeface(ResourcesCompat.getFont(this, R.font.hangle_l)); // 폰트 설정
+                customTitle.setTextColor(getResources().getColor(R.color.white)); // 텍스트 색상 설정
+
+                // 제목 설정
+                if (isPrivate) {
+                    customTitle.setText("[개인] " + albumDTO.getName());
+                    chat.setVisibility(View.INVISIBLE);
+                } else {
+                    customTitle.setText("[공유] " + albumDTO.getName());
+                }
+
+                actionBar.setCustomView(customTitle); // 커스텀 뷰 설정
             }
         }
 

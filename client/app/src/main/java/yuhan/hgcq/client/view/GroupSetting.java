@@ -4,7 +4,9 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.Rect;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -27,8 +29,10 @@ import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -102,9 +106,23 @@ public class GroupSetting extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getSupportActionBar().setTitle("그룹 설정");
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayShowCustomEnabled(true); // 커스텀 뷰 사용 허용
+            actionBar.setDisplayShowTitleEnabled(false); // 기본 제목 비활성화
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            // 액션바 배경 색상 설정
+            actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#c2dcff")));
 
+            // 커스텀 타이틀 텍스트뷰 설정
+            TextView customTitle = new TextView(this);
+            customTitle.setText("그룹 설정"); // 제목 텍스트 설정
+            customTitle.setTextSize(20); // 텍스트 크기 조정
+            customTitle.setTypeface(ResourcesCompat.getFont(this, R.font.hangle_l)); // 폰트 설정
+            customTitle.setTextColor(getResources().getColor(R.color.white)); // 텍스트 색상 설정
+
+            actionBar.setCustomView(customTitle); // 커스텀 뷰 설정
+        }
         EdgeToEdge.enable(this);
         /* Layout */
         setContentView(R.layout.activity_group_setting);

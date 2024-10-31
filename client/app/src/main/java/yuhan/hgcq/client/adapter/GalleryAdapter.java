@@ -139,7 +139,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryV
 
                     // 배경색 설정
                     if (selectedPhotos.contains(photoDTO)) {
-                        view.setBackgroundColor(Color.LTGRAY); // 선택된 경우 회색으로
+                        view.setBackgroundColor(Color.BLACK); // 선택된 경우 회색으로
                     } else {
                         view.setBackgroundColor(Color.WHITE); // 선택 해제된 경우 흰색으로
                     }

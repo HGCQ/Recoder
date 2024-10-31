@@ -25,6 +25,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -126,11 +127,22 @@ public class Photo extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         ActionBar actionBar = getSupportActionBar(); // actionBar 가져오기
         if (actionBar != null) {
-            actionBar.setTitle("Recoder");
+            actionBar.setDisplayShowCustomEnabled(true); // 커스텀 뷰 사용 허용
+            actionBar.setDisplayShowTitleEnabled(false); // 기본 제목 비활성화
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            // 액션바 배경 색상 설정
             actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#c2dcff")));
-            actionBar.setDisplayHomeAsUpEnabled(true); // 뒤로가기 버튼 활성화
-        }
 
+            // 커스텀 타이틀 텍스트뷰 설정
+            TextView customTitle = new TextView(this);
+            customTitle.setText("채팅"); // 제목 텍스트 설정
+            customTitle.setTextSize(20); // 텍스트 크기 조정
+            customTitle.setTypeface(ResourcesCompat.getFont(this, R.font.hangle_l)); // 폰트 설정
+            customTitle.setTextColor(getResources().getColor(R.color.white)); // 텍스트 색상 설정
+
+            // 커스텀 뷰 설정
+            actionBar.setCustomView(customTitle);
+        }
 
         EdgeToEdge.enable(this);
         /* Layout */
@@ -327,8 +339,10 @@ public class Photo extends AppCompatActivity {
                 }
 
                 if (dto != null) {
-                    if (!isPrivate) {
-                        getSupportActionBar().setTitle("[공유자] " + dto.getMember());
+                    ActionBar actionBar = getSupportActionBar();
+                    if (actionBar != null && actionBar.getCustomView() != null) {
+                        TextView customTitle = (TextView) actionBar.getCustomView(); // 커스텀 뷰에서 TextView 가져오기
+                        customTitle.setText("[공유자] " + dto.getMember());
                     }
                     if (dto.getLiked()) {
                         like.setImageResource(R.drawable.love);

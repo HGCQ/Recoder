@@ -1,5 +1,8 @@
 package yuhan.hgcq.client.adapter;
 
+import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,9 +14,12 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+
 import java.util.List;
 
 import yuhan.hgcq.client.R;
+import yuhan.hgcq.client.config.NetworkClient;
 import yuhan.hgcq.client.model.dto.chat.ChatDTO;
 import yuhan.hgcq.client.model.dto.member.MemberDTO;
 
@@ -21,10 +27,15 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
     List<ChatDTO> chatList;
     private OnItemClickListener listener;
     private MemberDTO loginMember;
+    private Context context;
+    private String serverIp;
+    private Handler handler = new Handler(Looper.getMainLooper());
 
-    public ChatAdapter(MemberDTO loginMember, List<ChatDTO> chatList) {
+    public ChatAdapter(MemberDTO loginMember, Context context, List<ChatDTO> chatList) {
         this.loginMember = loginMember;
         this.chatList = chatList;
+        this.context = context;
+        this.serverIp = NetworkClient.getInstance(context).getServerIp();
     }
 
     public interface OnItemClickListener {
@@ -92,7 +103,16 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
         if (holder.getItemViewType() == 0) { // 상대의 채팅
             holder.name.setText(chatDTO.getWriterName());
             holder.name.setVisibility(View.VISIBLE);
-
+            handler.post(() -> {
+                if(chatDTO.getImage() == null || chatDTO.getImage().isEmpty()) {
+                    holder.profile.setImageResource(R.drawable.profile);
+                }else{
+                    String path = serverIp + chatDTO.getImage();
+                    Glide.with(context)
+                            .load(path)
+                            .into(holder.profile);
+                }
+            });
 
             holder.profile.setVisibility(View.VISIBLE);
 

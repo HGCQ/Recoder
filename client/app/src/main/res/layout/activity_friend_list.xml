@@ -124,6 +124,7 @@
         android:id="@+id/bottom_navigation_view"
         android:layout_width="match_parent"
         android:layout_height="95dp"
+        android:background="#e6f4f1"
         app:itemTextColor="@color/black"
         app:labelVisibilityMode="unlabeled"
         app:layout_constraintBottom_toBottomOf="parent"
