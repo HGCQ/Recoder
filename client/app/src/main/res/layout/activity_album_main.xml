@@ -118,8 +118,10 @@
   <com.google.android.material.bottomnavigation.BottomNavigationView
       android:id="@+id/bottom_navigation_view"
       android:layout_width="match_parent"
-      android:layout_height="100dp"
+      android:layout_height="95dp"
       app:contentInsetStart="0dp"
+      android:background="#e6f4f1"
+      app:labelVisibilityMode="unlabeled"
       android:fitsSystemWindows="true"
       android:layout_alignParentBottom="true"
       app:menu="@menu/menu_bottom_nav" />
