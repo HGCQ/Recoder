@@ -92,7 +92,8 @@
             android:clipToPadding="false"
             android:gravity="center"
             app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-            app:spanCount="2" />
+            app:spanCount="2"
+            tools:listitem="@layout/item_group"/>
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
