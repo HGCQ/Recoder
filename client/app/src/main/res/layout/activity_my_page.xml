@@ -31,7 +31,7 @@
         android:scaleType="fitCenter"
         android:src="@drawable/profile"
         android:text="이름"
-        android:layout_marginStart="-370dp"
+        android:layout_marginStart="-360dp"
         android:fontFamily="@font/ibm_medium"
         app:tint="#234567" />
 
@@ -139,7 +139,7 @@
         android:layout_width="match_parent"
         android:layout_height="40dp"
         android:layout_marginTop="498dp"
-        android:layout_marginStart="-250dp"
+        android:layout_marginStart="-271dp"
         android:background="@drawable/text2"
         android:backgroundTint="@color/colorMain"
         android:fontFamily="@font/ibm_medium"

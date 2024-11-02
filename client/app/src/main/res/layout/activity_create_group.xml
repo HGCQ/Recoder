@@ -23,6 +23,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:tint="#234567" />
+
     <EditText
         android:id="@+id/GroupText"
         android:layout_width="380dp"
@@ -102,12 +103,10 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/createGroupList"
             android:layout_width="match_parent"
-            android:background="#e6f4f1"
             android:clipToPadding="false"
-            android:layout_height="380dp"
-            android:layout_marginTop="188dp"
+            android:layout_height="430dp"
+            android:layout_marginTop="180dp"
             android:gravity="center"
-            android:padding="17dp"
             tools:listitem="@layout/item_group_setting"
             app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
             app:layout_constraintBottom_toBottomOf="parent"
