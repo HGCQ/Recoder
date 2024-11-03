@@ -24,15 +24,15 @@ public interface PhotoDAO {
     @Query("SELECT * FROM photo WHERE photoId = :photoId")
     List<Photo> findById(Long photoId);
 
-    @Query("SELECT * FROM photo WHERE albumId = :albumId and is_deleted = 0")
+    @Query("SELECT * FROM photo WHERE albumId = :albumId and is_deleted = 0 order by created")
     List<Photo> findByAlbumId(Long albumId);
-
-    @Query("SELECT * FROM photo where is_deleted = 0")
-    List<Photo> findAll();
 
     @Query("select * from photo where is_deleted = 1")
     List<Photo> findByIsDeleted();
 
-    @Query("select*from photo where is_liked = 1 and is_deleted = 0")
-    List<Photo>findIsLiked();
+    @Query("select * from photo where is_liked = 1 and is_deleted = 0")
+    List<Photo> findIsLiked();
+
+    @Query("select path from Photo where albumId = :albumId")
+    List<String> findPathList(Long albumId);
 }

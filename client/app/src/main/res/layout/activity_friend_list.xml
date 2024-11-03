@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
-    android:background="#ffffff"
+    android:background="#e6f4f1"
     android:layout_width="wrap_content"
     android:layout_height="match_parent"
     tools:context=".view.AlbumMain">
@@ -15,11 +15,14 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/friendList"
         android:layout_width="match_parent"
+        android:background="#e6f4f1"
         android:layout_height="489dp"
         android:layout_marginTop="150dp"
         android:padding="0dp"
+        android:clipToPadding="false"
         app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-        app:spanCount="1" />
+        app:spanCount="1"
+        tools:listitem="@layout/item_friend_follwer"/>
 
 </LinearLayout>
     <EditText
@@ -33,7 +36,7 @@
         android:padding="5dp"
         android:textColor="@color/black"
         android:background="@drawable/edittext"
-        android:fontFamily="@font/notosans_medium"
+        android:fontFamily="@font/ibm_regular"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.48"
         app:layout_constraintStart_toStartOf="parent"
@@ -41,30 +44,14 @@
 
     <ImageButton
         android:id="@+id/friendAdd"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
         android:layout_marginTop="92dp"
         android:background="#00000000"
         android:scaleType="fitCenter"
         android:src="@drawable/friendadd"
-        app:tint="#000000"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.924"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:layout_width="50dp"
-        android:layout_height="20dp"
-        android:layout_marginTop="115dp"
-        android:fontFamily="@font/ibm_regular"
-        android:gravity="center"
-        android:padding="0dp"
-        android:text="친구 추가"
-        android:textColor="@color/black"
-        android:textSize="10dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.946"
+        app:layout_constraintHorizontal_bias="0.96"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -96,7 +83,7 @@
 
     <android.widget.Button
         android:id="@+id/follower"
-        android:layout_width="204dp"
+        android:layout_width="192dp"
         android:layout_height="54dp"
         android:layout_marginTop="28dp"
         android:background="@drawable/button"
@@ -112,7 +99,7 @@
 
     <android.widget.Button
         android:id="@+id/following"
-        android:layout_width="207dp"
+        android:layout_width="192dp"
         android:layout_height="54dp"
         android:layout_marginTop="28dp"
         android:background="@drawable/button"
@@ -136,11 +123,11 @@
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation_view"
-        android:layout_width="410dp"
-        android:layout_height="85dp"
-        app:itemIconTint="#2196F3"
+        android:layout_width="match_parent"
+        android:layout_height="95dp"
+        android:background="#e6f4f1"
         app:itemTextColor="@color/black"
-        app:labelVisibilityMode="labeled"
+        app:labelVisibilityMode="unlabeled"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"

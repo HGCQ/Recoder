@@ -3,23 +3,29 @@ package yuhan.hgcq.client.view;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.Rect;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -45,6 +51,7 @@ import yuhan.hgcq.client.model.dto.team.TeamDTO;
 public class AlbumTrash extends AppCompatActivity {
     /* View */
     AppCompatButton recover;
+    Button trash;
     TextView empty;
     RecyclerView albumTrashListView;
     BottomNavigationView navi;
@@ -89,9 +96,19 @@ public class AlbumTrash extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getSupportActionBar().setTitle("[앨범 휴지통]");
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        ActionBar actionbar = getSupportActionBar();
+        
+        TextView customTitle = new TextView(this);
+        customTitle.setText("앨범 휴지통"); // Set your title text here
+        customTitle.setTextSize(20); // Adjust size as needed
+        customTitle.setTypeface(ResourcesCompat.getFont(this, R.font.hangle_l));
+        customTitle.setTextColor(getResources().getColor(R.color.white)); // Set color if needed
+        actionbar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#c2dcff")));
+        actionbar.setDisplayShowCustomEnabled(true);
+        actionbar.setCustomView(customTitle);
+        getSupportActionBar().setTitle("");
+        actionbar.setDisplayHomeAsUpEnabled(true);
         EdgeToEdge.enable(this);
         /* Layout */
         setContentView(R.layout.activity_album_trash);
@@ -111,6 +128,7 @@ public class AlbumTrash extends AppCompatActivity {
         albumTrashListView = findViewById(R.id.albumTrashList);
         navi = findViewById(R.id.bottom_navigation_view);
         recover = findViewById(R.id.recover);
+        trash=findViewById(R.id.remove);
 
         /* 관련된 페이지 */
         Intent groupMainPage = new Intent(this, GroupMain.class);
@@ -157,7 +175,7 @@ public class AlbumTrash extends AppCompatActivity {
                 }
             });
         }
-        /* 공유 */
+        /* 공유! */
         else {
             if (teamDTO != null) {
                 Long teamId = teamDTO.getTeamId();
@@ -191,6 +209,79 @@ public class AlbumTrash extends AppCompatActivity {
                 });
             }
         }
+        trash.setOnClickListener(v->{
+            List<Long> selectedItems = ata.getSelectedItems();
+            onClick_setting_costume_save("정말로 삭제하시겠습니까?", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    if(isPrivate){
+                        ar.remove(selectedItems, new Callback<Boolean>() {
+                            @Override
+                            public void onSuccess(Boolean result) {
+                                if (result != null) {
+                                    handler.post(() -> {
+                                        Toast.makeText(AlbumTrash.this, "삭제하였습니다.", Toast.LENGTH_SHORT).show();
+                                        ata.removeAlbumsByIds(selectedItems);
+
+                                        if(ata.getItemCount()==0){
+                                            empty.setVisibility(View.VISIBLE);
+                                        }
+                                        // Clear the selection state
+                                        selectedItems.clear();
+                                        // Notify adapter to refresh the UI
+                                        ata.notifyDataSetChanged();
+                                    });
+                                } else {
+                                    Toast.makeText(AlbumTrash.this, "삭제 실패", Toast.LENGTH_SHORT).show();
+                                }
+
+                            }
+
+                            @Override
+                            public void onError(Exception e) {
+
+                            }
+                        });
+                    }else{
+                        ac.removeAlbum(new DeleteCancelAlbumForm(selectedItems), new retrofit2.Callback<ResponseBody>() {
+                            @Override
+                            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+
+                                if (response.isSuccessful()) {
+                                    handler.post(() -> {
+                                        Toast.makeText(AlbumTrash.this,"삭제했습니다.", Toast.LENGTH_SHORT).show();
+                                        ata.removeAlbumsByIds(selectedItems);
+
+                                        if(ata.getItemCount()==0){
+                                            empty.setVisibility(View.VISIBLE);
+                                        }
+                                        // Clear the selection state
+                                        selectedItems.clear();
+                                        // Notify adapter to refresh the UI
+                                        ata.notifyDataSetChanged();
+                                    });
+                                } else {
+                                    handler.post(() -> {
+                                        Toast.makeText(AlbumTrash.this,"삭제 실패", Toast.LENGTH_SHORT).show();
+                                    });
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call<ResponseBody> call, Throwable t) {
+
+                            }
+                        });
+                    }
+                }
+
+            }, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    Toast.makeText(AlbumTrash.this, "취소했습니다.", Toast.LENGTH_SHORT).show();
+                }
+            });
+        });
 
         /* 복구 */
         recover.setOnClickListener(v -> {
@@ -213,13 +304,15 @@ public class AlbumTrash extends AppCompatActivity {
                                     });
                                     startActivity(albumTrashPage);
                                 } else {
-                                    /* Toast 메시지 */
+                                    Toast.makeText(AlbumTrash.this, "복구 실패", Toast.LENGTH_SHORT).show();
                                 }
                             }
 
                             @Override
                             public void onError(Exception e) {
-                                /* Toast 메시지 */
+                                Log.e("recover Error", "Failed Recover: "+e );
+                                Log.d("AlbumSelection", "Selected album IDs: " + selectedItems);
+
                             }
                         });
                     }

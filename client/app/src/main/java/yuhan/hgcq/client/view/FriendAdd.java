@@ -3,12 +3,15 @@ package yuhan.hgcq.client.view;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.Rect;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -18,8 +21,10 @@ import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -76,8 +81,24 @@ public class FriendAdd extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getSupportActionBar().setTitle("팔로우 추가");
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        ActionBar actionBar = getSupportActionBar(); // actionBar 가져오기
+        if (actionBar != null) {
+            actionBar.setDisplayShowCustomEnabled(true); // 커스텀 뷰 사용 허용
+            actionBar.setDisplayShowTitleEnabled(false); // 기본 제목 비활성화
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            // 액션바 배경 색상 설정
+            actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#c2dcff")));
+
+            // 커스텀 타이틀 텍스트뷰 설정
+            TextView customTitle = new TextView(this);
+            customTitle.setText("친구 추가"); // 제목 텍스트 설정
+            customTitle.setTextSize(20); // 텍스트 크기 조정
+            customTitle.setTypeface(ResourcesCompat.getFont(this, R.font.hangle_l)); // 폰트 설정
+            customTitle.setTextColor(getResources().getColor(R.color.white)); // 텍스트 색상 설정
+
+            actionBar.setCustomView(customTitle); // 커스텀 뷰 설정
+        }
+
 
         EdgeToEdge.enable(this);
         /* Layout */
@@ -121,59 +142,88 @@ public class FriendAdd extends AppCompatActivity {
                     handler.post(() -> {
                         memberListView.setAdapter(fa);
                     });
-                    searchText.addTextChangedListener(new TextWatcher() {
-                        @Override
-                        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-                        }
-
-                        @Override
-                        public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-                            String text=s.toString();
-
-                            mc.memberListByName("%" + text + "%", new Callback<Members>() {
-                                @Override
-                                public void onResponse(Call<Members> call, Response<Members> response) {
-                                    if(response.isSuccessful()){
-                                        List<MemberDTO> memberList=response.body().getMemberList();
-                                        if(memberList!=null){
-                                            if(memberList.isEmpty()){
-                                                handler.post(()->{
-                                                   empty.setVisibility(View.VISIBLE);
-                                                });
-                                            }else{
-                                                handler.post(()->{
-                                                   empty.setVisibility(View.INVISIBLE);
-                                                });
-                                            }
-                                            handler.post(()->{
-                                               fa.updateList(memberList);
-                                            });
-                                        }
-                                    }
-                                }
-
-                                @Override
-                                public void onFailure(Call<Members> call, Throwable t) {
-
-                                }
-                            });
-                        }
-
-                        @Override
-                        public void afterTextChanged(Editable s) {
-
-                        }
-                    });
-                } else {
-                    /* Toast 메시지 */
                 }
             }
 
             @Override
             public void onFailure(Call<Members> call, Throwable t) {
                 /* Toast 메시지 */
+            }
+        });
+
+        searchText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                String text = s.toString();
+
+                if (!text.isEmpty() || !text.equals("")) {
+                    mc.memberListByName("%" + text + "%", new Callback<Members>() {
+                        @Override
+                        public void onResponse(Call<Members> call, Response<Members> response) {
+                            if (response.isSuccessful()) {
+                                List<MemberDTO> findList = response.body().getMemberList();
+                                if (findList != null) {
+                                    if (findList.isEmpty()) {
+                                        handler.post(() -> {
+                                            empty.setVisibility(View.VISIBLE);
+                                        });
+                                    } else {
+                                        handler.post(() -> {
+                                            empty.setVisibility(View.INVISIBLE);
+                                        });
+                                    }
+                                    handler.post(() -> {
+                                        fa.updateList(findList);
+                                    });
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<Members> call, Throwable t) {
+
+                        }
+                    });
+                } else {
+                    mc.memberList(new Callback<Members>() {
+                        @Override
+                        public void onResponse(Call<Members> call, Response<Members> response) {
+                            if (response.isSuccessful()) {
+                                Members body = response.body();
+                                List<MemberDTO> memberList = body.getMemberList();
+                                if (memberList.isEmpty()) {
+                                    handler.post(() -> {
+                                        empty.setVisibility(View.VISIBLE);
+                                    });
+                                } else {
+                                    handler.post(() -> {
+                                        empty.setVisibility(View.INVISIBLE);
+                                    });
+                                }
+                                fa = new FollowerAdapter(FriendAdd.this, memberList, body.getFollowingList());
+                                handler.post(() -> {
+                                    memberListView.setAdapter(fa);
+                                });
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<Members> call, Throwable t) {
+
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
             }
         });
     }

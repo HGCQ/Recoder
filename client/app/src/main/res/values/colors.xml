@@ -4,8 +4,11 @@
     <color name="white">#FFFFFFFF</color>
     <color name="colorPrimary">#6f52e8</color>
     <color name="colorPrimaryDark">#6f52e8</color>
+    <color name="colorMain">#c2dcff</color>
     <color name="colorAccent">#6f52e8</color>
-
+    <color name="bg_progress">#ffd94d</color>
     <color name="colorRed">#ff0d00</color>
+    <color name="colorBack">#e6f4f1</color>
+    <color name="color">#80000000</color>
     <color name="colorPurple">#6f52e8</color>
 </resources>

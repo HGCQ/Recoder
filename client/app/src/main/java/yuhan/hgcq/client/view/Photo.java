@@ -3,7 +3,9 @@ package yuhan.hgcq.client.view;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.Rect;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -14,12 +16,16 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -56,7 +62,9 @@ public class Photo extends AppCompatActivity {
     Button move, photoDelete;
     ViewPager2 photoView;
     BottomNavigationView navi;
-    RecyclerView albumListView;
+    RecyclerView albumList;
+    TextView albumListViewTop;
+    ImageView albumListView;
 
     /* Adapter */
     PhotoAdapter pa;
@@ -117,8 +125,24 @@ public class Photo extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getSupportActionBar().setTitle("Recoder");
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        ActionBar actionBar = getSupportActionBar(); // actionBar 가져오기
+        if (actionBar != null) {
+            actionBar.setDisplayShowCustomEnabled(true); // 커스텀 뷰 사용 허용
+            actionBar.setDisplayShowTitleEnabled(false); // 기본 제목 비활성화
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            // 액션바 배경 색상 설정
+            actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#c2dcff")));
+
+            // 커스텀 타이틀 텍스트뷰 설정
+            TextView customTitle = new TextView(this);
+            customTitle.setText("채팅"); // 제목 텍스트 설정
+            customTitle.setTextSize(20); // 텍스트 크기 조정
+            customTitle.setTypeface(ResourcesCompat.getFont(this, R.font.hangle_l)); // 폰트 설정
+            customTitle.setTextColor(getResources().getColor(R.color.white)); // 텍스트 색상 설정
+
+            // 커스텀 뷰 설정
+            actionBar.setCustomView(customTitle);
+        }
 
         EdgeToEdge.enable(this);
         /* Layout */
@@ -142,8 +166,10 @@ public class Photo extends AppCompatActivity {
         move = findViewById(R.id.move);
         photoDelete = findViewById(R.id.photoDelete);
         photoView = findViewById(R.id.viewPager);
-        albumListView = findViewById(R.id.albumList);
+        albumList = findViewById(R.id.albumList);
         navi = findViewById(R.id.bottom_navigation_view);
+        albumListViewTop = findViewById(R.id.albumListViewTop);
+        albumListView = findViewById(R.id.albumListView);
 
         /* 관련된 페이지 */
         Intent groupMainPage = new Intent(this, GroupMain.class);
@@ -253,7 +279,6 @@ public class Photo extends AppCompatActivity {
                 }
                 /* 공유 */
                 else {
-                    getSupportActionBar().setTitle("[공유] " + albumDTO.getName());
                     pc.photoList(albumDTO.getAlbumId(), new Callback<List<PhotoDTO>>() {
                         @Override
                         public void onResponse(Call<List<PhotoDTO>> call, Response<List<PhotoDTO>> response) {
@@ -314,6 +339,11 @@ public class Photo extends AppCompatActivity {
                 }
 
                 if (dto != null) {
+                    ActionBar actionBar = getSupportActionBar();
+                    if (actionBar != null && actionBar.getCustomView() != null) {
+                        TextView customTitle = (TextView) actionBar.getCustomView(); // 커스텀 뷰에서 TextView 가져오기
+                        customTitle.setText("[공유자] " + dto.getMember());
+                    }
                     if (dto.getLiked()) {
                         like.setImageResource(R.drawable.love);
                     } else {
@@ -430,15 +460,17 @@ public class Photo extends AppCompatActivity {
         move.setOnClickListener(v -> {
             /* 개인 */
             if (isPrivate) {
-                ar.searchAll(new yuhan.hgcq.client.localDatabase.callback.Callback<List<AlbumDTO>>() {
+                ar.searchMove(albumDTO.getAlbumId(), new yuhan.hgcq.client.localDatabase.callback.Callback<List<AlbumDTO>>() {
                     @Override
                     public void onSuccess(List<AlbumDTO> result) {
                         if (result != null) {
                             aa = new AlbumAdapter(result, Photo.this, isPrivate);
                             aa.setPhoto();
                             handler.post(() -> {
+                                albumList.setAdapter(aa);
                                 albumListView.setVisibility(View.VISIBLE);
-                                albumListView.setAdapter(aa);
+                                albumListViewTop.setVisibility(View.VISIBLE);
+                                albumList.setVisibility(View.VISIBLE);
                             });
 
                             aa.setOnItemClickListener(new AlbumAdapter.OnItemClickListener() {
@@ -448,13 +480,13 @@ public class Photo extends AppCompatActivity {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
                                             int index = photoView.getCurrentItem();
-                                            AlbumDTO albumDTO = result.get(position);
+                                            AlbumDTO albumDTO1 = result.get(position);
                                             List<PhotoDTO> photoList = pa.getPhotoList();
                                             PhotoDTO dto = photoList.get(index);
                                             List<PhotoDTO> pls = new ArrayList<>();
                                             pls.add(dto);
 
-                                            MovePhotoForm form = new MovePhotoForm(albumDTO.getAlbumId(), pls);
+                                            MovePhotoForm form = new MovePhotoForm(albumDTO1.getAlbumId(), pls);
                                             pr.move(form, new yuhan.hgcq.client.localDatabase.callback.Callback<Boolean>() {
                                                 @Override
                                                 public void onSuccess(Boolean result) {
@@ -465,6 +497,8 @@ public class Photo extends AppCompatActivity {
                                                             photoView.getAdapter().notifyItemRangeChanged(index, photoList.size());
                                                             Toast.makeText(Photo.this, "앨범 이동 했습니다.", Toast.LENGTH_SHORT).show();
                                                             albumListView.setVisibility(View.INVISIBLE);
+                                                            albumList.setVisibility(View.INVISIBLE);
+                                                            albumListViewTop.setVisibility(View.INVISIBLE);
                                                         });
                                                         int newItemPosition = index;
                                                         if (index == photoList.size()) {
@@ -512,16 +546,18 @@ public class Photo extends AppCompatActivity {
             else {
                 if (teamDTO != null) {
                     Long teamId = teamDTO.getTeamId();
-                    ac.albumList(teamId, new retrofit2.Callback<List<AlbumDTO>>() {
+                    ac.moveAlbumList(teamId, albumDTO.getAlbumId(), new retrofit2.Callback<List<AlbumDTO>>() {
                         @Override
                         public void onResponse(Call<List<AlbumDTO>> call, Response<List<AlbumDTO>> response) {
                             if (response.isSuccessful() && response.body() != null) {
-                                List<AlbumDTO> albumList = response.body();
-                                aa = new AlbumAdapter(albumList, Photo.this, isPrivate);
+                                List<AlbumDTO> albumList1 = response.body();
+                                aa = new AlbumAdapter(albumList1, Photo.this, isPrivate);
                                 aa.setPhoto();
                                 handler.post(() -> {
+                                    albumList.setAdapter(aa);
+                                    albumList.setVisibility(View.VISIBLE);
+                                    albumListViewTop.setVisibility(View.VISIBLE);
                                     albumListView.setVisibility(View.VISIBLE);
-                                    albumListView.setAdapter(aa);
                                 });
 
                                 aa.setOnItemClickListener(new AlbumAdapter.OnItemClickListener() {
@@ -531,13 +567,13 @@ public class Photo extends AppCompatActivity {
                                             @Override
                                             public void onClick(DialogInterface dialogInterface, int i) {
                                                 int index = photoView.getCurrentItem();
-                                                AlbumDTO albumDTO = albumList.get(position);
+                                                AlbumDTO albumDTO1 = albumList1.get(position);
                                                 List<PhotoDTO> photoList = pa.getPhotoList();
                                                 PhotoDTO dto = photoList.get(index);
                                                 List<PhotoDTO> pls = new ArrayList<>();
                                                 pls.add(dto);
 
-                                                MovePhotoForm form = new MovePhotoForm(albumDTO.getAlbumId(), pls);
+                                                MovePhotoForm form = new MovePhotoForm(albumDTO1.getAlbumId(), pls);
                                                 pc.moveAlbumPhoto(form, new Callback<ResponseBody>() {
                                                     @Override
                                                     public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -548,6 +584,8 @@ public class Photo extends AppCompatActivity {
                                                                 photoView.getAdapter().notifyItemRangeChanged(index, photoList.size());
                                                                 Toast.makeText(Photo.this, "앨범 이동 했습니다.", Toast.LENGTH_SHORT).show();
                                                                 albumListView.setVisibility(View.INVISIBLE);
+                                                                albumListViewTop.setVisibility(View.INVISIBLE);
+                                                                albumList.setVisibility(View.INVISIBLE);
                                                             });
                                                             int newItemPosition = index;
                                                             if (index == photoList.size()) {
@@ -780,6 +818,8 @@ public class Photo extends AppCompatActivity {
                 if (!rect.contains((int) ev.getRawX(), (int) ev.getRawY())) {
                     handler.post(() -> {
                         albumListView.setVisibility(View.INVISIBLE);
+                        albumList.setVisibility(View.INVISIBLE);
+                        albumListViewTop.setVisibility(View.INVISIBLE);
                     });
                 }
             }

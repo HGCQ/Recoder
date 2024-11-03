@@ -3,7 +3,9 @@ package yuhan.hgcq.client.view;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.Rect;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -18,8 +20,10 @@ import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -46,7 +50,7 @@ import yuhan.hgcq.client.model.dto.team.TeamDTO;
 public class PhotoTrash extends AppCompatActivity {
     /* View */
     TextView empty;
-    Button recover;
+    Button recover, remove;
     RecyclerView photoTrashListView;
     BottomNavigationView navi;
 
@@ -91,8 +95,24 @@ public class PhotoTrash extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getSupportActionBar().setTitle("사진 휴지통");
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        ActionBar actionBar = getSupportActionBar(); // actionBar 가져오기
+        if (actionBar != null) {
+            actionBar.setDisplayShowCustomEnabled(true); // 커스텀 뷰 사용 허용
+            actionBar.setDisplayShowTitleEnabled(false); // 기본 제목 비활성화
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            // 액션바 배경 색상 설정
+            actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#c2dcff")));
+
+            // 커스텀 타이틀 텍스트뷰 설정
+            TextView customTitle = new TextView(this);
+            customTitle.setText("사진 휴지통"); // 제목 텍스트 설정
+            customTitle.setTextSize(20); // 텍스트 크기 조정
+            customTitle.setTypeface(ResourcesCompat.getFont(this, R.font.hangle_l)); // 폰트 설정
+            customTitle.setTextColor(getResources().getColor(R.color.white)); // 텍스트 색상 설정
+
+            actionBar.setCustomView(customTitle); // 커스텀 뷰 설정
+        }
+
 
         EdgeToEdge.enable(this);
         /* Layout */
@@ -113,6 +133,7 @@ public class PhotoTrash extends AppCompatActivity {
         recover = findViewById(R.id.recover);
         photoTrashListView = findViewById(R.id.photoTrashList);
         navi = findViewById(R.id.bottom_navigation_view);
+        remove = findViewById(R.id.remove);
 
         /* 관련된 페이지 */
         Intent groupMainPage = new Intent(this, GroupMain.class);
@@ -176,6 +197,66 @@ public class PhotoTrash extends AppCompatActivity {
                 });
             }
         }
+
+        remove.setOnClickListener(v -> {
+            List<Long> selectedItems = pa.getSelectedItems();
+            onClick_setting_costume_save("삭제하시겠습니까?", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    if(isPrivate){
+                        pr.remove(selectedItems, new Callback<Boolean>() {
+                            @Override
+                            public void onSuccess(Boolean result) {
+                                if(result != null){
+                                    Intent photoTrashPage = new Intent(PhotoTrash.this, PhotoTrash.class);
+                                    photoTrashPage.putExtra("isPrivate", isPrivate);
+                                    photoTrashPage.putExtra("loginMember", loginMember);
+                                    photoTrashPage.putExtra("teamDTO", teamDTO);
+                                    photoTrashPage.putExtra("albumDTO", albumDTO);
+                                    handler.post(() -> {
+                                        Toast.makeText(PhotoTrash.this, "삭제했습니다.", Toast.LENGTH_SHORT).show();
+                                    });
+                                    startActivity(photoTrashPage);
+                                }
+                            }
+
+                            @Override
+                            public void onError(Exception e) {
+
+                            }
+                        });
+                    }
+                    else{
+                        pc.removePhoto(new DeleteCancelPhotoForm(selectedItems), new retrofit2.Callback<ResponseBody>() {
+                            @Override
+                            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                                if (response.isSuccessful()){
+                                    Intent photoTrashPage = new Intent(PhotoTrash.this, PhotoTrash.class);
+                                    photoTrashPage.putExtra("isPrivate", isPrivate);
+                                    photoTrashPage.putExtra("loginMember", loginMember);
+                                    photoTrashPage.putExtra("teamDTO", teamDTO);
+                                    photoTrashPage.putExtra("albumDTO", albumDTO);
+                                    handler.post(() -> {
+                                        Toast.makeText(PhotoTrash.this, "삭제했습니다.", Toast.LENGTH_SHORT).show();
+                                    });
+                                    startActivity(photoTrashPage);
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call<ResponseBody> call, Throwable t) {
+
+                            }
+                        });
+                    }
+                }
+            }, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    Toast.makeText(PhotoTrash.this, "취소했습니다.", Toast.LENGTH_SHORT).show();
+                }
+            });
+        });
 
         /* 복구 */
         recover.setOnClickListener(v -> {

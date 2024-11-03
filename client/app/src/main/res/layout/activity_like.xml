@@ -4,25 +4,40 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#ffffff"
+    android:background="#e6f4f1"
     android:id="@+id/main">
 
 <LinearLayout
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="horizontal">
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/likeList"
         android:layout_width="match_parent"
         android:layout_height="520dp"
-        android:layout_marginTop="100dp"
+        android:background="#e6f4f1"
+        android:layout_marginTop="35dp"
         android:gravity="center"
-        android:padding="17dp"
+        android:clipToPadding="false"
         app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.497"
         app:spanCount="4" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="75dp"
+        android:layout_marginTop="560dp"
+        android:layout_marginStart="-400dp"
+        android:fontFamily="@font/notosans_medium"
+        android:gravity="center_horizontal"
+        android:hint="♥를 누른 사진만 표시가 됩니다."
+        android:textSize="13dp"
+        android:textStyle="bold"/>
+
 </LinearLayout>
     <TextView
         android:id="@+id/empty"
@@ -49,15 +64,15 @@
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation_view"
-        android:layout_width="410dp"
-        android:layout_height="85dp"
-        app:itemIconTint="#2196F3"
+        android:layout_width="match_parent"
+        android:layout_height="95dp"
         app:itemTextColor="@color/black"
-        app:labelVisibilityMode="labeled"
+        android:background="#e6f4f1"
+        app:labelVisibilityMode="unlabeled"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:menu="@menu/menu_bottom_nav" />
-        
+
 </androidx.constraintlayout.widget.ConstraintLayout>

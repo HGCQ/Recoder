@@ -38,15 +38,20 @@ public class PhotoRepository {
     }
 
     @Transaction
-    public void create(Long albumId, List<String> paths, List<LocalDateTime> times, Callback<Boolean> callback) {
+    public void create(Long albumId, List<String> paths, List<LocalDateTime> times, List<String> regions, Callback<Boolean> callback) {
         executor.execute(() -> {
             try {
                 int size = paths.size();
                 for (int i = 0; i < size; i++) {
-                    Photo photo = Photo.create(paths.get(i), albumId, times.get(i));
+                    String region = regions.get(i);
+                    if (region.equals("null")) {
+                        region = "위치정보없음";
+                    }
+                    String path = paths.get(i);
+                    Photo photo = Photo.create(path, albumId, times.get(i), region);
                     dao.save(photo);
                 }
-                callback.onSuccess(Boolean.TRUE);
+                callback.onSuccess(true);
             } catch (Exception e) {
                 callback.onError(e);
             }
@@ -94,20 +99,40 @@ public class PhotoRepository {
         });
     }
 
+    @Transaction
+    public void remove(List<Long> photoIdList, Callback<Boolean> callback) {
+        executor.execute(() -> {
+            try {
+                for (Long id : photoIdList) {
+                    Photo photo = dao.findById(id).get(0);
+                    if (photo == null) {
+                        callback.onSuccess(false);
+                        return;
+                    }
+                    if (photo.getIs_deleted()) {
+                        dao.delete(photo);
+                    }
+                }
+                callback.onSuccess(Boolean.TRUE);
+            } catch (Exception e) {
+                callback.onError(e);
+            }
+        });
+    }
+
     //찾기
     //널 비교
     public void search(Long id, Callback<PhotoDTO> callback) {
         executor.execute(() -> {
             try {
                 List<Photo> photoList = dao.findById(id);
-                // Null 또는 빈 리스트 체크
-                if (photoList == null) {
+
+                if (photoList.isEmpty()) {
                     callback.onError(new Exception("No photo found with the given id."));
                     return;
                 }
                 Photo photo = photoList.get(0);
                 PhotoDTO dto = mapping(photo);
-                ;
 
                 callback.onSuccess(dto);
             } catch (Exception e) {
@@ -138,11 +163,12 @@ public class PhotoRepository {
     public void Liked(Long id, Callback<Boolean> callback) {
         executor.execute(() -> {
             try {
-                Photo photo = dao.findById(id).get(0);
-                if (photo == null) {
+                List<Photo> findPhoto = dao.findById(id);
+                if (findPhoto.isEmpty()) {
                     callback.onSuccess(false);
                     return;
                 }
+                Photo photo = findPhoto.get(0);
                 photo.liked();
                 dao.update(photo);
                 callback.onSuccess(true);
@@ -166,14 +192,37 @@ public class PhotoRepository {
 
                     photoDTOList.add(dto);
 
-                    photoDTOList.sort(new Comparator<PhotoDTO>() {
-                        @Override
-                        public int compare(PhotoDTO p1, PhotoDTO p2) {
-                            return p2.getCreated().compareTo(p1.getCreated());
-                        }
-                    });
-
                     gallery.put(create.toString(), photoDTOList);
+                }
+
+                callback.onSuccess(gallery);
+            } catch (Exception e) {
+                callback.onError(e);
+            }
+        });
+    }
+
+    public void galleryByDate(Long albumId, String startDate, String endDate, Callback<Map<String, List<PhotoDTO>>> callback) {
+        executor.execute(() -> {
+            try {
+                LocalDate start = LocalDate.parse(startDate);
+                LocalDate end = LocalDate.parse(endDate);
+                List<Photo> photoList = dao.findByAlbumId(albumId);
+                Map<String, List<PhotoDTO>> gallery = new HashMap<>();
+
+                for (Photo photo : photoList) {
+                    LocalDate create = photo.getCreated().toLocalDate();
+
+                    if ((create.isEqual(start) || create.isAfter(start)) &&
+                            (create.isEqual(end) || create.isBefore(end))) {
+                        PhotoDTO dto = mapping(photo);
+
+                        List<PhotoDTO> photoDTOList = gallery.getOrDefault(create.toString(), new ArrayList<>());
+
+                        photoDTOList.add(dto);
+
+                        gallery.put(create.toString(), photoDTOList);
+                    }
                 }
 
                 callback.onSuccess(gallery);
@@ -223,7 +272,11 @@ public class PhotoRepository {
                 Long albumId = form.getNewAlbumId();
                 List<PhotoDTO> photos = form.getPhotos();
                 for (PhotoDTO p : photos) {
-                    Photo photo = dao.findById(p.getPhotoId()).get(0);
+                    List<Photo> findPhoto = dao.findById(p.getPhotoId());
+                    if (findPhoto.isEmpty()) {
+                        continue;
+                    }
+                    Photo photo = findPhoto.get(0);
                     photo.setAlbumId(albumId);
                     dao.update(photo);
                 }
@@ -238,34 +291,49 @@ public class PhotoRepository {
      * 선택된 앨범에 사진 자동으로 저장
      */
     @Transaction
-    public void autoSave(List<String> paths, List<LocalDateTime> creates, Callback<Boolean> callback) {
+    public void autoSave(List<String> paths, List<LocalDateTime> creates, List<String> regions, Callback<Boolean> callback) {
         executor.execute(() -> {
             try {
-                List<Album> albumList = adao.findAll();
+                String noRegion = "위치정보없음";
                 int size = paths.size();
                 for (int i = 0; i < size; i++) {
-                    LocalDateTime photoCreate = creates.get(i);
-                    // 앨범 정보 조회
-                    for (Album album : albumList) {
-                        // 앨범 시작일과 종료일을 Room DB에서 가져오는 로직
-                        LocalDateTime startDate = album.getStartDate();
-                        LocalDateTime endDate = album.getEndDate();
-                        Log.d("startDate", startDate.toString());
-                        Log.d("endDate", endDate.toString());
+                    String path = paths.get(i);
+                    LocalDateTime create = creates.get(i);
+                    String region = regions.get(i);
 
-                        // 사진 시간이 앨범 기간 내에 있는지 확인
-                        if (photoCreate.isAfter(startDate) && photoCreate.isBefore(endDate)) {
-                            Photo photo = Photo.create(paths.get(i), album.getAlbumId(), photoCreate);
-                            Log.d("photo", photo.toString());
-                            dao.save(photo);
+                    List<String> albumNameList = adao.findAlbumNameList();
+                    Album album = null;
+
+                    if (region != null) {
+                        if (region.equals("null")) {
+                            if (!albumNameList.contains(noRegion)) {
+                                Album newAlbum = Album.create(noRegion);
+                                adao.save(newAlbum);
+                                albumNameList.add(noRegion);
+                            }
+                            album = adao.findOneByName(noRegion);
+                        } else {
+                            if (!albumNameList.contains(region)) {
+                                Album newAlbum = Album.create(region);
+                                adao.save(newAlbum);
+                                albumNameList.add(region);
+                            }
+                            album = adao.findOneByName(region);
                         }
                     }
-                }
 
-                // 성공 콜백
-                callback.onSuccess(Boolean.TRUE);
+                    if (album != null) {
+                        Long albumId = album.getAlbumId();
+                        List<String> pathList = dao.findPathList(albumId);
+                        if (pathList.contains(path)) {
+                            continue;
+                        }
+                        Photo newPhoto = Photo.create(path, albumId, create, region);
+                        dao.save(newPhoto);
+                    }
+                }
+                callback.onSuccess(true);
             } catch (Exception e) {
-                // 오류 처리
                 callback.onError(e);
             }
         });

@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
-    android:background="#ffffff"
+    android:background="#e6f4f1"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="horizontal"
@@ -28,7 +28,7 @@
                 android:layout_gravity="center"
                 android:text="Recoder"
                 android:textColor="@color/black"
-                android:fontFamily="@font/continuous"
+                android:fontFamily="@font/hangle_b"
                 android:textSize="40sp"
                 android:textStyle="bold" />
 

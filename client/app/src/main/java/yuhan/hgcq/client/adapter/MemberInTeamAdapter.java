@@ -15,6 +15,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,6 +25,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import yuhan.hgcq.client.R;
+import yuhan.hgcq.client.config.NetworkClient;
 import yuhan.hgcq.client.controller.TeamController;
 import yuhan.hgcq.client.model.dto.member.MemberDTO;
 import yuhan.hgcq.client.model.dto.team.MemberInTeamDTO;
@@ -36,18 +39,23 @@ public class MemberInTeamAdapter extends RecyclerView.Adapter<MemberInTeamAdapte
     private TeamMemberDTO tmDTO;
     private TeamDTO teamDTO;
     private MemberDTO loginmember;
+    private Context context;
+    private String serverIp;
 
     public MemberInTeamAdapter(List<MemberInTeamDTO> memberList, Context context, TeamDTO teamDTO, MemberDTO loginmember) {
         this.memberList = memberList;
         this.tc = new TeamController(context);
         this.teamDTO = teamDTO;  // 전달받은 teamDTO를 설정
         this.loginmember = loginmember;
+        this.serverIp = NetworkClient.getInstance(context).getServerIp();
+        this.context = context;
     }
 
     public static class MemberInTeamViewHolder extends RecyclerView.ViewHolder {
         public TextView name;
         public TextView level;
         public ImageButton friendDelete, power;
+        public ImageView profile;
 
 
 
@@ -57,6 +65,7 @@ public class MemberInTeamAdapter extends RecyclerView.Adapter<MemberInTeamAdapte
             level = view.findViewById(R.id.level);
             friendDelete = view.findViewById(R.id.friendDelete);
             power = view.findViewById(R.id.power);
+            profile = view.findViewById(R.id.profile);
         }
     }
 
@@ -74,6 +83,12 @@ public class MemberInTeamAdapter extends RecyclerView.Adapter<MemberInTeamAdapte
         holder.name.setText(dto.getName());
         holder.power.setVisibility(View.INVISIBLE);
         holder.friendDelete.setVisibility(View.INVISIBLE);
+
+        if(dto.getImage() != null){
+            Glide.with(context)
+                    .load(serverIp + dto.getImage())
+                    .into(holder.profile);
+        }
 
         if (dto.getOwner()) {
             holder.level.setText("그룹장");
@@ -237,6 +252,12 @@ public class MemberInTeamAdapter extends RecyclerView.Adapter<MemberInTeamAdapte
     public int getItemCount() {
         return memberList.size();
     }
+    public void updateData(List<MemberInTeamDTO> newMemberList) {
+        this.memberList.clear(); // Clear the old data
+        this.memberList.addAll(newMemberList); // Add new data
+        notifyDataSetChanged(); // Notify the adapter of the data change
+    }
+
 
     // Confirm dialog method
     public void onClick_setting_costume_save(Context context, String message, DialogInterface.OnClickListener positive, DialogInterface.OnClickListener negative) {

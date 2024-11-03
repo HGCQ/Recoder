@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#ffffff"
+    android:background="#e6f4f1"
     android:id="@+id/main">
 
 
@@ -23,6 +23,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:tint="#234567" />
+
     <EditText
         android:id="@+id/GroupText"
         android:layout_width="380dp"
@@ -57,7 +58,7 @@
         android:layout_width="380dp"
         android:layout_height="45dp"
         android:layout_marginTop="616dp"
-        android:background="@drawable/select"
+        android:background="@drawable/edittext3"
         android:fontFamily="@font/ibm_semibold"
         android:layout_marginBottom="5dp"
         android:gravity="center"
@@ -102,10 +103,11 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/createGroupList"
             android:layout_width="match_parent"
-            android:layout_height="380dp"
-            android:layout_marginTop="188dp"
+            android:clipToPadding="false"
+            android:layout_height="430dp"
+            android:layout_marginTop="180dp"
             android:gravity="center"
-            android:padding="17dp"
+            tools:listitem="@layout/item_group_setting"
             app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

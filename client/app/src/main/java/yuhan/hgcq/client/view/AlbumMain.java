@@ -4,7 +4,9 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.graphics.Rect;
+import android.graphics.drawable.ColorDrawable;
 import android.location.Address;
 import android.location.Geocoder;
 import android.net.Uri;
@@ -18,6 +20,7 @@ import android.provider.Settings;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -32,7 +35,9 @@ import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -98,32 +103,56 @@ public class AlbumMain extends AppCompatActivity {
     private static final int GALLERY = 1000;
     private static final int REQUEST_PERMISSION = 1111;
 
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        if(isPrivate){
+            getMenuInflater().inflate(R.menu.menu_actionbar_icon_share, menu);
+        }else {
+            getMenuInflater().inflate(R.menu.menu_actionbar_icon_privated, menu);
+        }
+        return super.onCreateOptionsMenu(menu);
+    }
+
     /* 뒤로 가기 */
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                if (isPrivate) {
-                    Intent selectPage = new Intent(this, Select.class);
-                    selectPage.putExtra("loginMember", loginMember);
-                    startActivity(selectPage);
-                } else {
-                    Intent groupMainPage = new Intent(this, GroupMain.class);
-                    groupMainPage.putExtra("loginMember", loginMember);
-                    startActivity(groupMainPage);
-                }
-                finish();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+        Intent loginPage = new Intent(this, Login.class);
+        Intent selectPage = new Intent(this, Select.class);
+        Intent groupMainPage = new Intent(this, GroupMain.class);
+
+
+        if (item.getItemId() == android.R.id.home) {
+            if (isPrivate) {
+                selectPage.putExtra("loginMember", loginMember);
+                startActivity(selectPage);
+            } else {
+
+                groupMainPage.putExtra("loginMember", loginMember);
+                startActivity(groupMainPage);
+            }
+            finish();
+            return true;
+        }else {
+            if (loginMember != null) {
+                groupMainPage.putExtra("loginMember", loginMember);
+                startActivity(groupMainPage);
+            } else {
+                startActivity(loginPage);
+            }
         }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getSupportActionBar().setTitle("Recoder");
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        ActionBar actionBar = getSupportActionBar(); // actionBar 가져오기
+        if (actionBar != null) {
+            actionBar.setTitle("Recoder");
+            actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#c2dcff")));
+            actionBar.setDisplayHomeAsUpEnabled(true); // 뒤로가기 버튼 활성화
+        }
 
         EdgeToEdge.enable(this);
         /* Layout */
@@ -173,18 +202,32 @@ public class AlbumMain extends AppCompatActivity {
         loginMember = (MemberDTO) getIntent.getSerializableExtra("loginMember");
 
         /* 제목 */
-        if (isPrivate) {
-            getSupportActionBar().setTitle("[개인] 앨범");
-        } else if (teamDTO != null) {
-            getSupportActionBar().setTitle("[공유] 앨범\n" + teamDTO.getName());
+        ActionBar actionbar = getSupportActionBar(); // 액션바 가져오기
+
+        if (actionbar != null) {
+            actionbar.setDisplayShowCustomEnabled(true); // 커스텀 뷰 사용 허용
+            actionbar.setDisplayShowTitleEnabled(false); // 기본 제목 비활성화
+            actionbar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#c2dcff"))); // 배경 색상 설정
+
+            // 제목 설정
+            TextView customTitle = new TextView(this);
+            customTitle.setTextSize(20); // 텍스트 크기 조정
+            customTitle.setTypeface(ResourcesCompat.getFont(this, R.font.hangle_l)); // 폰트 설정
+            customTitle.setTextColor(getResources().getColor(R.color.white)); // 텍스트 색상 설정
+
+            if (isPrivate) {
+                customTitle.setText("[개인] 앨범"); // 개인 앨범 제목
+            } else if (teamDTO != null) {
+                customTitle.setText("[공유] 앨범 " + teamDTO.getName()); // 공유 앨범 제목
+            }
+
+            actionbar.setCustomView(customTitle); // 커스텀 뷰 설정
         }
 
         /* 초기 설정 */
 
         /* 개인 */
         if (isPrivate) {
-
-
             ar.searchAll(new Callback<List<AlbumDTO>>() {
                 @Override
                 public void onSuccess(List<AlbumDTO> result) {
@@ -221,6 +264,7 @@ public class AlbumMain extends AppCompatActivity {
                                 AlbumDTO albumDTO = result.get(position);
                                 galleryPage.putExtra("albumDTO", albumDTO);
                                 galleryPage.putExtra("isPrivate", true);
+                                galleryPage.putExtra("loginMember", loginMember);
                                 startActivity(galleryPage);
                             }
                         });
@@ -497,27 +541,29 @@ public class AlbumMain extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
+        // ProgressDialog 선언
+        ProgressDialog progressDialog = new ProgressDialog(AlbumMain.this);
+        progressDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT)); // 배경을 투명하게
+        progressDialog.setCancelable(false); // 다이얼로그 외부 클릭으로 종료되지 않게
+
         /* 갤러리 */
         if (requestCode == GALLERY && resultCode == RESULT_OK) {
             if (data != null) {
                 /* 사진 여러 장 */
                 if (data.getClipData() != null) {
                     int count = data.getClipData().getItemCount();
-
                     List<Uri> uriList = new ArrayList<>(count);
                     List<String> paths = new ArrayList<>(count);
                     List<LocalDateTime> creates = new ArrayList<>(count);
-                    List<String> regions = new ArrayList<>();
+                    List<String> regions = new ArrayList<>(count);
 
                     for (int i = 0; i < count; i++) {
                         Uri imageUri = data.getClipData().getItemAt(i).getUri();
-
                         PhotoMetaData metadata = getImageMetadata(imageUri);
                         if (metadata != null) {
                             String path = imageUri.toString();
                             LocalDateTime created = metadata.getCreated();
                             String region = metadata.getRegion();
-
                             uriList.add(imageUri);
                             paths.add(path);
                             creates.add(created);
@@ -527,31 +573,29 @@ public class AlbumMain extends AppCompatActivity {
 
                     /* 개인 */
                     if (isPrivate) {
-                        /* 권한 요청 */
-                        for (Uri uri : uriList) {
-                            getContentResolver().takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                        }
-
-                        pr.autoSave(paths, creates, new Callback<Boolean>() {
+                        progressDialog.show(); // 로딩 화면 보여주기
+                        pr.autoSave(paths, creates, regions, new Callback<Boolean>() {
                             @Override
                             public void onSuccess(Boolean result) {
+                                progressDialog.dismiss(); // 로딩 화면 종료
                                 if (result) {
                                     handler.post(() -> {
                                         Toast.makeText(AlbumMain.this, "사진이 저장되었습니다.", Toast.LENGTH_SHORT).show();
+                                        Intent albumMainPage = new Intent(AlbumMain.this, AlbumMain.class);
+                                        albumMainPage.putExtra("isPrivate", true);
+                                        albumMainPage.putExtra("loginMember", loginMember);
+                                        albumMainPage.putExtra("teamDTO", teamDTO);
+                                        startActivity(albumMainPage);
                                     });
-                                    Intent albumMainPage = new Intent(AlbumMain.this, AlbumMain.class);
-                                    albumMainPage.putExtra("isPrivate", true);
-                                    albumMainPage.putExtra("loginMember", loginMember);
-                                    albumMainPage.putExtra("teamDTO", teamDTO);
-                                    startActivity(albumMainPage);
                                 } else {
-                                    /* Toast 메시지 */
+                                    handler.post(() -> Toast.makeText(AlbumMain.this, "사진 저장에 실패했습니다.", Toast.LENGTH_SHORT).show());
                                 }
                             }
 
                             @Override
                             public void onError(Exception e) {
-                                /* Toast 메시지 */
+                                progressDialog.dismiss(); // 로딩 화면 종료
+                                handler.post(() -> Toast.makeText(AlbumMain.this, "사진 저장 중 오류가 발생했습니다.", Toast.LENGTH_SHORT).show());
                             }
                         });
                     }
@@ -559,46 +603,49 @@ public class AlbumMain extends AppCompatActivity {
                     else {
                         if (teamDTO != null) {
                             Long teamId = teamDTO.getTeamId();
+                            progressDialog.show(); // 로딩 화면 보여주기
                             pc.autoSavePhoto(uriList, teamId, creates, regions, new retrofit2.Callback<ResponseBody>() {
                                 @Override
                                 public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                                    progressDialog.dismiss(); // 로딩 화면 종료
                                     if (response.isSuccessful()) {
                                         handler.post(() -> {
                                             Toast.makeText(AlbumMain.this, "사진이 저장되었습니다.", Toast.LENGTH_SHORT).show();
+                                            Intent albumMainPage = new Intent(AlbumMain.this, AlbumMain.class);
+                                            albumMainPage.putExtra("loginMember", loginMember);
+                                            albumMainPage.putExtra("teamDTO", teamDTO);
+                                            startActivity(albumMainPage);
                                         });
-                                        Intent albumMainPage = new Intent(AlbumMain.this, AlbumMain.class);
-                                        albumMainPage.putExtra("loginMember", loginMember);
-                                        albumMainPage.putExtra("teamDTO", teamDTO);
-                                        startActivity(albumMainPage);
                                     } else {
-                                        /* Toast 메시지 */
+                                        handler.post(() -> Toast.makeText(AlbumMain.this, "사진 저장에 실패했습니다.", Toast.LENGTH_SHORT).show());
                                     }
                                 }
 
                                 @Override
                                 public void onFailure(Call<ResponseBody> call, Throwable t) {
-                                    /* Toast 메시지 */
+                                    progressDialog.dismiss(); // 로딩 화면 종료
+                                    handler.post(() -> Toast.makeText(AlbumMain.this, "사진 저장 중 오류가 발생했습니다.", Toast.LENGTH_SHORT).show());
                                 }
                             });
+                        } else {
+                            progressDialog.dismiss(); // 로딩 화면 종료
+                            handler.post(() -> Toast.makeText(AlbumMain.this, "팀 정보가 없습니다.", Toast.LENGTH_SHORT).show());
                         }
                     }
                 }
                 /* 사진 한 장 */
                 else if (data.getData() != null) {
                     Uri imageUri = data.getData();
-
                     List<Uri> uriList = new ArrayList<>();
                     List<String> paths = new ArrayList<>();
                     List<LocalDateTime> creates = new ArrayList<>();
                     List<String> regions = new ArrayList<>();
-
                     PhotoMetaData metadata = getImageMetadata(imageUri);
 
                     if (metadata != null) {
                         String path = imageUri.toString();
                         LocalDateTime created = metadata.getCreated();
                         String region = metadata.getRegion();
-
                         uriList.add(imageUri);
                         paths.add(path);
                         creates.add(created);
@@ -607,47 +654,48 @@ public class AlbumMain extends AppCompatActivity {
 
                     /* 개인 */
                     if (isPrivate) {
-                        /* 권한 요청 */
-                        getContentResolver().takePersistableUriPermission(imageUri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
-
-                        pr.autoSave(paths, creates, new Callback<Boolean>() {
+                        progressDialog.show(); // 로딩 화면 보여주기
+                        pr.autoSave(paths, creates, regions, new Callback<Boolean>() {
                             @Override
                             public void onSuccess(Boolean result) {
+                                progressDialog.dismiss(); // 로딩 화면 종료
                                 if (result) {
                                     handler.post(() -> {
                                         Toast.makeText(AlbumMain.this, "사진이 저장되었습니다.", Toast.LENGTH_SHORT).show();
+                                        Intent albumMainPage = new Intent(AlbumMain.this, AlbumMain.class);
+                                        albumMainPage.putExtra("isPrivate", true);
+                                        albumMainPage.putExtra("loginMember", loginMember);
+                                        albumMainPage.putExtra("teamDTO", teamDTO);
+                                        startActivity(albumMainPage);
                                     });
-                                    Intent albumMainPage = new Intent(AlbumMain.this, AlbumMain.class);
-                                    albumMainPage.putExtra("isPrivate", true);
-                                    albumMainPage.putExtra("loginMember", loginMember);
-                                    albumMainPage.putExtra("teamDTO", teamDTO);
-                                    startActivity(albumMainPage);
                                 } else {
-                                    /* Toast 메시지 추가 */
+                                    handler.post(() -> Toast.makeText(AlbumMain.this, "사진 저장에 실패했습니다.", Toast.LENGTH_SHORT).show());
                                 }
                             }
 
                             @Override
                             public void onError(Exception e) {
-                                /* Toast 메시지 추가 */
+                                progressDialog.dismiss(); // 로딩 화면 종료
+                                handler.post(() -> Toast.makeText(AlbumMain.this, "사진 저장 중 오류가 발생했습니다.", Toast.LENGTH_SHORT).show());
                             }
                         });
                     }
                     /* 공유 */
                     else {
                         if (teamDTO != null) {
-                            Long teamId = teamDTO.getTeamId();
-                            pc.autoSavePhoto(uriList, teamId, creates, regions, new retrofit2.Callback<ResponseBody>() {
+                            progressDialog.show(); // 로딩 화면 보여주기
+                            pc.autoSavePhoto(uriList, teamDTO.getTeamId(), creates, regions, new retrofit2.Callback<ResponseBody>() {
                                 @Override
                                 public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                                    progressDialog.dismiss(); // 로딩 화면 종료
                                     if (response.isSuccessful()) {
                                         handler.post(() -> {
                                             Toast.makeText(AlbumMain.this, "사진이 저장되었습니다.", Toast.LENGTH_SHORT).show();
+                                            Intent albumMainPage = new Intent(AlbumMain.this, AlbumMain.class);
+                                            albumMainPage.putExtra("loginMember", loginMember);
+                                            albumMainPage.putExtra("teamDTO", teamDTO);
+                                            startActivity(albumMainPage);
                                         });
-                                        Intent albumMainPage = new Intent(AlbumMain.this, AlbumMain.class);
-                                        albumMainPage.putExtra("loginMember", loginMember);
-                                        albumMainPage.putExtra("teamDTO", teamDTO);
-                                        startActivity(albumMainPage);
                                     } else {
                                         /* Toast 메시지 추가 */
                                     }

@@ -43,9 +43,6 @@ dependencies {
     implementation ("com.squareup.okhttp3:logging-interceptor:4.9.0")
     implementation ("com.github.franmontiel:PersistentCookieJar:v1.0.1")
 
-    /* Apache */
-    implementation ("commons-io:commons-io:2.11.0")
-
     /* Metadata */
     implementation ("com.drewnoakes:metadata-extractor:2.19.0")
 
@@ -56,8 +53,8 @@ dependencies {
     implementation ("com.github.bumptech.glide:glide:4.15.1")
     annotationProcessor ("com.github.bumptech.glide:compiler:4.15.1")
 
-    /* Material */
-    implementation ("com.google.android.material:material:1.4.0")
+    /* Material !*/
+    implementation ("com.google.android.material:material:1.10.0")
 
     implementation(libs.appcompat)
     implementation(libs.material)
@@ -77,4 +74,11 @@ dependencies {
     testImplementation ("androidx.test.ext:junit:1.1.5")
     testImplementation ("androidx.test:core:1.5.0")
     testImplementation ("junit:junit:4.13.2")
+
+    /* Glide */
+    implementation ("com.github.bumptech.glide:glide:4.15.0")
+    annotationProcessor ("com.github.bumptech.glide:compiler:4.15.0")
+
+    /* Dialog */
+    implementation ("com.github.ybq:Android-SpinKit:1.4.0")
 }

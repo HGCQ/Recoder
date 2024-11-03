@@ -3,16 +3,15 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
-    android:background="#ffffff"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".view.Loading">
-
     <View
         android:layout_width="181dp"
         android:layout_height="261dp"
         android:background="@drawable/select"
         android:elevation="10dp"
+
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.043"
@@ -35,7 +34,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/continuous"
+        android:fontFamily="@font/hangle_b"
         android:textStyle="bold"
         android:text="Recoder"
         android:textColor="@color/black"
@@ -67,7 +66,7 @@
         android:text="개인"
         android:textSize="20dp"
         android:elevation="10dp"
-        android:fontFamily="@font/ibm_regular"
+        android:fontFamily="@font/ibm_medium"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.223"
@@ -95,7 +94,7 @@
         android:layout_height="wrap_content"
         android:text="공유"
         android:textSize="20dp"
-        android:fontFamily="@font/ibm_regular"
+        android:fontFamily="@font/ibm_medium"
         android:elevation="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

@@ -3,7 +3,9 @@ package yuhan.hgcq.client.view;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.Rect;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -12,6 +14,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.provider.Settings;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -19,13 +22,17 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -48,9 +55,10 @@ public class MyPage extends AppCompatActivity {
     /* View */
     ImageView profile;
     TextView name, email;
-    ImageButton profileAdd;
-    Button retouch, secession;
+    ImageButton profileAdd,retouch;
+    Button  secession,logout;
     BottomNavigationView navi;
+    Switch swit;
 
     /* http 통신 */
     MemberController mc;
@@ -68,11 +76,36 @@ public class MyPage extends AppCompatActivity {
     /* Intent 요청 코드 */
     private static final int GALLERY = 1000;
     private static final int REQUEST_PERMISSION = 1111;
-
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home: // 뒤로가기 버튼 ID
+                finish(); // 현재 액티비티 종료
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getSupportActionBar().setTitle("내 정보");
+        ActionBar actionBar = getSupportActionBar(); // actionBar 가져오기
+        if (actionBar != null) {
+            actionBar.setDisplayShowCustomEnabled(true); // 커스텀 뷰 사용 허용
+            actionBar.setDisplayShowTitleEnabled(false); // 기본 제목 비활성화
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            // 액션바 배경 색상 설정
+            actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#c2dcff")));
+
+            // 커스텀 타이틀 텍스트뷰 설정
+            TextView customTitle = new TextView(this);
+            customTitle.setText("내 정보"); // 제목 텍스트 설정
+            customTitle.setTextSize(20); // 텍스트 크기 조정
+            customTitle.setTypeface(ResourcesCompat.getFont(this, R.font.hangle_l)); // 폰트 설정
+            customTitle.setTextColor(getResources().getColor(R.color.white)); // 텍스트 색상 설정
+
+            actionBar.setCustomView(customTitle); // 커스텀 뷰 설정
+        }
+
 
         EdgeToEdge.enable(this);
         /* Layout */
@@ -94,6 +127,9 @@ public class MyPage extends AppCompatActivity {
         email = findViewById(R.id.email);
         retouch = findViewById(R.id.retouch);
         secession = findViewById(R.id.secession);
+        logout=findViewById(R.id.logout);
+        secession=findViewById(R.id.secession);
+        swit=findViewById(R.id.switch1);
 
         /* 갤러리 */
         Intent gallery = new Intent(Intent.ACTION_PICK);
@@ -107,6 +143,7 @@ public class MyPage extends AppCompatActivity {
         Intent groupMainPage = new Intent(this, GroupMain.class);
         Intent friendListPage = new Intent(this, FriendList.class);
         Intent likePage = new Intent(this, Like.class);
+        Intent loginPage=new Intent(this, Login.class);
 
         /* 받아올 값 */
         Intent getIntent = getIntent();
@@ -125,6 +162,81 @@ public class MyPage extends AppCompatActivity {
                         .into(profile);
             }
         }
+           secession.setOnClickListener(v -> {
+                mc.deleteMember(new Callback<ResponseBody>() {
+                    @Override
+                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                        if(response.isSuccessful()){
+                            NetworkClient.getInstance(MyPage.this.getApplicationContext()).deleteCookie();
+                            Toast.makeText(MyPage.this,"회원 탈퇴 완료",Toast.LENGTH_SHORT).show();
+                            startActivity(loginPage);
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<ResponseBody> call, Throwable t) {
+
+                    }
+                });
+            });
+        swit.setChecked(loginMember.getSearch());
+        swit.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
+                // 스위치가 켜져 있을 때 (검색 허용 상태)
+                mc.changeSearched(new Callback<MemberDTO>() {
+                    @Override
+                    public void onResponse(Call<MemberDTO> call, Response<MemberDTO> response) {
+                        if (response.isSuccessful()) {
+                            // 검색 결과를 보여줌 (검색 허용)
+                            loginMember = response.body();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<MemberDTO> call, Throwable t) {
+                        // 실패 처리
+
+                    }
+                });
+            } else {
+                // 스위치가 꺼져 있을 때 (검색 차단 상태)
+                // 검색 결과를 숨김
+                mc.changeSearched(new Callback<MemberDTO>() {
+                    @Override
+                    public void onResponse(Call<MemberDTO> call, Response<MemberDTO> response) {
+                        if(response.isSuccessful()){
+                            loginMember = response.body();
+                        }
+
+                    }
+
+                    @Override
+                    public void onFailure(Call<MemberDTO> call, Throwable t) {
+
+                    }
+                });
+
+            }
+        });
+
+        logout.setOnClickListener(v->{
+            mc.logoutMember(new Callback<ResponseBody>() {
+                @Override
+                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                    if(response.isSuccessful()){
+                        String name=loginMember.getName();
+                        NetworkClient.getInstance(MyPage.this.getApplicationContext()).deleteCookie();
+                        Toast.makeText(MyPage.this,name+"님 로그아웃되었습니다.",Toast.LENGTH_SHORT).show();
+                        startActivity(loginPage);
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<ResponseBody> call, Throwable t) {
+
+                }
+            });
+        });
 
         /* 프로필 추가 */
         profileAdd.setOnClickListener(v -> {

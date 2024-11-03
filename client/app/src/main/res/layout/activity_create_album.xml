@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:background="#ffffff"
+    android:background="#e6f4f1"
     android:layout_height="match_parent"
     android:id="@+id/main"
     tools:context=".view.CreateAlbum">
@@ -47,7 +47,7 @@
         android:layout_height="45dp"
         android:layout_marginTop="624dp"
         android:layout_marginBottom="5dp"
-        android:background="@drawable/select"
+        android:background="@drawable/edittext3"
         android:fontFamily="@font/ibm_semibold"
         android:onClick="onClick_setting_costume_save"
         android:padding="0dp"
