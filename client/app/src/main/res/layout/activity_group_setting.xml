@@ -195,11 +195,11 @@
 
         <android.widget.Button
             android:id="@+id/groupLeave"
-            android:layout_width="380dp"
+            android:layout_width="350dp"
             android:layout_height="45dp"
             android:layout_marginTop="615dp"
             android:layout_marginBottom="5dp"
-            android:layout_marginStart="-350dp"
+            android:layout_marginStart="-360dp"
             android:padding="0dp"
             android:elevation="10dp"
             android:background="@drawable/edittext3"

@@ -112,7 +112,7 @@ public class FollowAdapter extends RecyclerView.Adapter<FollowAdapter.FollowView
         if (selectedItems.contains(position)) {
             holder.itemView.setBackgroundColor(Color.LTGRAY);
         } else {
-            holder.itemView.setBackgroundColor(Color.WHITE);
+            holder.itemView.setBackgroundColor(Color.argb(255,230,244,241));
         }
 
         holder.itemView.setOnClickListener(v -> {
