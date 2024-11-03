@@ -39,11 +39,11 @@
 
       <android.widget.Button
           android:id="@+id/auto"
-          android:layout_width="40dp"
-          android:layout_height="35dp"
-          android:layout_marginStart="-327dp"
-          android:layout_marginTop="115dp"
-          android:background="@drawable/photoplus"
+          android:layout_width="80dp"
+          android:layout_height="58dp"
+          android:layout_marginStart="-346dp"
+          android:layout_marginTop="95dp"
+          android:background="@drawable/auto"
           android:elevation="10dp"
           android:fontFamily="@font/ibm_regular"
           android:scaleType="fitCenter" />
