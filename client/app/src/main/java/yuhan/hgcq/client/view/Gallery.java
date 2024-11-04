@@ -19,6 +19,7 @@ import android.os.Looper;
 import android.provider.MediaStore;
 import android.provider.Settings;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -115,27 +116,55 @@ public class Gallery extends AppCompatActivity {
     private static final int GALLERY = 1000;
     private static final int REQUEST_PERMISSION = 1111;
 
-    /* 뒤로 가기 */
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        if(isPrivate){
+            getMenuInflater().inflate(R.menu.menu_actionbar_icon_share, menu);
+        }else {
+            getMenuInflater().inflate(R.menu.menu_actionbar_icon_privated, menu);
+        }
+        return super.onCreateOptionsMenu(menu);
+    }
+
+
+    /* 뒤로 가기, 개인, 공유 이동 */
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                Intent albumMainPage = new Intent(this, AlbumMain.class);
-                if (isPrivate) {
-                    albumMainPage.putExtra("isPrivate", true);
-                    if (loginMember != null) {
-                        albumMainPage.putExtra("loginMember", loginMember);
-                    }
+        Intent loginPage = new Intent(this, Login.class);
+        Intent selectPage = new Intent(this, Select.class);
+        Intent groupMainPage = new Intent(this, GroupMain.class);
+        Intent albumMainPage = new Intent(this, AlbumMain.class);
+
+        if (item.getItemId() == android.R.id.home) {
+            if (isPrivate) {
+                selectPage.putExtra("loginMember", loginMember);
+                startActivity(selectPage);
+            } else {
+
+                groupMainPage.putExtra("loginMember", loginMember);
+                startActivity(groupMainPage);
+            }
+            finish();
+            return true;
+        }else {
+            if(isPrivate) {
+                if (loginMember != null) {
+                    groupMainPage.putExtra("loginMember", loginMember);
+                    startActivity(groupMainPage);
                 } else {
-                    albumMainPage.putExtra("teamDTO", teamDTO);
+                    startActivity(loginPage);
+                }
+            }else{
+                albumMainPage.putExtra("isPrivate", true);
+                if (loginMember != null) {
                     albumMainPage.putExtra("loginMember", loginMember);
                 }
                 startActivity(albumMainPage);
-                finish();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+
+            }
         }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
