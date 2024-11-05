@@ -73,6 +73,7 @@ import yuhan.hgcq.client.adapter.AlbumAdapter;
 import yuhan.hgcq.client.adapter.GalleryAdapter;
 import yuhan.hgcq.client.controller.AlbumController;
 import yuhan.hgcq.client.controller.PhotoController;
+import yuhan.hgcq.client.listener.Click;
 import yuhan.hgcq.client.localDatabase.Repository.AlbumRepository;
 import yuhan.hgcq.client.localDatabase.Repository.PhotoRepository;
 import yuhan.hgcq.client.localDatabase.callback.Callback;
@@ -116,6 +117,7 @@ public class Gallery extends AppCompatActivity {
     private static final int GALLERY = 1000;
     private static final int REQUEST_PERMISSION = 1111;
 
+    boolean isDatePickerVisible = false;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -126,7 +128,6 @@ public class Gallery extends AppCompatActivity {
         }
         return super.onCreateOptionsMenu(menu);
     }
-
 
     /* 뒤로 가기, 개인, 공유 이동 */
     @Override
@@ -485,9 +486,15 @@ public class Gallery extends AppCompatActivity {
                 });
             }
         });
+
         calendar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (isDatePickerVisible) {
+                    return; // 이미 날짜 선택기가 열려 있으면 아무것도 하지 않음
+                }
+                isDatePickerVisible = true; // 날짜 선택기 열림 상태로 설정
+
                 MaterialDatePicker.Builder<androidx.core.util.Pair<Long, Long>> builder = MaterialDatePicker.Builder.dateRangePicker();
 
                 // Setting title for picker
@@ -534,11 +541,12 @@ public class Gallery extends AppCompatActivity {
                                         ga.notifyDataSetChanged();
                                     });
                                 }
+                                isDatePickerVisible = false; // 성공적으로 처리 후 플래그 해제
                             }
 
                             @Override
                             public void onError(Exception e) {
-
+                                isDatePickerVisible = false; // 에러 발생 시 플래그 해제
                             }
                         });
                     } else {
@@ -562,17 +570,24 @@ public class Gallery extends AppCompatActivity {
                                         ga.notifyDataSetChanged();
                                     });
                                 }
+                                isDatePickerVisible = false; // 성공적으로 처리 후 플래그 해제
                             }
 
                             @Override
                             public void onFailure(Call<Map<String, List<PhotoDTO>>> call, Throwable t) {
-
+                                isDatePickerVisible = false; // 에러 발생 시 플래그 해제
                             }
                         });
                     }
                 });
+                // 선택기가 닫힐 때 플래그 해제
+                datePicker.addOnDismissListener(dialog -> {
+                    isDatePickerVisible = false;
+                });
             }
         });
+
+
 
         /* 채팅 */
         chat.setOnClickListener(new View.OnClickListener() {
