@@ -9,6 +9,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -93,33 +94,48 @@ public class Photo extends AppCompatActivity {
     /* 메인 스레드 */
     Handler handler = new Handler(Looper.getMainLooper());
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        if(isPrivate){
+            getMenuInflater().inflate(R.menu.menu_actionbar_icon_share, menu);
+        }else {
+            getMenuInflater().inflate(R.menu.menu_actionbar_icon_privated, menu);
+        }
+        return super.onCreateOptionsMenu(menu);
+    }
+
     /* 뒤로 가기 */
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                if (isLike) {
-                    Intent likePage = new Intent(this, Like.class);
-                    if (isPrivate) {
-                        likePage.putExtra("isPrivate", true);
-                    }
-                    likePage.putExtra("loginMember", loginMember);
-                    startActivity(likePage);
-                } else {
-                    Intent galleryPage = new Intent(this, Gallery.class);
-                    if (isPrivate) {
-                        galleryPage.putExtra("isPrivate", true);
-                    }
-                    galleryPage.putExtra("loginMember", loginMember);
-                    galleryPage.putExtra("teamDTO", teamDTO);
-                    galleryPage.putExtra("albumDTO", albumDTO);
-                    startActivity(galleryPage);
+        if (item.getItemId() == android.R.id.home) {
+            if (isLike) {
+                Intent likePage = new Intent(this, Like.class);
+                if (isPrivate) {
+                    likePage.putExtra("isPrivate", true);
                 }
-                finish();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+                likePage.putExtra("loginMember", loginMember);
+                startActivity(likePage);
+            } else {
+                Intent galleryPage = new Intent(this, Gallery.class);
+                if (isPrivate) {
+                    galleryPage.putExtra("isPrivate", true);
+                }
+                galleryPage.putExtra("loginMember", loginMember);
+                galleryPage.putExtra("teamDTO", teamDTO);
+                galleryPage.putExtra("albumDTO", albumDTO);
+                startActivity(galleryPage);
+            }
+            finish();
+            return true;
+        }else{
+            Intent albumMainPage = new Intent(this, AlbumMain.class);
+            albumMainPage.putExtra("isPrivate", true);
+            if (loginMember != null) {
+                albumMainPage.putExtra("loginMember", loginMember);
+            }
+            startActivity(albumMainPage);
         }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
