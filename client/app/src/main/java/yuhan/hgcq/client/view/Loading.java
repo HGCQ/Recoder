@@ -40,7 +40,7 @@ public class Loading extends AppCompatActivity {
             TextView customTitle = new TextView(this);
             customTitle.setText("Recoder"); // 제목 텍스트 설정
             customTitle.setTextSize(20); // 텍스트 크기 조정
-            customTitle.setTypeface(ResourcesCompat.getFont(this, R.font.hangle_l)); // 폰트 설정
+            customTitle.setTypeface(ResourcesCompat.getFont(this, R.font.hangle_b)); // 폰트 설정
             customTitle.setTextColor(getResources().getColor(R.color.white)); // 텍스트 색상 설정
 
             actionBar.setCustomView(customTitle); // 커스텀 뷰 설정

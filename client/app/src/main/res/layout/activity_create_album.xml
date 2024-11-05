@@ -26,7 +26,7 @@
 
     <EditText
         android:id="@+id/AlbumText"
-        android:layout_width="380dp"
+        android:layout_width="370dp"
         android:layout_height="45dp"
         android:layout_marginTop="76dp"
         android:background="@drawable/text"
@@ -45,7 +45,7 @@
         android:id="@+id/save"
         android:layout_width="380dp"
         android:layout_height="45dp"
-        android:layout_marginTop="624dp"
+        android:layout_marginTop="610dp"
         android:layout_marginBottom="5dp"
         android:background="@drawable/edittext3"
         android:fontFamily="@font/ibm_semibold"
