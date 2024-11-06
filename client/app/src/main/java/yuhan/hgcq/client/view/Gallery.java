@@ -73,7 +73,6 @@ import yuhan.hgcq.client.adapter.AlbumAdapter;
 import yuhan.hgcq.client.adapter.GalleryAdapter;
 import yuhan.hgcq.client.controller.AlbumController;
 import yuhan.hgcq.client.controller.PhotoController;
-import yuhan.hgcq.client.listener.Click;
 import yuhan.hgcq.client.localDatabase.Repository.AlbumRepository;
 import yuhan.hgcq.client.localDatabase.Repository.PhotoRepository;
 import yuhan.hgcq.client.localDatabase.callback.Callback;
