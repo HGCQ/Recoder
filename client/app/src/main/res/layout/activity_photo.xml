@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#e3e3e3"
+    android:background="#ffffff"
     android:id="@+id/main">
 
    <FrameLayout
@@ -71,12 +71,12 @@
         android:layout_marginTop="112dp"
         android:layout_marginStart="-370dp"
         android:gravity="left"
-        android:fontFamily="@font/ibm_medium"
+        android:fontFamily="@font/hangle_l"
         android:padding="10dp"
         android:textSize="15sp"
         android:background="@color/colorMain"
         android:text=" >>  앨범 선택"
-        android:textColor="@color/black"
+        android:textColor="@color/white"
         android:elevation="30dp"
         android:visibility="invisible"
         app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"/>
@@ -91,7 +91,7 @@
         android:padding="0dp"
         android:elevation="30dp"
         android:visibility="invisible"
-        android:background="#8ce6f4f1"
+        android:background="#000000"
         tools:listitem="@layout/item_album"
         app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -106,7 +106,7 @@
         android:id="@+id/bottom_navigation_view"
         android:layout_width="match_parent"
         android:layout_height="95dp"
-        app:itemTextColor="@color/black"
+        app:itemIconTint="@color/black"
         app:labelVisibilityMode="unlabeled"
         android:background="#e6f4f1"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -114,6 +114,16 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:menu="@menu/menu_bottom_nav" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:background="#e6f4f1"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.87" />
 
     <android.widget.Button
         android:id="@+id/photoDelete"
@@ -135,7 +145,7 @@
         app:layout_constraintHorizontal_bias="0.92"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.85"/>
+        app:layout_constraintVertical_bias="0.84"/>
 
     <android.widget.Button
         android:id="@+id/move"
@@ -150,13 +160,13 @@
         android:gravity="center_vertical"
         android:textSize="15sp"
         android:elevation="10dp"
-        android:textColor="@color/black"
         android:textStyle="bold"
+        android:textColor="@color/black"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.1"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.85"/>
+        app:layout_constraintVertical_bias="0.84"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

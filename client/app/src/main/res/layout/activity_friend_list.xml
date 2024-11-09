@@ -21,7 +21,8 @@
         android:padding="0dp"
         android:clipToPadding="false"
         app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-        app:spanCount="1" />
+        app:spanCount="1"
+        tools:listitem="@layout/item_friend_follwer"/>
 
 </LinearLayout>
     <EditText
@@ -61,7 +62,7 @@
         android:layout_marginTop="284dp"
         android:gravity="center"
         android:text="비어있음"
-        android:fontFamily="@font/ibm_regular"
+        android:fontFamily="@font/ibm_medium"
         android:textSize="18dp"
         android:visibility="invisible"
         app:layout_constraintEnd_toEndOf="parent"
@@ -126,6 +127,7 @@
         android:layout_height="95dp"
         android:background="#e6f4f1"
         app:itemTextColor="@color/black"
+        app:itemIconTint="@color/black"
         app:labelVisibilityMode="unlabeled"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

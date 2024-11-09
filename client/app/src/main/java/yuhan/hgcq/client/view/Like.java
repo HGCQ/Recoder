@@ -220,18 +220,39 @@ public class Like extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(isPrivate ? R.menu.menu_actionbar_icon_share : R.menu.menu_actionbar_icon_privated, menu);
+        if(isPrivate){
+            getMenuInflater().inflate(R.menu.menu_actionbar_icon_share, menu);
+        }else {
+            getMenuInflater().inflate(R.menu.menu_actionbar_icon_privated, menu);
+        }
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home: // 뒤로가기 버튼 ID
-                finish(); // 현재 액티비티 종료
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+        if (item.getItemId() == android.R.id.home) { // 뒤로가기 버튼 ID
+            finish(); // 현재 액티비티 종료
+            return true;
+        }else {
+            Intent loginPage = new Intent(this, Login.class);
+            Intent likePage = new Intent(this, Like.class);
+
+            if (isPrivate) {
+                if (loginMember != null) {
+                    likePage.putExtra("loginMember", loginMember);
+                    startActivity(likePage);
+                } else {
+                    startActivity(loginPage);
+                }
+            } else {
+                likePage.putExtra("isPrivate", true);
+                if (loginMember != null) {
+                    likePage.putExtra("loginMember", loginMember);
+                }
+                startActivity(likePage);
+
+            }
+            return super.onOptionsItemSelected(item);
         }
     }
 

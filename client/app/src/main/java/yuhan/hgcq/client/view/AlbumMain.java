@@ -120,7 +120,7 @@ public class AlbumMain extends AppCompatActivity {
         Intent loginPage = new Intent(this, Login.class);
         Intent selectPage = new Intent(this, Select.class);
         Intent groupMainPage = new Intent(this, GroupMain.class);
-
+        Intent albumMainPage = new Intent(this, AlbumMain.class);
 
         if (item.getItemId() == android.R.id.home) {
             if (isPrivate) {
@@ -134,12 +134,21 @@ public class AlbumMain extends AppCompatActivity {
             finish();
             return true;
         }else {
-            if (loginMember != null) {
-                groupMainPage.putExtra("loginMember", loginMember);
-                startActivity(groupMainPage);
-            } else {
-                startActivity(loginPage);
-            }
+           if(isPrivate) {
+               if (loginMember != null) {
+                   groupMainPage.putExtra("loginMember", loginMember);
+                   startActivity(groupMainPage);
+               } else {
+                   startActivity(loginPage);
+               }
+           }else{
+               albumMainPage.putExtra("isPrivate", true);
+               if (loginMember != null) {
+                   albumMainPage.putExtra("loginMember", loginMember);
+               }
+               startActivity(albumMainPage);
+
+           }
         }
         return super.onOptionsItemSelected(item);
     }
