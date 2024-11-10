@@ -163,13 +163,17 @@ public class PhotoTrash extends AppCompatActivity {
                                 photoTrashListView.setAdapter(pa);
                             });
                         } else {
-                            /* Toast 메시지 */
+                            handler.post(() -> {
+                                Toast.makeText(PhotoTrash.this, "사진이 없습니다.", Toast.LENGTH_SHORT).show();
+                            });
                         }
                     }
 
                     @Override
                     public void onError(Exception e) {
-                        /* Toast 메시지 */
+                        handler.post(() -> {
+                            Toast.makeText(PhotoTrash.this, "휴지통을 불러오는 중 오류가 발생했습니다: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        });
                     }
                 });
             }
@@ -186,13 +190,17 @@ public class PhotoTrash extends AppCompatActivity {
                                 photoTrashListView.setAdapter(pa);
                             });
                         } else {
-                            /* Toast 메시지 */
+                            handler.post(() -> {
+                                Toast.makeText(PhotoTrash.this, "휴지통을 불러오는 데 실패했습니다.", Toast.LENGTH_SHORT).show();
+                            });
                         }
                     }
 
                     @Override
                     public void onFailure(Call<List<PhotoDTO>> call, Throwable t) {
-                        /* Toast 메시지 */
+                        handler.post(() -> {
+                            Toast.makeText(PhotoTrash.this, "휴지통을 불러오는 중 오류가 발생했습니다: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                        });
                     }
                 });
             }
@@ -222,7 +230,9 @@ public class PhotoTrash extends AppCompatActivity {
 
                             @Override
                             public void onError(Exception e) {
-
+                                handler.post(() -> {
+                                    Toast.makeText(PhotoTrash.this, "사진 삭제 중 오류가 발생했습니다: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                });
                             }
                         });
                     }
@@ -245,7 +255,9 @@ public class PhotoTrash extends AppCompatActivity {
 
                             @Override
                             public void onFailure(Call<ResponseBody> call, Throwable t) {
-
+                                handler.post(() -> {
+                                    Toast.makeText(PhotoTrash.this, "사진 삭제 중 오류가 발생했습니다: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                                });
                             }
                         });
                     }
@@ -253,7 +265,9 @@ public class PhotoTrash extends AppCompatActivity {
             }, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    Toast.makeText(PhotoTrash.this, "취소했습니다.", Toast.LENGTH_SHORT).show();
+                    handler.post(() -> {
+                        Toast.makeText(PhotoTrash.this, "취소했습니다.", Toast.LENGTH_SHORT).show();
+                    });
                 }
             });
         });
@@ -280,13 +294,17 @@ public class PhotoTrash extends AppCompatActivity {
                                     });
                                     startActivity(photoTrashPage);
                                 } else {
-                                    /* Toast 메시지 */
+                                    handler.post(() -> {
+                                        Toast.makeText(PhotoTrash.this, "사진 복구에 실패했습니다.", Toast.LENGTH_SHORT).show();
+                                    });
                                 }
                             }
 
                             @Override
                             public void onError(Exception e) {
-                                /* Toast 메시지 */
+                                handler.post(() -> {
+                                    Toast.makeText(PhotoTrash.this, "사진 복구 중 오류가 발생했습니다: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                });
                             }
                         });
                     }
@@ -306,13 +324,17 @@ public class PhotoTrash extends AppCompatActivity {
                                     });
                                     startActivity(photoTrashPage);
                                 } else {
-                                    /* Toast 메시지 */
+                                    handler.post(() -> {
+                                        Toast.makeText(PhotoTrash.this, "사진 복구에 실패했습니다.", Toast.LENGTH_SHORT).show();
+                                    });
                                 }
                             }
 
                             @Override
                             public void onFailure(Call<ResponseBody> call, Throwable t) {
-                                /* Toast 메시지 */
+                                handler.post(() -> {
+                                    Toast.makeText(PhotoTrash.this, "사진 복구 중 오류가 발생했습니다: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                                });
                             }
                         });
                     }
@@ -320,7 +342,9 @@ public class PhotoTrash extends AppCompatActivity {
             }, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    Toast.makeText(PhotoTrash.this, "취소했습니다.", Toast.LENGTH_SHORT).show();
+                    handler.post(() -> {
+                        Toast.makeText(PhotoTrash.this, "취소했습니다.", Toast.LENGTH_SHORT).show();
+                    });
                 }
             });
         });

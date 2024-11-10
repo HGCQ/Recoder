@@ -316,6 +316,9 @@ public class AlbumMain extends AppCompatActivity {
                                     }
                                     @Override
                                     public void onError(Exception e) {
+                                        handler.post(() -> {
+                                            Toast.makeText(AlbumMain.this, "앨범 검색 중 오류가 발생했습니다: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                        });
                                     }
                                 });
                             }
@@ -326,13 +329,17 @@ public class AlbumMain extends AppCompatActivity {
                             }
                         });
                     } else {
-                        /* Toast 메시지 */
+                        handler.post(() -> {
+                            Toast.makeText(AlbumMain.this, "앨범을 불러오는 데 실패했습니다.", Toast.LENGTH_SHORT).show();
+                        });
                     }
                 }
 
                 @Override
                 public void onError(Exception e) {
-                    /* Toast 메시지 */
+                    handler.post(() -> {
+                        Toast.makeText(AlbumMain.this, "앨범을 불러오는 중 오류가 발생했습니다: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    });
                 }
             });
         }
@@ -430,13 +437,17 @@ public class AlbumMain extends AppCompatActivity {
                                 }
                             });
                         } else {
-                            /* Toast 메시지 */
+                            handler.post(() -> {
+                                Toast.makeText(AlbumMain.this, "앨범 목록을 불러오는 데 실패했습니다: " + response.message(), Toast.LENGTH_SHORT).show();
+                            });
                         }
                     }
 
                     @Override
                     public void onFailure(Call<List<AlbumDTO>> call, Throwable t) {
-                        /* Toast 메시지 */
+                        handler.post(() -> {
+                            Toast.makeText(AlbumMain.this, "앨범 목록을 불러오는 중 오류가 발생했습니다: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                        });
                     }
                 });
             }
@@ -706,13 +717,13 @@ public class AlbumMain extends AppCompatActivity {
                                             startActivity(albumMainPage);
                                         });
                                     } else {
-                                        /* Toast 메시지 추가 */
+                                        handler.post(() -> Toast.makeText(AlbumMain.this, "사진 저장에 실패했습니다: " + response.message(), Toast.LENGTH_SHORT).show());
                                     }
                                 }
 
                                 @Override
                                 public void onFailure(Call<ResponseBody> call, Throwable t) {
-                                    /* Toast 메시지 추가 */
+                                    handler.post(() -> Toast.makeText(AlbumMain.this, "사진 저장 중 오류가 발생했습니다: " + t.getMessage(), Toast.LENGTH_SHORT).show());
                                 }
                             });
                         }
