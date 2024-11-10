@@ -19,6 +19,7 @@ import android.os.Looper;
 import android.provider.MediaStore;
 import android.provider.Settings;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -115,27 +116,54 @@ public class Gallery extends AppCompatActivity {
     private static final int GALLERY = 1000;
     private static final int REQUEST_PERMISSION = 1111;
 
-    /* 뒤로 가기 */
+    boolean isDatePickerVisible = false;
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        if(isPrivate){
+            getMenuInflater().inflate(R.menu.menu_actionbar_icon_share, menu);
+        }else {
+            getMenuInflater().inflate(R.menu.menu_actionbar_icon_privated, menu);
+        }
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    /* 뒤로 가기, 개인, 공유 이동 */
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                Intent albumMainPage = new Intent(this, AlbumMain.class);
-                if (isPrivate) {
-                    albumMainPage.putExtra("isPrivate", true);
-                    if (loginMember != null) {
-                        albumMainPage.putExtra("loginMember", loginMember);
-                    }
+        Intent loginPage = new Intent(this, Login.class);
+        Intent selectPage = new Intent(this, Select.class);
+        Intent groupMainPage = new Intent(this, GroupMain.class);
+        Intent albumMainPage = new Intent(this, AlbumMain.class);
+
+        if (item.getItemId() == android.R.id.home) {
+            if (isPrivate) {
+                albumMainPage.putExtra("isPrivate", true);
+            }
+                albumMainPage.putExtra("teamDTO", teamDTO);
+                albumMainPage.putExtra("loginMember", loginMember);
+                startActivity(albumMainPage);
+
+            finish();
+            return true;
+        }else {
+            if(isPrivate) {
+                if (loginMember != null) {
+                    groupMainPage.putExtra("loginMember", loginMember);
+                    startActivity(groupMainPage);
                 } else {
-                    albumMainPage.putExtra("teamDTO", teamDTO);
+                    startActivity(loginPage);
+                }
+            }else{
+                albumMainPage.putExtra("isPrivate", true);
+                if (loginMember != null) {
                     albumMainPage.putExtra("loginMember", loginMember);
                 }
                 startActivity(albumMainPage);
-                finish();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+
+            }
         }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -239,13 +267,17 @@ public class Gallery extends AppCompatActivity {
                                 photoListView.setAdapter(ga);
                             });
                         } else {
-                            /* Toast 메시지 */
+                            handler.post(() -> {
+                                Toast.makeText(Gallery.this, "갤러리 데이터가 없습니다.", Toast.LENGTH_SHORT).show();
+                            });
                         }
                     }
 
                     @Override
                     public void onError(Exception e) {
-                        /* Toast 메시지 */
+                        handler.post(() -> {
+                            Toast.makeText(Gallery.this, "갤러리 데이터를 불러오는 중 오류가 발생했습니다: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        });
                     }
                 });
             }
@@ -261,13 +293,17 @@ public class Gallery extends AppCompatActivity {
                                 photoListView.setAdapter(ga);
                             });
                         } else {
-                            /* Toast 메시지 */
+                            handler.post(() -> {
+                                Toast.makeText(Gallery.this, "갤러리 목록을 불러오는 데 실패했습니다: " + response.message(), Toast.LENGTH_SHORT).show();
+                            });
                         }
                     }
 
                     @Override
                     public void onFailure(Call<Map<String, List<PhotoDTO>>> call, Throwable t) {
-                        /* Toast 메시지 */
+                        handler.post(() -> {
+                            Toast.makeText(Gallery.this, "갤러리 목록을 불러오는 중 오류가 발생했습니다.", Toast.LENGTH_SHORT).show();
+                        });
                     }
                 });
             }
@@ -345,38 +381,47 @@ public class Gallery extends AppCompatActivity {
                                                             });
                                                             startActivity(galleryPage);
                                                         } else {
-                                                            /* Toast 메시지 */
+                                                            handler.post(() -> {
+                                                                Toast.makeText(Gallery.this, "앨범 이동에 실패했습니다.", Toast.LENGTH_SHORT).show();
+                                                            });
                                                         }
                                                     }
 
                                                     @Override
                                                     public void onError(Exception e) {
-
+                                                        handler.post(() -> {
+                                                            Toast.makeText(Gallery.this, "앨범 이동 중 오류가 발생했습니다: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                                        });
                                                     }
                                                 });
-
                                             }
                                         }, new DialogInterface.OnClickListener() {
                                             @Override
                                             public void onClick(DialogInterface dialog, int which) {
-                                                Toast.makeText(Gallery.this, "취소했습니다.", Toast.LENGTH_SHORT).show();
+                                                handler.post(() -> {
+                                                    Toast.makeText(Gallery.this, "취소했습니다.", Toast.LENGTH_SHORT).show();
+                                                });
                                             }
                                         });
                                     }
                                 });
                             } else {
-                                /* Toast 메시지 */
+                                handler.post(() -> {
+                                    Toast.makeText(Gallery.this, "앨범 목록을 불러오는 데 실패했습니다.", Toast.LENGTH_SHORT).show();
+                                });
                             }
                         }
 
                         @Override
                         public void onError(Exception e) {
-
+                            handler.post(() -> {
+                                Toast.makeText(Gallery.this, "앨범 목록을 불러오는 중 오류가 발생했습니다: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                            });
                         }
                     });
                 });
             }
-            /* 공유 !*/
+            /* 공유 */
             else {
                 ga.enableSelectionMode();
                 moveOk.setVisibility(View.VISIBLE);
@@ -423,32 +468,42 @@ public class Gallery extends AppCompatActivity {
                                                                 });
                                                                 startActivity(galleryPage);
                                                             } else {
-                                                                /* Toast 메시지 */
+                                                                handler.post(() -> {
+                                                                    Toast.makeText(Gallery.this, "앨범 이동에 실패했습니다.", Toast.LENGTH_SHORT).show();
+                                                                });
                                                             }
                                                         }
 
                                                         @Override
                                                         public void onFailure(Call<ResponseBody> call, Throwable t) {
-                                                            /* Toast 메시지 */
+                                                            handler.post(() -> {
+                                                                Toast.makeText(Gallery.this, "앨범 이동 중 오류가 발생했습니다: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                                                            });
                                                         }
                                                     });
                                                 }
                                             }, new DialogInterface.OnClickListener() {
                                                 @Override
                                                 public void onClick(DialogInterface dialog, int which) {
-                                                    Toast.makeText(Gallery.this, "취소했습니다.", Toast.LENGTH_SHORT).show();
+                                                    handler.post(() -> {
+                                                        Toast.makeText(Gallery.this, "취소했습니다.", Toast.LENGTH_SHORT).show();
+                                                    });
                                                 }
                                             });
                                         }
                                     });
                                 } else {
-                                    /* Toast 메시지 */
+                                    handler.post(() -> {
+                                        Toast.makeText(Gallery.this, "앨범 목록을 불러오는 데 실패했습니다.", Toast.LENGTH_SHORT).show();
+                                    });
                                 }
                             }
 
                             @Override
                             public void onFailure(Call<List<AlbumDTO>> call, Throwable t) {
-                                /* Toast 메시지 */
+                                handler.post(() -> {
+                                    Toast.makeText(Gallery.this, "앨범 목록을 불러오는 중 오류가 발생했습니다: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                                });
                             }
                         });
                     }
@@ -456,9 +511,16 @@ public class Gallery extends AppCompatActivity {
                 });
             }
         });
+
+
         calendar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (isDatePickerVisible) {
+                    return; // 이미 날짜 선택기가 열려 있으면 아무것도 하지 않음
+                }
+                isDatePickerVisible = true; // 날짜 선택기 열림 상태로 설정
+
                 MaterialDatePicker.Builder<androidx.core.util.Pair<Long, Long>> builder = MaterialDatePicker.Builder.dateRangePicker();
 
                 // Setting title for picker
@@ -505,11 +567,12 @@ public class Gallery extends AppCompatActivity {
                                         ga.notifyDataSetChanged();
                                     });
                                 }
+                                isDatePickerVisible = false; // 성공적으로 처리 후 플래그 해제
                             }
 
                             @Override
                             public void onError(Exception e) {
-
+                                isDatePickerVisible = false; // 에러 발생 시 플래그 해제
                             }
                         });
                     } else {
@@ -533,17 +596,24 @@ public class Gallery extends AppCompatActivity {
                                         ga.notifyDataSetChanged();
                                     });
                                 }
+                                isDatePickerVisible = false; // 성공적으로 처리 후 플래그 해제
                             }
 
                             @Override
                             public void onFailure(Call<Map<String, List<PhotoDTO>>> call, Throwable t) {
-
+                                isDatePickerVisible = false; // 에러 발생 시 플래그 해제
                             }
                         });
                     }
                 });
+                // 선택기가 닫힐 때 플래그 해제
+                datePicker.addOnDismissListener(dialog -> {
+                    isDatePickerVisible = false;
+                });
             }
         });
+
+
 
         /* 채팅 */
         chat.setOnClickListener(new View.OnClickListener() {
@@ -657,14 +727,18 @@ public class Gallery extends AppCompatActivity {
                                         startActivity(galleryPage);
                                     });
                                 } else {
-                                    /* Toast 메시지 */
+                                    handler.post(() -> {
+                                        Toast.makeText(Gallery.this, "사진 저장에 실패했습니다.", Toast.LENGTH_SHORT).show();
+                                    });
                                 }
                             }
 
                             @Override
                             public void onError(Exception e) {
                                 progressDialog.dismiss(); // 로딩 화면 종료
-                                /* Toast 메시지 */
+                                handler.post(() -> {
+                                    Toast.makeText(Gallery.this, "사진 저장 중 오류가 발생했습니다: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                });
                             }
                         });
                     }
@@ -687,14 +761,18 @@ public class Gallery extends AppCompatActivity {
                                         galleryPage.putExtra("albumDTO", albumDTO);
                                         startActivity(galleryPage);
                                     } else {
-                                        /* Toast 메시지 */
+                                        handler.post(() -> {
+                                            Toast.makeText(Gallery.this, "사진 저장에 실패했습니다.", Toast.LENGTH_SHORT).show();
+                                        });
                                         progressDialog.dismiss(); // 로딩 화면 종료
                                     }
                                 }
 
                                 @Override
                                 public void onFailure(Call<ResponseBody> call, Throwable t) {
-                                    /* Toast 메시지 */
+                                    handler.post(() -> {
+                                        Toast.makeText(Gallery.this, "사진 저장 중 오류가 발생했습니다: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                                    });
                                     progressDialog.dismiss(); // 로딩 화면 종료
                                 }
                             });
@@ -740,13 +818,17 @@ public class Gallery extends AppCompatActivity {
                                     startActivity(galleryPage);
                                 } else {
                                     progressDialog.dismiss(); // 로딩 화면 종료
-                                    /* Toast 메시지 */
+                                    handler.post(() -> {
+                                        Toast.makeText(Gallery.this, "사진 저장에 실패했습니다.", Toast.LENGTH_SHORT).show();
+                                    });
                                 }
                             }
 
                             @Override
                             public void onError(Exception e) {
-                                /* Toast 메시지 */
+                                handler.post(() -> {
+                                    Toast.makeText(Gallery.this, "사진 저장 중 오류가 발생했습니다: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                });
                             }
                         });
                     }
@@ -769,13 +851,17 @@ public class Gallery extends AppCompatActivity {
                                         galleryPage.putExtra("albumDTO", albumDTO);
                                         startActivity(galleryPage);
                                     } else {
-                                        /* Toast 메시지 */
+                                        handler.post(() -> {
+                                            Toast.makeText(Gallery.this, "사진 저장에 실패했습니다.", Toast.LENGTH_SHORT).show();
+                                        });
                                     }
                                 }
 
                                 @Override
                                 public void onFailure(Call<ResponseBody> call, Throwable t) {
-                                    /* Toast 메시지 */
+                                    handler.post(() -> {
+                                        Toast.makeText(Gallery.this, "사진 저장 중 오류가 발생했습니다: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                                    });
                                 }
                             });
                         }
