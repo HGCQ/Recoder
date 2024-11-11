@@ -208,7 +208,7 @@ public class PhotoTrash extends AppCompatActivity {
 
         remove.setOnClickListener(v -> {
             List<Long> selectedItems = pa.getSelectedItems();
-            onClick_setting_costume_save("삭제하시겠습니까?", new DialogInterface.OnClickListener() {
+            onClick_setting_costume_save("정말로 삭제하시겠습니까?", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     if(isPrivate){
