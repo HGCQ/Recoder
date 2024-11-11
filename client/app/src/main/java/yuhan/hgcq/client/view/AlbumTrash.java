@@ -165,13 +165,17 @@ public class AlbumTrash extends AppCompatActivity {
                             albumTrashListView.setAdapter(ata);
                         });
                     } else {
-                        /* Toast 메시지 */
+                        handler.post(() -> {
+                            Toast.makeText(AlbumTrash.this, "휴지통을 불러오는 데 실패했습니다.", Toast.LENGTH_SHORT).show();
+                        });
                     }
                 }
 
                 @Override
                 public void onError(Exception e) {
-                    /* Toast 메시지 */
+                    handler.post(() -> {
+                        Toast.makeText(AlbumTrash.this, "휴지통을 불러오는 중 오류가 발생했습니다: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    });
                 }
             });
         }
@@ -198,13 +202,17 @@ public class AlbumTrash extends AppCompatActivity {
                                 albumTrashListView.setAdapter(ata);
                             });
                         } else {
-                            /* Toast 메시지 */
+                            handler.post(() -> {
+                                Toast.makeText(AlbumTrash.this, "휴지통을 불러오는 데 실패했습니다: " + response.message(), Toast.LENGTH_SHORT).show();
+                            });
                         }
                     }
 
                     @Override
                     public void onFailure(Call<List<AlbumDTO>> call, Throwable t) {
-                        /* Toast 메시지 */
+                        handler.post(() -> {
+                            Toast.makeText(AlbumTrash.this, "휴지통을 불러오는 중 오류가 발생했습니다: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                        });
                     }
                 });
             }
@@ -232,14 +240,18 @@ public class AlbumTrash extends AppCompatActivity {
                                         ata.notifyDataSetChanged();
                                     });
                                 } else {
-                                    Toast.makeText(AlbumTrash.this, "삭제 실패", Toast.LENGTH_SHORT).show();
+                                    handler.post(() -> {
+                                        Toast.makeText(AlbumTrash.this, "삭제 실패", Toast.LENGTH_SHORT).show();
+                                    });
                                 }
 
                             }
 
                             @Override
                             public void onError(Exception e) {
-
+                                handler.post(() -> {
+                                    Toast.makeText(AlbumTrash.this, "삭제 중 오류가 발생했습니다: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                });
                             }
                         });
                     }else{
@@ -269,7 +281,9 @@ public class AlbumTrash extends AppCompatActivity {
 
                             @Override
                             public void onFailure(Call<ResponseBody> call, Throwable t) {
-
+                                handler.post(() -> {
+                                    Toast.makeText(AlbumTrash.this, "삭제 중 오류가 발생했습니다: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                                });
                             }
                         });
                     }
@@ -304,7 +318,9 @@ public class AlbumTrash extends AppCompatActivity {
                                     });
                                     startActivity(albumTrashPage);
                                 } else {
-                                    Toast.makeText(AlbumTrash.this, "복구 실패", Toast.LENGTH_SHORT).show();
+                                    handler.post(() -> {
+                                        Toast.makeText(AlbumTrash.this, "복구 실패", Toast.LENGTH_SHORT).show();
+                                    });
                                 }
                             }
 
@@ -312,7 +328,9 @@ public class AlbumTrash extends AppCompatActivity {
                             public void onError(Exception e) {
                                 Log.e("recover Error", "Failed Recover: "+e );
                                 Log.d("AlbumSelection", "Selected album IDs: " + selectedItems);
-
+                                handler.post(() -> {
+                                    Toast.makeText(AlbumTrash.this, "복구 중 오류가 발생했습니다: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                });
                             }
                         });
                     }
@@ -331,13 +349,17 @@ public class AlbumTrash extends AppCompatActivity {
                                     });
                                     startActivity(AlbumTrashPage);
                                 } else {
-                                    /* Toast 메시지 */
+                                    handler.post(() -> {
+                                        Toast.makeText(AlbumTrash.this, "복구 실패: " + response.message(), Toast.LENGTH_SHORT).show();
+                                    });
                                 }
                             }
 
                             @Override
                             public void onFailure(Call<ResponseBody> call, Throwable t) {
-                                /* Toast 메시지 */
+                                handler.post(() -> {
+                                    Toast.makeText(AlbumTrash.this, "복구 중 오류가 발생했습니다: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                                });
                             }
                         });
                     }

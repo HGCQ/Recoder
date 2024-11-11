@@ -96,9 +96,9 @@ public class Photo extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        if(isPrivate){
+        if (isPrivate) {
             getMenuInflater().inflate(R.menu.menu_actionbar_icon_share, menu);
-        }else {
+        } else {
             getMenuInflater().inflate(R.menu.menu_actionbar_icon_privated, menu);
         }
         return super.onCreateOptionsMenu(menu);
@@ -127,7 +127,7 @@ public class Photo extends AppCompatActivity {
             }
             finish();
             return true;
-        }else{
+        } else {
             Intent albumMainPage = new Intent(this, AlbumMain.class);
             albumMainPage.putExtra("isPrivate", true);
             if (loginMember != null) {
@@ -151,7 +151,7 @@ public class Photo extends AppCompatActivity {
 
             // 커스텀 타이틀 텍스트뷰 설정
             TextView customTitle = new TextView(this);
-            customTitle.setText("채팅"); // 제목 텍스트 설정
+            customTitle.setText("[개인]"); // 제목 텍스트 설정
             customTitle.setTextSize(20); // 텍스트 크기 조정
             customTitle.setTypeface(ResourcesCompat.getFont(this, R.font.hangle_l)); // 폰트 설정
             customTitle.setTextColor(getResources().getColor(R.color.white)); // 텍스트 색상 설정
@@ -221,13 +221,17 @@ public class Photo extends AppCompatActivity {
                                 photoView.setCurrentItem(position, false);
                             });
                         } else {
-                            /* Toast 메시지 */
+                            handler.post(() -> {
+                                Toast.makeText(Photo.this, "좋아요한 사진이 없습니다.", Toast.LENGTH_SHORT).show();
+                            });
                         }
                     }
 
                     @Override
                     public void onError(Exception e) {
-                        /* Toast 메시지 */
+                        handler.post(() -> {
+                            Toast.makeText(Photo.this, "좋아요 목록을 불러오는 데 실패했습니다.", Toast.LENGTH_SHORT).show();
+                        });
                     }
                 });
             }
@@ -245,13 +249,17 @@ public class Photo extends AppCompatActivity {
                                 photoView.setCurrentItem(position, false);
                             });
                         } else {
-                            /* Toast 메시지 */
+                            handler.post(() -> {
+                                Toast.makeText(Photo.this, "좋아요 목록을 불러오는 데 실패했습니다.", Toast.LENGTH_SHORT).show();
+                            });
                         }
                     }
 
                     @Override
                     public void onFailure(Call<List<PhotoDTO>> call, Throwable t) {
-                        /* Toast 메시지 */
+                        handler.post(() -> {
+                            Toast.makeText(Photo.this, "네트워크 오류가 발생했습니다.", Toast.LENGTH_SHORT).show();
+                        });
                     }
                 });
             }
@@ -283,13 +291,17 @@ public class Photo extends AppCompatActivity {
                                     photoView.setCurrentItem(finalIndex, false);
                                 });
                             } else {
-                                /* Toast 메시지 */
+                                handler.post(() -> {
+                                    Toast.makeText(Photo.this, "앨범에 사진이 없습니다.", Toast.LENGTH_SHORT).show();
+                                });
                             }
                         }
 
                         @Override
                         public void onError(Exception e) {
-                            /* Toast 메시지 */
+                            handler.post(() -> {
+                                Toast.makeText(Photo.this, "앨범을 불러오는 데 실패했습니다.", Toast.LENGTH_SHORT).show();
+                            });
                         }
                     });
                 }
@@ -317,18 +329,23 @@ public class Photo extends AppCompatActivity {
                                     photoView.setCurrentItem(finalIndex, false);
                                 });
                             } else {
-                                /* Toast 메시지 */
+                                handler.post(() -> {
+                                    Toast.makeText(Photo.this, "앨범 사진을 불러오는 데 실패했습니다.", Toast.LENGTH_SHORT).show();
+                                });
                             }
                         }
 
                         @Override
                         public void onFailure(Call<List<PhotoDTO>> call, Throwable t) {
-                            /* Toast 메시지 */
+                            handler.post(() -> {
+                                Toast.makeText(Photo.this, "네트워크 오류가 발생했습니다.", Toast.LENGTH_SHORT).show();
+                            });
                         }
                     });
                 }
             }
         }
+
 
         /* 사진 초기 설정 */
         photoView.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
@@ -358,7 +375,9 @@ public class Photo extends AppCompatActivity {
                     ActionBar actionBar = getSupportActionBar();
                     if (actionBar != null && actionBar.getCustomView() != null) {
                         TextView customTitle = (TextView) actionBar.getCustomView(); // 커스텀 뷰에서 TextView 가져오기
-                        customTitle.setText("[공유자] " + dto.getMember());
+                        if (!isPrivate) {
+                            customTitle.setText("[공유자] " + dto.getMember());
+                        }
                     }
                     if (dto.getLiked()) {
                         like.setImageResource(R.drawable.love);
@@ -390,14 +409,18 @@ public class Photo extends AppCompatActivity {
                                     });
                                     dto.setLiked(false);
                                 } else {
-                                    /* Toast 메시지 */
+                                    handler.post(() -> {
+                                        Toast.makeText(Photo.this, "좋아요 취소에 실패했습니다.", Toast.LENGTH_SHORT).show();
+                                    });
                                 }
                             }
                         }
 
                         @Override
                         public void onError(Exception e) {
-                            /* Toast 메시지 */
+                            handler.post(() -> {
+                                Toast.makeText(Photo.this, "좋아요 취소 중 오류가 발생했습니다.", Toast.LENGTH_SHORT).show();
+                            });
                         }
                     });
                 } else {
@@ -412,14 +435,18 @@ public class Photo extends AppCompatActivity {
                                     });
                                     dto.setLiked(true);
                                 } else {
-                                    /* Toast 메시지 */
+                                    handler.post(() -> {
+                                        Toast.makeText(Photo.this, "좋아요 추가에 실패했습니다.", Toast.LENGTH_SHORT).show();
+                                    });
                                 }
                             }
                         }
 
                         @Override
                         public void onError(Exception e) {
-                            /* Toast 메시지 */
+                            handler.post(() -> {
+                                Toast.makeText(Photo.this, "좋아요 추가 중 오류가 발생했습니다.", Toast.LENGTH_SHORT).show();
+                            });
                         }
                     });
                 }
@@ -439,13 +466,17 @@ public class Photo extends AppCompatActivity {
                                 });
                                 dto.setLiked(false);
                             } else {
-                                /* Toast 메시지 */
+                                handler.post(() -> {
+                                    Toast.makeText(Photo.this, "좋아요 취소에 실패했습니다.", Toast.LENGTH_SHORT).show();
+                                });
                             }
                         }
 
                         @Override
                         public void onFailure(Call<ResponseBody> call, Throwable t) {
-                            /* Toast 메시지 */
+                            handler.post(() -> {
+                                Toast.makeText(Photo.this, "좋아요 취소 중 오류가 발생했습니다.", Toast.LENGTH_SHORT).show();
+                            });
                         }
                     });
                 } else {
@@ -459,13 +490,17 @@ public class Photo extends AppCompatActivity {
                                 });
                                 dto.setLiked(true);
                             } else {
-                                /* Toast 메시지 */
+                                handler.post(() -> {
+                                    Toast.makeText(Photo.this, "좋아요 추가에 실패했습니다.", Toast.LENGTH_SHORT).show();
+                                });
                             }
                         }
 
                         @Override
                         public void onFailure(Call<ResponseBody> call, Throwable t) {
-                            /* Toast 메시지 */
+                            handler.post(() -> {
+                                Toast.makeText(Photo.this, "좋아요 추가 중 오류가 발생했습니다.", Toast.LENGTH_SHORT).show();
+                            });
                         }
                     });
                 }
@@ -529,32 +564,42 @@ public class Photo extends AppCompatActivity {
                                                             });
                                                         }
                                                     } else {
-                                                        /* Toast 메시지 */
+                                                        handler.post(() -> {
+                                                            Toast.makeText(Photo.this, "앨범 이동에 실패했습니다.", Toast.LENGTH_SHORT).show();
+                                                        });
                                                     }
                                                 }
 
                                                 @Override
                                                 public void onError(Exception e) {
-                                                    /* Toast 메시지 */
+                                                    handler.post(() -> {
+                                                        Toast.makeText(Photo.this, "앨범 이동 중 오류가 발생했습니다.", Toast.LENGTH_SHORT).show();
+                                                    });
                                                 }
                                             });
                                         }
                                     }, new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
-                                            Toast.makeText(Photo.this, "취소했습니다.", Toast.LENGTH_SHORT).show();
+                                            handler.post(() -> {
+                                                Toast.makeText(Photo.this, "취소했습니다.", Toast.LENGTH_SHORT).show();
+                                            });
                                         }
                                     });
                                 }
                             });
                         } else {
-                            /* Toast 메시지 */
+                            handler.post(() -> {
+                                Toast.makeText(Photo.this, "앨범 목록을 불러오는 데 실패했습니다.", Toast.LENGTH_SHORT).show();
+                            });
                         }
                     }
 
                     @Override
                     public void onError(Exception e) {
-                        /* Toast 메시지 */
+                        handler.post(() -> {
+                            Toast.makeText(Photo.this, "앨범을 불러오는 중 오류가 발생했습니다.", Toast.LENGTH_SHORT).show();
+                        });
                     }
                 });
             }
@@ -616,33 +661,42 @@ public class Photo extends AppCompatActivity {
                                                                 });
                                                             }
                                                         } else {
-                                                            /* Toast 메시지 */
+                                                            handler.post(() -> {
+                                                                Toast.makeText(Photo.this, "앨범 이동에 실패했습니다.", Toast.LENGTH_SHORT).show();
+                                                            });
                                                         }
                                                     }
 
                                                     @Override
                                                     public void onFailure(Call<ResponseBody> call, Throwable t) {
-                                                        /* Toast 메시지 */
+                                                        handler.post(() -> {
+                                                            Toast.makeText(Photo.this, "앨범 이동 중 오류가 발생했습니다.", Toast.LENGTH_SHORT).show();
+                                                        });
                                                     }
                                                 });
                                             }
                                         }, new DialogInterface.OnClickListener() {
                                             @Override
                                             public void onClick(DialogInterface dialogInterface, int i) {
-                                                Toast.makeText(Photo.this, "취소했습니다.", Toast.LENGTH_SHORT).show();
+                                                handler.post(() -> {
+                                                    Toast.makeText(Photo.this, "취소했습니다.", Toast.LENGTH_SHORT).show();
+                                                });
                                             }
                                         });
-
                                     }
                                 });
                             } else {
-                                /* Toast 메시지 */
+                                handler.post(() -> {
+                                    Toast.makeText(Photo.this, "앨범 목록을 불러오는 데 실패했습니다.", Toast.LENGTH_SHORT).show();
+                                });
                             }
                         }
 
                         @Override
                         public void onFailure(Call<List<AlbumDTO>> call, Throwable t) {
-                            /* Toast 메시지 */
+                            handler.post(() -> {
+                                Toast.makeText(Photo.this, "앨범 목록을 불러오는 중 오류가 발생했습니다.", Toast.LENGTH_SHORT).show();
+                            });
                         }
                     });
                 }
@@ -745,7 +799,9 @@ public class Photo extends AppCompatActivity {
             }, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    Toast.makeText(Photo.this, "취소했습니다.", Toast.LENGTH_SHORT).show();
+                    handler.post(() -> {
+                        Toast.makeText(Photo.this, "취소했습니다.", Toast.LENGTH_SHORT).show();
+                    });
                 }
             });
         });
