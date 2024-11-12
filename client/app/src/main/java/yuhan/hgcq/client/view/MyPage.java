@@ -154,13 +154,30 @@ public class MyPage extends AppCompatActivity {
         if (loginMember != null) {
             name.setText(loginMember.getName());
             email.setText(loginMember.getEmail());
-            String path = loginMember.getImage();
-            if (path != null) {
-                Log.i("path", path);
-                Glide.with(MyPage.this)
-                        .load(serverIp + path)
-                        .into(profile);
-            }
+
+            mc.me(new Callback<MemberDTO>() {
+                @Override
+                public void onResponse(Call<MemberDTO> call, Response<MemberDTO> response) {
+                    if (response.isSuccessful()) {
+                        MemberDTO body = response.body();
+                        String path = body.getImage();
+
+                        handler.post(() -> {
+                            if (path != null) {
+                                Log.i("path", path);
+                                Glide.with(MyPage.this)
+                                        .load(serverIp + path)
+                                        .into(profile);
+                            }
+                        });
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<MemberDTO> call, Throwable t) {
+
+                }
+            });
         }
            secession.setOnClickListener(v -> {
                 mc.deleteMember(new Callback<ResponseBody>() {

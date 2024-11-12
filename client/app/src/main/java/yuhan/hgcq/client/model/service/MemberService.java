@@ -53,4 +53,7 @@ public interface MemberService {
 
     @POST("/member/searched")
     Call<MemberDTO> searched();
+
+    @GET("/member/me")
+    Call<MemberDTO> me();
 }
