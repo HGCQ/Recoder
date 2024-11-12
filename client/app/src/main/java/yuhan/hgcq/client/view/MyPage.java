@@ -153,13 +153,30 @@ public class MyPage extends AppCompatActivity {
         if (loginMember != null) {
             name.setText(loginMember.getName());
             email.setText(loginMember.getEmail());
-            String path = loginMember.getImage();
-            if (path != null) {
-                Log.i("path", path);
-                Glide.with(MyPage.this)
-                        .load(serverIp + path)
-                        .into(profile);
-            }
+
+            mc.me(new Callback<MemberDTO>() {
+                @Override
+                public void onResponse(Call<MemberDTO> call, Response<MemberDTO> response) {
+                    if (response.isSuccessful()) {
+                        MemberDTO body = response.body();
+                        String path = body.getImage();
+
+                        handler.post(() -> {
+                            if (path != null) {
+                                Log.i("path", path);
+                                Glide.with(MyPage.this)
+                                        .load(serverIp + path)
+                                        .into(profile);
+                            }
+                        });
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<MemberDTO> call, Throwable t) {
+
+                }
+            });
         }
         secession.setOnClickListener(v -> {
             onClick_setting_costume_cancel("회원 탈퇴하시겠습니까?", new DialogInterface.OnClickListener() {

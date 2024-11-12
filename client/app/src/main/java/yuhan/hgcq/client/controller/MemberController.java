@@ -112,6 +112,11 @@ public class MemberController {
         call.enqueue(callback);
     }
 
+    public void me(Callback<MemberDTO> callback) {
+        Call<MemberDTO> call = memberService.me();
+        call.enqueue(callback);
+    }
+
     private String getFileNameFromUri(Uri uri) {
         String[] projection = { MediaStore.Images.Media.DISPLAY_NAME };
         Cursor cursor = context.getContentResolver().query(uri, projection, null, null, null);
