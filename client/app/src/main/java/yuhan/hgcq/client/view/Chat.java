@@ -7,6 +7,8 @@ import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -64,6 +66,8 @@ public class Chat extends AppCompatActivity {
     /* http 통신 */
     ChatController cc;
     ChatWebSocketClient webSocket;
+
+    Handler handler = new Handler(Looper.getMainLooper());
 
     /* 뒤로 가기 */
     @Override
@@ -144,12 +148,18 @@ public class Chat extends AppCompatActivity {
                     ca = new ChatAdapter(loginMember, Chat.this, chatList);
                     chatListView.setAdapter(ca);
                     chatListView.scrollToPosition(ca.getItemCount() - 1);
+                } else {
+                    handler.post(() -> {
+                        Toast.makeText(Chat.this, "채팅 목록을 불러오는 데 실패했습니다: " + response.message(), Toast.LENGTH_SHORT).show();
+                    });
                 }
             }
 
             @Override
             public void onFailure(Call<List<ChatDTO>> call, Throwable t) {
-                /* Toast 메시지 */
+                handler.post(() -> {
+                    Toast.makeText(Chat.this, "채팅 목록을 불러오는 중 오류가 발생했습니다: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                });
             }
         });
 

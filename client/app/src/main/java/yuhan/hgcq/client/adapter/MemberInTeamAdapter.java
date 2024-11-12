@@ -160,7 +160,7 @@ public class MemberInTeamAdapter extends RecyclerView.Adapter<MemberInTeamAdapte
                         tmDTO = new TeamMemberDTO();
                         tmDTO.setMemberId(dto.getMemberId());
                         tmDTO.setTeamId(teamDTO.getTeamId());
-                        String message = dto.getName() + "일반 회원님을 추방하시겠습니끼?";
+                        String message = dto.getName() + " 님을 추방하시겠습니끼?";
 
                         onClick_setting_costume_save(v.getContext(), message, (dialog, which) -> {
 
@@ -171,9 +171,9 @@ public class MemberInTeamAdapter extends RecyclerView.Adapter<MemberInTeamAdapte
                                         memberList.remove(position);
                                         notifyItemRemoved(position);
                                         notifyItemRangeChanged(position, memberList.size());
-                                        Toast.makeText(v.getContext(), dto.getName() + "님을 추방하였습니다.", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(v.getContext(), dto.getName() + " 님을 추방했습니다.", Toast.LENGTH_SHORT).show();
                                     } else {
-                                        Toast.makeText(v.getContext(), dto.getName() + "님을 추방하지 못하였습니다.", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(v.getContext(), dto.getName() + " 님을 추방하지 못했습니다.", Toast.LENGTH_SHORT).show();
                                     }
                                 }
 
@@ -206,7 +206,7 @@ public class MemberInTeamAdapter extends RecyclerView.Adapter<MemberInTeamAdapte
                                         tmDTO = new TeamMemberDTO();
                                         tmDTO.setMemberId(dto.getMemberId());
                                         tmDTO.setTeamId(teamDTO.getTeamId());
-                                        String message = dto.getName() + "일반 회원님을 추방하시겠습니끼?";
+                                        String message = dto.getName() + " 님을 추방하시겠습니끼?";
 
                                         onClick_setting_costume_save(v.getContext(), message, (dialog, which) -> {
 
@@ -217,9 +217,9 @@ public class MemberInTeamAdapter extends RecyclerView.Adapter<MemberInTeamAdapte
                                                         memberList.remove(position);
                                                         notifyItemRemoved(position);
                                                         notifyItemRangeChanged(position, memberList.size());
-                                                        Toast.makeText(v.getContext(), dto.getName() + "추방하였습니다.", Toast.LENGTH_SHORT).show();
+                                                        Toast.makeText(v.getContext(), dto.getName() + " 님을 추방했습니다.", Toast.LENGTH_SHORT).show();
                                                     } else {
-                                                        Toast.makeText(v.getContext(), dto.getName() + "추방하지 못하였습니다.", Toast.LENGTH_SHORT).show();
+                                                        Toast.makeText(v.getContext(), dto.getName() + " 님을 추방하지 못했습니다.", Toast.LENGTH_SHORT).show();
                                                     }
                                                 }
 
@@ -230,7 +230,7 @@ public class MemberInTeamAdapter extends RecyclerView.Adapter<MemberInTeamAdapte
                                             });
 
                                         }, (dialog, which) -> {
-                                            Toast.makeText(v.getContext(), "취소했씁니다.", Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(v.getContext(), "취소했습니다.", Toast.LENGTH_SHORT).show();
                                         });
                                     }
                                 });

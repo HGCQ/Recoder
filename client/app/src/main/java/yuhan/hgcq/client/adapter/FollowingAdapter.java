@@ -99,7 +99,7 @@ public class FollowingAdapter extends RecyclerView.Adapter<FollowingAdapter.Foll
                     @Override
                     public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                         if (response.isSuccessful()) {
-                            Toast.makeText(context, memberDTO.getName() + "을 팔로잉 취소합니다.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(context, memberDTO.getName() + " 님을 팔로잉 취소합니다.", Toast.LENGTH_SHORT).show();
                             followingList.remove(memberDTO);
                             notifyDataSetChanged();
                             Log.i("Delete Following", "Success");
