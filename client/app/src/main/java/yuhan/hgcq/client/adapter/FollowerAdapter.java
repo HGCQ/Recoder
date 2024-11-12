@@ -127,7 +127,7 @@ public class FollowerAdapter extends RecyclerView.Adapter<FollowerAdapter.Follow
                         @Override
                         public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                             if (response.isSuccessful()) {
-                                Toast.makeText(context, memberDTO.getName() + "을 팔로잉 취소합니다.", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(context, memberDTO.getName() + " 님을 팔로잉 취소합니다.", Toast.LENGTH_SHORT).show();
                                 followingList.remove(memberDTO);
                                 followingNameList.remove(memberDTO.getName());
                                 notifyDataSetChanged();
@@ -153,7 +153,7 @@ public class FollowerAdapter extends RecyclerView.Adapter<FollowerAdapter.Follow
                     @Override
                     public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                         if (response.isSuccessful()) {
-                            Toast.makeText(context, memberDTO.getName() + "을 팔로잉 합니다.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(context, memberDTO.getName() + " 님을 팔로잉 합니다.", Toast.LENGTH_SHORT).show();
                             followingList.add(memberDTO);
                             followingNameList.add(memberDTO.getName());
                             notifyDataSetChanged();

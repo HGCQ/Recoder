@@ -162,7 +162,7 @@ public class MyPage extends AppCompatActivity {
             }
         }
         secession.setOnClickListener(v -> {
-            onClick_setting_costume_cancel("회원탈퇴하시겠습니까?", new DialogInterface.OnClickListener() {
+            onClick_setting_costume_cancel("회원 탈퇴하시겠습니까?", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
                     mc.deleteMember(new Callback<ResponseBody>() {
