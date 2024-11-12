@@ -139,7 +139,7 @@ public class MemberInTeamAdapter extends RecyclerView.Adapter<MemberInTeamAdapte
                                         notifyDataSetChanged();
                                         Toast.makeText(v.getContext(), "권한을 부여했습니다.", Toast.LENGTH_SHORT).show();
                                     } else {
-                                        Toast.makeText(v.getContext(), "취소했습니다.", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(v.getContext(), "권한을 부여하지 못했습니다.", Toast.LENGTH_SHORT).show();
                                     }
                                 }
 

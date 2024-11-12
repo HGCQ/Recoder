@@ -1,5 +1,6 @@
 package yuhan.hgcq.client.view;
 
+import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -85,7 +86,7 @@ import yuhan.hgcq.client.model.dto.team.TeamDTO;
 public class Gallery extends AppCompatActivity {
     /* View */
     TextView empty, albumListViewTop;
-    Button chat, move, photoPlus, photoTrash,calendar;
+    Button chat, move, photoPlus, photoTrash,calendar,cancel;
     RecyclerView photoListView, albumList;
     BottomNavigationView navi;
     Button moveOk;
@@ -206,6 +207,7 @@ public class Gallery extends AppCompatActivity {
         albumListView = findViewById(R.id.albumListView);
         navi = findViewById(R.id.bottom_navigation_view);
         calendar=findViewById(R.id.calendar);
+        cancel=findViewById(R.id.calendardel);
 
         /* 갤러리 */
         Intent gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
@@ -263,6 +265,15 @@ public class Gallery extends AppCompatActivity {
                     public void onSuccess(Map<String, List<PhotoDTO>> result) {
                         if (result != null) {
                             ga = new GalleryAdapter(result, Gallery.this, isPrivate, loginMember, albumDTO);
+                            cancel.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+
+                                    cancel.setVisibility(View.INVISIBLE);
+                                    ((Activity) v.getContext()).recreate();
+                                    Toast.makeText(Gallery.this, "날짜 취소", Toast.LENGTH_SHORT).show();
+                                }
+                            });
                             handler.post(() -> {
                                 photoListView.setAdapter(ga);
                             });
@@ -289,6 +300,14 @@ public class Gallery extends AppCompatActivity {
                         if (response.isSuccessful()) {
                             Map<String, List<PhotoDTO>> galleryList = response.body();
                             ga = new GalleryAdapter(galleryList, Gallery.this, isPrivate, loginMember, teamDTO, albumDTO);
+                            cancel.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+
+                                    cancel.setVisibility(View.INVISIBLE);
+                                    ((Activity) v.getContext()).recreate();
+                                }
+                            });
                             handler.post(() -> {
                                 photoListView.setAdapter(ga);
                             });
@@ -377,7 +396,7 @@ public class Gallery extends AppCompatActivity {
                                                             galleryPage.putExtra("loginMember", loginMember);
                                                             galleryPage.putExtra("albumDTO", albumDTO);
                                                             handler.post(() -> {
-                                                                Toast.makeText(Gallery.this, "앨범 이동 했습니다.", Toast.LENGTH_SHORT).show();
+                                                                Toast.makeText(Gallery.this, "앨범을 이동 했습니다.", Toast.LENGTH_SHORT).show();
                                                             });
                                                             startActivity(galleryPage);
                                                         } else {
@@ -464,7 +483,7 @@ public class Gallery extends AppCompatActivity {
                                                                 galleryPage.putExtra("teamDTO", teamDTO);
                                                                 galleryPage.putExtra("albumDTO", albumDTO);
                                                                 handler.post(() -> {
-                                                                    Toast.makeText(Gallery.this, "앨범 이동 했습니다.", Toast.LENGTH_SHORT).show();
+                                                                    Toast.makeText(Gallery.this, "앨범을 이동 했습니다.", Toast.LENGTH_SHORT).show();
                                                                 });
                                                                 startActivity(galleryPage);
                                                             } else {
@@ -554,10 +573,12 @@ public class Gallery extends AppCompatActivity {
                                 if (result != null) {
                                     if (result.isEmpty()) {
                                         handler.post(() -> {
+                                            cancel.setVisibility(View.VISIBLE);
                                             empty.setVisibility(View.VISIBLE);
                                         });
                                     } else {
                                         handler.post(() -> {
+                                            cancel.setVisibility(View.VISIBLE);
                                             empty.setVisibility(View.INVISIBLE);
                                         });
                                     }
@@ -583,10 +604,12 @@ public class Gallery extends AppCompatActivity {
                                     Map<String, List<PhotoDTO>> galleryList = response.body();
                                     if (galleryList.isEmpty()) {
                                         handler.post(() -> {
+                                            cancel.setVisibility(View.VISIBLE);
                                             empty.setVisibility(View.VISIBLE);
                                         });
                                     } else {
                                         handler.post(() -> {
+                                            cancel.setVisibility(View.VISIBLE);
                                             empty.setVisibility(View.INVISIBLE);
                                         });
                                     }
