@@ -144,7 +144,7 @@ public class Gallery extends AppCompatActivity {
             } else {
 
                 groupMainPage.putExtra("loginMember", loginMember);
-                startActivity(groupMainPage);
+                startActivity(albumMainPage);
             }
             finish();
             return true;
@@ -389,7 +389,7 @@ public class Gallery extends AppCompatActivity {
                                                             galleryPage.putExtra("loginMember", loginMember);
                                                             galleryPage.putExtra("albumDTO", albumDTO);
                                                             handler.post(() -> {
-                                                                Toast.makeText(Gallery.this, "앨범 이동 했습니다.", Toast.LENGTH_SHORT).show();
+                                                                Toast.makeText(Gallery.this, "앨범을 이동 했습니다.", Toast.LENGTH_SHORT).show();
                                                             });
                                                             startActivity(galleryPage);
                                                         } else {
@@ -467,7 +467,7 @@ public class Gallery extends AppCompatActivity {
                                                                 galleryPage.putExtra("teamDTO", teamDTO);
                                                                 galleryPage.putExtra("albumDTO", albumDTO);
                                                                 handler.post(() -> {
-                                                                    Toast.makeText(Gallery.this, "앨범 이동 했습니다.", Toast.LENGTH_SHORT).show();
+                                                                    Toast.makeText(Gallery.this, "앨범을 이동 했습니다.", Toast.LENGTH_SHORT).show();
                                                                 });
                                                                 startActivity(galleryPage);
                                                             } else {

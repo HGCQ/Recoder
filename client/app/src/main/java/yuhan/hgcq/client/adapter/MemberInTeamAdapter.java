@@ -118,9 +118,9 @@ public class MemberInTeamAdapter extends RecyclerView.Adapter<MemberInTeamAdapte
                                     if (response.isSuccessful()) {
                                         dto.setAdmin(false);
                                         notifyDataSetChanged();
-                                        Toast.makeText(v.getContext(), "권한 박탈 완료", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(v.getContext(), "권한을 박탈했습니다.", Toast.LENGTH_SHORT).show();
                                     } else {
-                                        Toast.makeText(v.getContext(), "권한 박탈 실패", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(v.getContext(), "권한을 박탈하지 못했습니다.", Toast.LENGTH_SHORT).show();
                                     }
                                 }
 
@@ -137,9 +137,9 @@ public class MemberInTeamAdapter extends RecyclerView.Adapter<MemberInTeamAdapte
                                     if (response.isSuccessful()) {
                                         dto.setAdmin(true);
                                         notifyDataSetChanged();
-                                        Toast.makeText(v.getContext(), "권한 부여 완료", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(v.getContext(), "권한을 부여했습니다.", Toast.LENGTH_SHORT).show();
                                     } else {
-                                        Toast.makeText(v.getContext(), "권한 부여 실패", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(v.getContext(), "권한을 부여하지 못했습니다.", Toast.LENGTH_SHORT).show();
                                     }
                                 }
 
@@ -150,7 +150,7 @@ public class MemberInTeamAdapter extends RecyclerView.Adapter<MemberInTeamAdapte
                             });
                         }
                     }, (dialog, which) -> {
-                        Toast.makeText(v.getContext(), "권한 부여 취소", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(v.getContext(), "취소했습니다.", Toast.LENGTH_SHORT).show();
                     });
                 });
 
@@ -171,9 +171,9 @@ public class MemberInTeamAdapter extends RecyclerView.Adapter<MemberInTeamAdapte
                                         memberList.remove(position);
                                         notifyItemRemoved(position);
                                         notifyItemRangeChanged(position, memberList.size());
-                                        Toast.makeText(v.getContext(), dto.getName() + "추방하였습니다.", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(v.getContext(), dto.getName() + "님을 추방하였습니다.", Toast.LENGTH_SHORT).show();
                                     } else {
-                                        Toast.makeText(v.getContext(), dto.getName() + "추방하지 못하였습니다.", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(v.getContext(), dto.getName() + "님을 추방하지 못하였습니다.", Toast.LENGTH_SHORT).show();
                                     }
                                 }
 
@@ -184,7 +184,7 @@ public class MemberInTeamAdapter extends RecyclerView.Adapter<MemberInTeamAdapte
                             });
 
                         }, (dialog, which) -> {
-                            Toast.makeText(v.getContext(), "추방 취소", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(v.getContext(), "취소했습니다.", Toast.LENGTH_SHORT).show();
                         });
                     }
                 });
@@ -230,7 +230,7 @@ public class MemberInTeamAdapter extends RecyclerView.Adapter<MemberInTeamAdapte
                                             });
 
                                         }, (dialog, which) -> {
-                                            Toast.makeText(v.getContext(), "추방 취소", Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(v.getContext(), "취소했씁니다.", Toast.LENGTH_SHORT).show();
                                         });
                                     }
                                 });
