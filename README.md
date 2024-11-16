@@ -127,17 +127,17 @@
 
 ## 프로그램 설계
 
-- 엔티티 분석
-![Entity]()
+### 엔티티 분석
+<img src="https://github.com/HGCQ/Recoder/blob/main/data/Entity.png" alt="Entity" width="500" height="500"/>
 
 <br>
 
--  테이블 설계
-![Table]()
+### 테이블 설계
+<img src="https://github.com/HGCQ/Recoder/blob/main/data/table.png" alt="table" width="500" height="500"/>
 
 <br>
 
-- 애플리케이션 흐름도
+### 애플리케이션 흐름도
 ![Flow]()
 
 <br>
