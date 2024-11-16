@@ -144,115 +144,134 @@
 
 ## 🔧 페이지별 기능
 
-- 로딩
+### 로딩
 ![loading]()
 >
 
 <br>
 
-- 선택
+### 선택
 ![select]()
 >
 
 <br>
 
-- 로그인
-![login]() 
+### 로그인
+<img src="https://github.com/HGCQ/Recoder/blob/main/data/login.jpg" alt="login" width="300" height="500"/>
+
 >
 
 <br>
 
-- 회원가입
-![join]()
+### 회원가입
+<img src="https://github.com/HGCQ/Recoder/blob/main/data/join.jpg" alt="join" width="300" height="500"/>
+
 >
 
 <br>
 
-- 그룹 목록
-![grouplist]()
+### 그룹 목록
+<img src="https://github.com/HGCQ/Recoder/blob/main/data/grouplist.jpg" alt="grouplist" width="300" height="500"/>
+
 >
 
 <br>
 
-- 그룹 생성
-![groupcreate]()
+### 그룹 생성
+<img src="https://github.com/HGCQ/Recoder/blob/main/data/groupcreate.jpg" alt="groupcreate" width="300" height="500"/>
+
 > 
 
 <br>
 
-- 그룹 설정
-![groupsetting]()
+### 그룹 설정
+<img src="https://github.com/HGCQ/Recoder/blob/main/data/groupsetting.jpg" alt="groupsetting" width="300" height="500"/>
+
 > 
 
 <br>
 
-- 앨범 목록
-![albumlist]()
+### 앨범 목록
+<img src="https://github.com/HGCQ/Recoder/blob/main/data/albumlist.jpg" alt="albumlist" width="300" height="500"/>
+
 > 
 
 <br>
 
-- 앨범 생성
-![albumcreate]()
+### 앨범 생성
+<img src="https://github.com/HGCQ/Recoder/blob/main/data/albumcreate.jpg" alt="albumcreate" width="300" height="500"/>
+
 > 
 
 <br>
 
-- 앨범 휴지통
-![albumtrash]()
+### 앨범 휴지통
+<img src="https://github.com/HGCQ/Recoder/blob/main/data/albumtrash.jpg" alt="albumtrash" width="300" height="500"/>
+
 > 
 
 <br>
 
-- 갤러리
-![gallery]()
+### 갤러리
+<img src="https://github.com/HGCQ/Recoder/blob/main/data/gallery.jpg" alt="gallery" width="300" height="500"/>
+
 > 
 
 <br>
 
-- 사진 휴지통
-![phototrash]()
+### 사진 휴지통
+<img src="https://github.com/HGCQ/Recoder/blob/main/data/phototrash1.jpg" alt="phototrash1" width="300" height="500"/>
+<img src="https://github.com/HGCQ/Recoder/blob/main/data/phototrash2.jpg" alt="phototrash2" width="300" height="500"/>
+
 > 
 
 <br>
 
-- 채팅
-![chat]()
+### 채팅
+<img src="https://github.com/HGCQ/Recoder/blob/main/data/chat.jpg" alt="chat" width="300" height="500"/>
+
 > 
 
 <br>
 
-- 사진
-![photo]()
+### 사진
+<img src="https://github.com/HGCQ/Recoder/blob/main/data/photo.jpg" alt="photo" width="300" height="500"/>
+
 > 
 
 <br>
 
-- 팔로우 목록
-![followlist]()
+### 팔로우 목록
+<img src="https://github.com/HGCQ/Recoder/blob/main/data/followlist.jpg" alt="followlist" width="300" height="500"/>
+
 > 
 
 <br>
 
-- 회원 검색
-![searchmember]()
+### 회원 검색
+<img src="https://github.com/HGCQ/Recoder/blob/main/data/followadd.jpg" alt="followadd" width="300" height="500"/>
+<img src="https://github.com/HGCQ/Recoder/blob/main/data/searchfollow.jpg" alt="searchfollow" width="300" height="500"/>
+
 > 
 
 <br>
 
-- 좋아요
-![like]()
+### 좋아요
+<img src="https://github.com/HGCQ/Recoder/blob/main/data/like.jpg" alt="like" width="300" height="500"/>
+
 > 
 
 <br>
 
-- 나의 정보
-![mypage]()
+### 나의 정보
+<img src="https://github.com/HGCQ/Recoder/blob/main/data/mypage.jpg" alt="mypage" width="300" height="500"/>
+<img src="https://github.com/HGCQ/Recoder/blob/main/data/mypage2.jpg" alt="mypage2" width="300" height="500"/>
+
 > 
 
 <br>
 
-- 정보 수정
+### 정보 수정
 ![modify]()
 > 
 
@@ -261,19 +280,17 @@
 ## 프로젝트 후기
 
 ### 👦 김명준
+이번 프로젝트를 통해 팀장의 역할이 얼마나 중요한지 깊이 깨닫게 되었습니다. 팀장의 리더십과 방향 설정이 팀 전체의 협업과 결과물의 완성도에 큰 영향을 미친다는 것을 직접 경험했습니다. 또한 프로젝트를 진행하면서 나의 부족한 점들을 명확히 알게 되었고, 이를 개선해야겠다는 동기를 얻었습니다.   
 
-<br>
+특히 의사소통 능력과 시간 관리, 그리고 문제를 구조적으로 접근하는 역량이 중요하다는 것을 깨달았습니다. 이러한 점들을 보완하기 위해 앞으로는 더 많은 실전 경험과 학습을 통해 성장해 나갈 계획입니다. 이번 프로젝트는 부족함을 발견하고 개선할 기회를 준 소중한 경험이었습니다.
 
 ### 👦 김남규
 
-<br>
 
 ### 👦 이동현
 
-<br>
 
 ### 👦 전경섭
 
-<br>
 
 ### 👧 조서윤
