@@ -128,7 +128,6 @@ public class MyPage extends AppCompatActivity {
         retouch = findViewById(R.id.retouch);
         secession = findViewById(R.id.secession);
         logout=findViewById(R.id.logout);
-        secession=findViewById(R.id.secession);
         swit=findViewById(R.id.switch1);
 
         /* 갤러리 */
@@ -154,31 +153,56 @@ public class MyPage extends AppCompatActivity {
         if (loginMember != null) {
             name.setText(loginMember.getName());
             email.setText(loginMember.getEmail());
-            String path = loginMember.getImage();
-            if (path != null) {
-                Log.i("path", path);
-                Glide.with(MyPage.this)
-                        .load(serverIp + path)
-                        .into(profile);
-            }
-        }
-           secession.setOnClickListener(v -> {
-                mc.deleteMember(new Callback<ResponseBody>() {
-                    @Override
-                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                        if(response.isSuccessful()){
-                            NetworkClient.getInstance(MyPage.this.getApplicationContext()).deleteCookie();
-                            Toast.makeText(MyPage.this,"회원 탈퇴 완료",Toast.LENGTH_SHORT).show();
-                            startActivity(loginPage);
-                        }
-                    }
 
-                    @Override
-                    public void onFailure(Call<ResponseBody> call, Throwable t) {
+            mc.me(new Callback<MemberDTO>() {
+                @Override
+                public void onResponse(Call<MemberDTO> call, Response<MemberDTO> response) {
+                    if (response.isSuccessful()) {
+                        MemberDTO body = response.body();
+                        String path = body.getImage();
 
+                        handler.post(() -> {
+                            if (path != null) {
+                                Log.i("path", path);
+                                Glide.with(MyPage.this)
+                                        .load(serverIp + path)
+                                        .into(profile);
+                            }
+                        });
                     }
-                });
+                }
+
+                @Override
+                public void onFailure(Call<MemberDTO> call, Throwable t) {
+
+                }
             });
+        }
+        secession.setOnClickListener(v -> {
+            onClick_setting_costume_cancel("회원 탈퇴하시겠습니까?", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    mc.deleteMember(new Callback<ResponseBody>() {
+                        @Override
+                        public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                            if(response.isSuccessful()){
+                                NetworkClient.getInstance(MyPage.this.getApplicationContext()).deleteCookie();
+                                Toast.makeText(MyPage.this,"회원 탈퇴 완료",Toast.LENGTH_SHORT).show();
+                                startActivity(loginPage);
+                            }
+                        }
+                        @Override
+                        public void onFailure(Call<ResponseBody> call, Throwable t) {
+                        }
+                    });
+                }
+            }, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    Toast.makeText(MyPage.this, "취소했습니다.", Toast.LENGTH_SHORT).show();
+                }
+            });
+        });
         swit.setChecked(loginMember.getSearch());
         swit.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked) {

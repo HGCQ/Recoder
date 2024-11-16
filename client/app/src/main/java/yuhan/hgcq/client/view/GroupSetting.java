@@ -227,7 +227,7 @@ public class GroupSetting extends AppCompatActivity {
                                         if (response.isSuccessful()) {
                                             updatedMemberList = response.body(); // Update the list
                                             handler.post(() -> {
-                                                Toast.makeText(v.getContext(), "초대하였습니다.", Toast.LENGTH_SHORT).show();
+                                                Toast.makeText(v.getContext(),"초대했습니다.", Toast.LENGTH_SHORT).show();
                                                 followingList.setVisibility(View.INVISIBLE);
                                                 followingListView.setVisibility(View.INVISIBLE);
                                                 followingListViewTop.setVisibility(View.INVISIBLE);
@@ -244,13 +244,13 @@ public class GroupSetting extends AppCompatActivity {
                                     @Override
                                     public void onFailure(Call<List<MemberInTeamDTO>> call, Throwable t) {
                                         handler.post(() -> {
-                                            Toast.makeText(v.getContext(), "오류 발생", Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(v.getContext(), "오류가 발생했습니다", Toast.LENGTH_SHORT).show();
                                         });
                                     }
                                 });
                             } else {
                                 handler.post(() -> {
-                                    Toast.makeText(v.getContext(), "초대하지 못하였습니다.", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(v.getContext(), "관리자만 초대할 수 있습니다.", Toast.LENGTH_SHORT).show();
                                 });
                             }
                         }
@@ -258,7 +258,7 @@ public class GroupSetting extends AppCompatActivity {
                         @Override
                         public void onFailure(Call<ResponseBody> call, Throwable t) {
                             handler.post(() -> {
-                                Toast.makeText(v.getContext(), "오류 발생", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(v.getContext(), "오류가 발생하였습니다.", Toast.LENGTH_SHORT).show();
                             });
                         }
                     });
@@ -357,7 +357,7 @@ public class GroupSetting extends AppCompatActivity {
                             });
                         } else {
                             handler.post(() -> {
-                                Toast.makeText(GroupSetting.this, "프로필 등록을 실패했습니다.", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(GroupSetting.this, "관리자만 프로필 등록이 가능합니다.", Toast.LENGTH_SHORT).show();
                             });
                         }
                     }
