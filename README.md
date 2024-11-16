@@ -4,23 +4,14 @@
 ## 목차
 
 - [🛤️ 공유 앨범 앱 Recoder](#️-공유-앨범-앱-recoder)
-  - [목차](#목차)
   - [📋 프로젝트 소개](#-프로젝트-소개)
   - [👨‍👨‍👧‍👦 팀원 구성](#-팀원-구성)
   - [📃 개발 환경 및 개발 기간](#-개발-환경-및-개발-기간)
-    - [🛠️ 개발 환경](#️-개발-환경)
-    - [📅 개발 기간](#-개발-기간)
-    - [🖊️ 브랜치 전략](#️-브랜치-전략)
   - [🧩 역할 분담](#-역할-분담)
   - [💡 기능 목록](#-기능-목록)
   - [프로그램 설계](#프로그램-설계)
   - [🔧 페이지별 기능](#-페이지별-기능)
   - [프로젝트 후기](#프로젝트-후기)
-    - [👦 김명준](#-김명준)
-    - [👦 김남규](#-김남규)
-    - [👦 이동현](#-이동현)
-    - [👦 전경섭](#-전경섭)
-    - [👧 조서윤](#-조서윤)
 
 <br>
 
@@ -29,6 +20,10 @@
 - ✈️ 친구, 연인 또는 가족끼리 추억을 회상하는 추억 공유 앨범 앱입니다.
 - 💑 특정 사람들과 어떤 추억이 있었는지 사진을 통해 회상할 수 있습니다.
 - 📷 앨범마다 친구와 사진을 쉽게 공유할 수 있습니다.
+
+<br>
+
+![video](https://private-user-images.githubusercontent.com/115599902/386812165-dd9a2e5c-f5c7-4bc9-be0e-e68caa3c4073.gif?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3MzE3MjM2NDUsIm5iZiI6MTczMTcyMzM0NSwicGF0aCI6Ii8xMTU1OTk5MDIvMzg2ODEyMTY1LWRkOWEyZTVjLWY1YzctNGJjOS1iZTBlLWU2OGNhYTNjNDA3My5naWY_WC1BbXotQWxnb3JpdGhtPUFXUzQtSE1BQy1TSEEyNTYmWC1BbXotQ3JlZGVudGlhbD1BS0lBVkNPRFlMU0E1M1BRSzRaQSUyRjIwMjQxMTE2JTJGdXMtZWFzdC0xJTJGczMlMkZhd3M0X3JlcXVlc3QmWC1BbXotRGF0ZT0yMDI0MTExNlQwMjE1NDVaJlgtQW16LUV4cGlyZXM9MzAwJlgtQW16LVNpZ25hdHVyZT0wZmQzOGI5ZjExYjNhZDkxNTE5NzVmNTk0ZjQwZWZjNjhlOGM1NDg5YzkwZDQ3OGM2NzlmYmIzZDU4MDY4NTJjJlgtQW16LVNpZ25lZEhlYWRlcnM9aG9zdCJ9.C2gkxv9U0dSKY0inAWTOW4l7vEIrCXd481jNCkjAgvE)
 
 <br>
 
