@@ -144,14 +144,9 @@
 
 ## 🔧 페이지별 기능
 
-### 로딩
-![loading]()
->
-
-<br>
-
 ### 선택
-![select]()
+<img src="https://github.com/HGCQ/Recoder/blob/main/data/select.jpg" alt="select" width="300" height="500"/>
+
 >
 
 <br>
@@ -272,7 +267,8 @@
 <br>
 
 ### 정보 수정
-![modify]()
+<img src="https://github.com/HGCQ/Recoder/blob/main/data/modify.jpg" alt="modify" width="300" height="500"/>
+
 > 
 
 <br>
